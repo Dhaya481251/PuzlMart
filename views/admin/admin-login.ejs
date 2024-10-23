@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Puzl Mart Login Form</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/adminLogin.css">
+</head>
+<body>
+    <div class="form-container">
+        <div class="form-box">
+            <h2> Admin Login</h2>
+            <form method="POST" action="/admin/login">
+                <input type="text" class="form-control" placeholder="Username">
+                <input type="password" class="form-control" placeholder="Password">
+                <div id="error2" class="error.message"></div>
+                <%if(locals.message && message.length > 0){%>
+                    <div class="alert alert-danger text-center">
+                        <%=message%>
+                    </div>
+                <%}%>
+                <button type="submit" class="btn btn-primary">Login</button>
+                
+            </form>
+            
+        </div>
+    </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const adminLoginForm = document.getElementById("adminLoginForm");
+        const nameField = document.getElementById("adminname");
+        const passwordField = document.getElementById("adminPassword");
+        const nameError = document.getElementById("nameError");
+        const passwordError = document.getElementById("passwordError");
+  
+        adminLoginForm.addEventListener("submit", function (event) {
+          let isValid = true;
+          const namePattern = /^[A-Za-z\s]+$/;
+          if (!namePattern.test(nameField.value)) {
+            nameError.textContent = "Invalid name format";
+            isValid = false;
+          } else {
+            nameError.textContent = "";
+          }
+          if (passwordField.value.length < 8) {
+            passwordError.textContent =
+              "Password should contain at least 8 characters";
+            isValid = false;
+          } else {
+            passwordError.textContent = "";
+          }
+  
+          if (!isValid) {
+            event.preventDefault();
+          }
+        });
+      });
+    </script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+    
+    
+    

@@ -11,16 +11,148 @@
     <div class="form-container">
         <div class="form-box">
             <h2>SignUp</h2>
-            <form>
-                <input type="text" class="form-control" placeholder="Username">
-                <input type="email" class="form-control" placeholder="Email">
-                <input type="password" class="form-control" placeholder="Password">
-                <input type="password" class="form-control" placeholder="Confirm Password">
-                <button type="submit" class="btn btn-primary">SignUp</button>
+            <form id="signform" method="POST" action="/signup">
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Username" name="name" id="name" >
+                    <div id="error1" class="error-message"></div>
+                </div>
+                <div class="form-group">
+                    <input type="email" class="form-control" placeholder="Email" name="email" id="email" >
+                    <div id="error2" class="error-message"></div>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Phone Number" name="phone" id="phone" >
+                    <div id="error3" class="error-message"></div>
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-control" placeholder="Password" name="password" id="password" >
+                    <div id="error4" class="error-message"></div>
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-control" placeholder="Confirm Password" name="cPassword" id="confirm-password" >
+                    <div id="error5" class="error-message"></div>
+                </div>
+                <%if(locals.message && message.length > 0){%>
+                    <div class="alert alert-danger text-center">
+                        <%=message%>
+                    </div>
+                <%}%>
+                <button type="submit" class="btn btn-primary" action>SignUp</button>
             </form>
-            <p class="text-center">Already have an account? <a href="#">Login</a></p>
+            <p class="text-center">Already have an account? <a href="/login">Login</a></p>
         </div>
     </div>
+
+    <script>
+        const nameid = document.getElementById('name');
+        const emailid = document.getElementById('email');
+        const phoneid = document.getElementById('phone');  // Corrected ID
+        const passid = document.getElementById('password');
+        const cpassid = document.getElementById('confirm-password');
+
+        const error1 = document.getElementById('error1');
+        const error2 = document.getElementById('error2');
+        const error3 = document.getElementById('error3');
+        const error4 = document.getElementById('error4');
+        const error5 = document.getElementById('error5');
+        
+        const signform = document.getElementById('signform');
+
+        function nameValidateChecking() {
+            const nameVal = nameid.value;
+            const namePattern = /^[A-Za-z\s]+$/;
+
+            if (nameVal.trim() === "") {
+                error1.style.display = 'block';
+                error1.innerHTML = 'Please enter a valid name';
+                return false;
+            } else if (!namePattern.test(nameVal)) {
+                error1.style.display = 'block';
+                error1.innerHTML = 'Name can only contain alphabets and spaces';
+                return false;
+            } else {
+                error1.style.display = 'none';
+                error1.innerHTML = '';
+                return true;
+            }
+        }
+
+        function emailValidateChecking() {
+            const emailVal = emailid.value;
+            const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+
+            if (!emailPattern.test(emailVal)) {
+                error2.style.display = 'block';
+                error2.innerHTML = 'Invalid email format';
+                return false;
+            } else {
+                error2.style.display = 'none';
+                error2.innerHTML = '';
+                return true;
+            }
+        }
+
+        function phoneValidateChecking() {
+            const phoneVal = phoneid.value;
+
+            if (phoneVal.trim() === '' || phoneVal.length !== 10) {
+                error3.style.display = 'block';
+                error3.innerHTML = 'Enter a valid 10-digit phone number';
+                return false;
+            } else {
+                error3.style.display = 'none';
+                error3.innerHTML = '';
+                return true;
+            }
+        }
+
+        function passValidateChecking() {
+            const passVal = passid.value;
+            const cpassVal = cpassid.value;
+            const alpha = /[a-zA-Z]/;
+            const digit = /\d/;
+
+            let isValid = true;
+
+            if (passVal.length < 8) {
+                error4.style.display = 'block';
+                error4.innerHTML = 'Password should contain at least 8 characters';
+                isValid = false;
+            } else if (!alpha.test(passVal) || !digit.test(passVal)) {
+                error4.style.display = 'block';
+                error4.innerHTML = 'Password should contain numbers and alphabets';
+                isValid = false;
+            } else {
+                error4.style.display = 'none';
+                error4.innerHTML = '';
+            }
+
+            if (passVal !== cpassVal) {
+                error5.style.display = 'block';
+                error5.innerHTML = 'Passwords do not match';
+                isValid = false;
+            } else {
+                error5.style.display = 'none';
+                error5.innerHTML = '';
+            }
+
+            return isValid;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            signform.addEventListener('submit', function(e) {
+                // Check each validation, and if any return false, prevent submission
+                const isNameValid = nameValidateChecking();
+                const isEmailValid = emailValidateChecking();
+                const isPhoneValid = phoneValidateChecking();
+                const isPassValid = passValidateChecking();
+
+                if (!isNameValid || !isEmailValid || !isPhoneValid || !isPassValid) {
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>

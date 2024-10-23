@@ -11,12 +11,24 @@
     <div class="form-container">
         <div class="form-box">
             <h2>Login</h2>
-            <form>
+            <form method="POST" action="/login">
                 <input type="text" class="form-control" placeholder="Username">
                 <input type="password" class="form-control" placeholder="Password">
+                <div id="error2" class="error.message"></div>
+                <%if(locals.message && message.length > 0){%>
+                    <div class="alert alert-danger text-center">
+                        <%=message%>
+                    </div>
+                <%}%>
                 <button type="submit" class="btn btn-primary">Login</button>
+                <div class="mt-2px text-center"><p>or Login with</p></div>
+                <div class="google-btns">
+                    <a href="/auth/google" class="btn btn-outline-danger" style="margin-left: 140px;">
+                        <img src="images/google-logo.png" alt="google-logo" style="width:24px;height: 24px;">
+                    </a>
+                </div>
             </form>
-            <p class="text-center">New to Puzl Mart? <a href="#">SignUp</a></p>
+            <p class="text-center">New to Puzl Mart? <a href="/signup">SignUp</a></p>
         </div>
     </div>
 

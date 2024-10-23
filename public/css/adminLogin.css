@@ -39,14 +39,7 @@
     background-color: #28a9a5;
 }
 
-.form-box a {
-    color: #36B5B1;
-    text-decoration: none;
-}
 
-.form-box a:hover {
-    text-decoration: underline;
-}
 
 /* Responsive Design */
 @media (max-width: 576px) {
@@ -57,10 +50,4 @@
     .form-box h2 {
         font-size: 1.5rem;
     }
-}
-
-.error-message{
-    color:red;
-    font-size: 0.75rem;
-    display: none;
 }

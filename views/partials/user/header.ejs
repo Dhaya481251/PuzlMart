@@ -31,7 +31,18 @@
                         </button>
                     </form>
                     <ul class="navbar-nav ml-auto">
-                        <li class="nav-item"><a class="nav-link" href="#">Login</a></li>
+                        <%if(locals.user){%>
+                            <div class="dropdown">
+                                <a href="#" class="sign-in-link"><%=locals.user.name%></a>
+                                <div class="dropdown-content">
+                                    <a href="/userProfile">Profile</a>
+                                    <a href="/logout">Logout</a>
+                                </div>
+                            </div>
+                        <%}else {%>
+                            <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
+                        <%}%>
+                        
                         <li class="nav-item"><a class="nav-link" href="#"><img src="images/cart.svg" alt=""></a></li>
                     </ul>
                 </div>
