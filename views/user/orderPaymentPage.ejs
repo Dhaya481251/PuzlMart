@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Puzl Mart Home</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
+    <style>
+/* Main navbar styling */
+.navbar {
+    background-color: #42ADA8;
+    border-bottom-left-radius: 25px;
+    border-bottom-right-radius: 25px;
+    padding: 1rem;
+}
+
+/* Adjusting the navbar links */
+.nav-link {
+    
+    font-size: 20px;
+    font-weight: bold;
+}
+.navbar-dark .navbar-nav .nav-link {
+    color: #2dbbb4;
+}
+.nav-item a{
+    color: #2dbbb4;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+/* Styling for individual nav items */
+.nav-item {
+    background-color: #D6F9F9;
+    
+    border-radius: 15px; /* Simplified radius to work better on smaller screens */
+}
+
+/* Adding gap between navbar items */
+.navbar-nav {
+    gap: 1.5rem; /* Reduced gap for better spacing on smaller screens */
+}
+
+/*.login-btn{
+    min-width: 4rem;
+    height: 2.5rem;
+    margin-top: 0.25rem;
+    text-align: center;
+    padding-top: 0.25rem;
+}*/
+
+/* Search form styling */
+.form-inline.search{
+    flex-grow: 0;
+    display: flex;
+    margin-left: 1rem;
+}
+.form-control {
+    background: #D6F9F9;
+    border-bottom-left-radius: 15px;
+    border: none;
+    width: 100%;
+}
+
+.search-btn {
+    background-color: #D6F9F9;
+    border-bottom-right-radius: 15px;
+    border: none;
+    padding: 0.375rem 1.5rem;
+    width: auto;
+}
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 0.5rem 1rem;
+        
+    }
+    .search{
+        display: flex;
+    }
+    .nav-link {
+        font-size: 18px; /* Slightly smaller font size */
+    }
+
+    .form-control {
+        width: 100%; /* Full width for the search bar on smaller screens */
+    }
+
+    .navbar-nav {
+        gap: 1rem; /* Less gap between items */
+    }
+
+    .search-btn {
+        padding: 0.3rem 1rem; /* Adjust button padding */
+    }
+
+    .navbar-brand img {
+        max-width: 150px; /* Adjust logo size */
+    }
+    
+}
+
+/* Additional responsive tweaks for mobile devices */
+@media (max-width: 576px) {
+    .nav-link {
+        font-size: 16px;
+    }
+
+    .form-control {
+        width: 100%; 
+        margin-bottom: 0; 
+    }
+
+    .navbar-nav {
+        flex-direction: column; /* Stack the nav items vertically on mobile */
+        text-align: center; /* Center the nav links */
+    }
+
+    .nav-item {
+        margin-bottom: 0.5rem; /* Spacing between stacked nav items */
+    }
+    .search-btn{
+        width: auto;
+    }
+}
+
+footer {
+    background-color: #77C8C4;
+    color: white;
+    margin-top: 4rem;
+}
+
+footer h5 {
+    font-size: 40px;
+    margin-bottom: 20px;
+}
+
+footer p {
+    font-size: 14px;
+}
+.copyright{
+    font-size: 45px;
+}
+    </style>
+
+</head>
+<body>
+    <!-- Navbar Section -->
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#"><img src="/images/logo.svg" alt=""></a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/products">Products</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Categories</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">About Us</a></li>
+                        <li class="nav-item"><a class="nav-link" href="">Contact Us</a></li>
+                    </ul>
+                    <form action="/search" method="POST" class="form-inline search">
+                        <input class="form-control mr-sm-2" name="query" type="search" placeholder="Search">
+                        <button class="btn btn-outline-success search-btn" type="submit">
+                            <img src="/images/Search.svg" alt="">
+                        </button>
+                    </form>
+                    <ul class="navbar-nav ml-auto">
+                        <% if (user || isAuthenticated) { %>
+                            <!-- Logged-in user options -->
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">My account</a>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" href="/userProfile"><%=user.name%></a>
+                                    <a class="dropdown-item" href="/logout">Logout</a>
+                                </div>
+                            </li>
+                        <% } else { %>
+                            <!-- Guest options -->
+                            <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
+                        <% } %>
+                        <li class="nav-item"><a class="nav-link" href="/cart"><img src="images/cart.svg" alt="Cart Icon"></a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+          <form method = 'POST' action="/buy" id="placeOrderForm">
+            <div class="card my-3" >
+
+                <div class="card-header text-white bg-info">DELIVERY ADDRESS</div>
+                
+                <div class="card-body" >
+                    <% if(userAddress){ %>
+                    <% userAddress.address.forEach((address,index) => { %>
+                    <div class="form-check my-3" style="border: 1px solid #42ada8;">
+                        <div class="mx-3 px-3 py-3" id="radioContainer" style="display: flex;flex-direction: column;">
+                            <input class="form-check-input" type="radio" name="selectedAddress" value="<%= address._id %>" id="flexRadioDefault2" <%= index === 0 ? 'checked' : '' %> >
+                            <label class="form-check-label" for="flexRadioDefault2">
+                                <div class="card-header text-center" style="font-family: monospace; font-size: larger; border:1px solid #42ada8">
+                                    <h5 class=""><%=address.addressType%></h5>
+                                </div>
+                                <div class="card-body">
+                                    <address>
+                                        <%=address.name%><br/>
+                                        <%=address.city%><br/>
+                                        <%=address.landMark%><br/>
+                                        <%=address.state%>
+                                    </address>
+                                    <p><%=address.pincode%></p>
+                                    <p><%=address.phone%></p>
+                                    <p><%=address.altPhone%></p>
+                                </div>
+                                <a href="/orderEditAddress?id=<%=address._id%>">Edit</a>
+                            </label>
+                        
+                            <button id="deliverBtn" class="btn text-white w-50" style="display:none;background-color: #42ada8;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;"><h5>Deliver Here</h5></button>
+                        
+                        </div>
+                      
+                    </div>
+                    <% }) %>
+                    <% } %>
+                    <div class=" px-3 py-3" style="border: 1px solid #42ada8; border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;">
+                    <a href="/orderAddAddress"><h3 class="text-center text-white" style="text-decoration: none; border-bottom-left-radius: 15px; border-bottom-right-radius: 15px;background-color: #42ada8;" >ADD A NEW ADDRESS</h3></a>
+                    </div>
+                </div>
+            </div>
+            <div class="card" id="orderDiv" >
+                <div class="card-header text-white bg-info">ORDER SUMMARY</div>
+                
+                <% cart.items.forEach(item => { %>
+                <div class="card-body mx-3 my-3" style=" display: flex;flex-direction: row; border: 1px solid #42ada8;">
+                    <div >
+                        <img class="img-fluid"  src="/uploads/re-image/<%=item.productId.productImage[0]%>" alt="">
+                    </div>
+                    <div class="px-3">
+                        <h2><%=item.productId.productName%></h2>
+                        <p><%=item.productId.description%></p>
+                        <h3><%=item.productId.salePrice%></h3>
+
+                    </div>
+                    
+                </div>
+                <% }) %>
+                <button id="orderBtn"  class="btn text-white w-50 h-25" style="background-color: #42ada8;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;"><h5>Continue</h5></button>
+            </div>
+            <!-- Coupon Section
+<div class="card" id="couponDiv">
+    <div class="card-header text-white bg-info">Apply Coupon</div>
+    <div class="card-body mx-3 my-3" style="display: flex;flex-direction: row; border: 1px solid #42ADA8;">
+        <form action="/applyCoupon" method="POST" id="couponForm">
+            <input type="text" name="couponCode" id="couponCode" placeholder="Enter coupon code">
+            <button type="submit" id="couponBtn" class="btn text-white w-50" style="background-color: #42ada8;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;">Apply Coupon</button>
+        </form>
+    </div>
+    <div class="card-body mx-3 my-3" style="display: flex;flex-direction: row; border: 1px solid #42ADA8;">
+        <p>Applied Coupons: <span id="appliedCoupon"><%= coupons && coupons.name ? coupons.name : 'None' %></span></p>
+        <p>Discount: ₹<span id="couponDiscount"><%= coupons && coupons.discount ? coupons.discount : 0 %></span></p>
+        <% if(coupons && coupons.isList && coupon.name) { %>
+            <button id="removeCouponBtn" class="btn btn-danger" style="background-color: red;" onclick="removeCoupon()">Remove Coupon</button>
+        <% } %>
+    </div>
+</div>-->
+
+            <div class="card" style="display: none;" id="priceDiv">
+                <div class="cardheader text-white bg-info">PRICE DETAILS</div>
+                <div class="card-body mx-3 my-3" style="display: flex;flex-direction: column; border: 1px solid #42ada8;">
+                    <h3>Total Price</h3>
+                    
+                    <p>Price : (<%= cart ? cart.items.length : 0 %> items): <%= cart ? cart.items.reduce((acc, item) => acc + item.productId.regularPrice * item.quantity, 0) : 0 %></p>
+                    
+                    <p>Discount : <%= cart ? cart.items.reduce((acc, item) => acc + (item.productId.regularPrice - item.productId.salePrice) * item.quantity, 0) : 0 %></p>
+                    
+                    <p>Delivery Charge : Free</p>
+                    <p>--------------------------</p>
+                    <p>Total: <%= cart ? cart.items.reduce((acc, item) => acc + item.productId.salePrice * item.quantity, 0) : 0 %></p>
+                    <button id="priceBtn" class="btn text-white w-50 h-25" style="background-color: #42ada8;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;"><h5>Continue</h5></button>
+                </div>
+            </div>
+            
+            
+            <div class="card"  id="payDiv">
+                <div class="card-header text-white bg-info">PAYMENT OPTIONS</div>
+                <div class="card-body mx-3 my-3" style=" display: flex;flex-direction: column; border: 1px solid #42ada8;">
+                    <div class="form-check" id="payRadio1">
+                        <input class="form-check-input1" type="radio" name="selectedPayment" value="PayPal" id="flexRadioDefault1">
+                        <label class="form-check-label" for="flexRadioDefault1">
+                          Pay with PayPal
+                        </label>
+                        <a href="" style="text-decoration: none;"><button id="payPalBtn" class="btn text-white w-50" onclick="startPayPal()" style="display:none;background-color: #42ada8;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;"><h5>Continue</h5></button></a>
+                    </div>
+                    <div class="form-check" id="payRadio3">
+                        <input class="form-check-input3" type="radio" name="selectedPayment" value="Razorpay" id="flexRadioDefault3">
+                        <label class="form-check-label" for="flexRadioDefault1">
+                          Pay with Razorpay
+                        </label>
+                        <a href="" style="text-decoration: none;"><button id="razorpayBtn" class="btn text-white w-50" onclick="startRazorpay()" style="display:none;background-color: #42ada8;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;"><h5>Continue</h5></button></a>
+                    </div>
+                    <div class="form-check" id="payRadio2">
+                        <input class="form-check-input2" type="radio" name="selectedPayment" value="COD" id="flexRadioDefault2" >
+                        <label class="form-check-label" for="flexRadioDefault2">
+                          CASH ON DELIVERY
+                        </label>
+                        <button type="submit" id="codBtn" class="btn text-white w-50" style="display:none;background-color: #42ada8;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;"><h5>Confirm Order</h5></button>
+                    </div>
+                      
+                </div>
+            </div>
+            
+         </form>
+        </div>
+        
+    </div>
+</div>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+
+document.getElementById('placeOrderForm').addEventListener('submit', (e) => {
+    const selectedAddress = document.querySelector('input[name="selectedAddress"]:checked');
+    const selectedPayment = document.querySelector('input[name="selectedPayment"]:checked');
+
+    if (!selectedAddress || !selectedPayment) {
+        e.preventDefault(); // Prevent form submission
+        
+    }
+});
+/*document.getElementById('couponForm').addEventListener('submit',(e) => {
+    e.preventDefault();
+    const couponCode = document.getElementById('couponCode').value;
+    fetch('/applyCoupon',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({couponCode})
+    }).then(response => response.json())
+    .then(data => {
+        if(data.success){
+            document.getElementById('appliedCoupon').innerText = data.couponName;
+            document.getElementById('couponDiscount').innerText = data.discount;
+            document.getElementById('removeCouponBtn').style.display = 'block';
+            document.getElementById('couponCodeData').dataset.code = data.couponCode;
+        }else{
+            alert('Coupon not applied');
+        }
+    }).catch(err => console.error(err));
+})
+function removeCoupon() {
+    fetch('/removeCoupon', { 
+        method: 'POST', 
+        headers: { 'Content-Type': 'application/json' },
+        body:JSON.stringify({couponCode})
+     })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                
+                document.getElementById('appliedCoupon').innerText = 'None';
+                document.getElementById('couponDiscount').innerText = '0';
+                
+                document.getElementById('removeCouponBtn').style.display = 'none';
+            }
+        });
+}*/
+
+document.addEventListener('DOMContentLoaded', () => {
+    const radioContainers = document.querySelectorAll('#radioContainer');
+    const deliverBtns = document.querySelectorAll('#deliverBtn');
+    const orderDiv = document.getElementById('orderDiv');
+    const orderBtn = document.getElementById('orderBtn');
+    const priceDiv = document.getElementById('priceDiv');
+    const priceBtn = document.getElementById('priceBtn');
+    const payDiv = document.getElementById('payDiv');
+
+    const radioInput1 = document.querySelector('.form-check-input1');
+    const radioInput2 = document.querySelector('.form-check-input2');
+    const radioInput3 = document.querySelector('.form-check-input3');
+    const upiBtn = document.getElementById('upiBtn');
+    const codBtn = document.getElementById('codBtn');
+    const payPalBtn = document.getElementById('payPalBtn');
+    const razorpayBtn= document.getElementById('razorpayBtn');
+    const form = document.getElementById('placeOrderForm');
+
+    radioContainers.forEach((radioContainer, index) => {
+        const radioInput = radioContainer.querySelector('.form-check-input');
+        const deliverBtn = deliverBtns[index];
+
+        radioInput.addEventListener('change', () => {
+            deliverBtns.forEach(btn => (btn.style.display = 'none')); // Hide all deliver buttons
+            deliverBtn.style.display = 'block'; // Show only the selected deliver button
+        });
+
+        deliverBtn.addEventListener('click', () => {
+            orderDiv.style.display = 'block'; // Show order summary
+        });
+    });
+
+    orderBtn.addEventListener('click', () => {
+        priceDiv.style.display = 'block';
+        orderDiv.style.display = 'none';
+    });
+    
+
+    priceBtn.addEventListener('click', () => {
+        payDiv.style.display = 'block';
+        priceDiv.style.display = 'none';
+    });
+
+    radioInput1.addEventListener('change', () => {
+        payPalBtn.style.display = 'block';
+        razorpayBtn.style.display = 'none';
+        codBtn.style.display = 'none';
+        
+    });
+
+    radioInput2.addEventListener('change', () => {
+        codBtn.style.display = 'block';
+        payPalBtn.style.display = 'none';
+        razorpayBtn.style.display = 'none';
+    });
+    radioInput3.addEventListener('change', () => {
+        razorpayBtn.style.display = 'block'
+        codBtn.style.display = 'none';
+        payPalBtn.style.display = 'none';
+    });
+
+    // Final validation and submission
+    form.addEventListener('submit', (e) => {
+        const selectedAddress = document.querySelector('input[name="selectedAddress"]:checked');
+        const selectedPayment = document.querySelector('input[name="selectedPayment"]:checked');
+
+        if (!selectedAddress || !selectedPayment) {
+            e.preventDefault();
+            
+        }
+    });
+});
+
+</script>
+
+<%- include('../../views/partials/user/footer') %>

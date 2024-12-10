@@ -1,0 +1,215 @@
+<%- include('../../views/partials/user/header') %>
+
+<main class="container">
+    <nav class="breadcrumbs mt-3 mb-3 container">
+        <a href="/" class="breadcrumbs-txt" style="text-decoration: none;">Home</a>/
+        <a href="/userProfile" class="breadcrumbs-txt" style="text-decoration: none;">My Details</a>/
+        <a href="/myOrders" class="breadcrumbs-txt" style="text-decoration: none;">My Orders</a>/
+        <a href="" class="breadcrumbs-txt" style="text-decoration: none;">Order</a>
+    </nav>
+        <div class="orders-list">
+           
+                <div class="order-card px-3 py-3 mx-3 my-3" style="border:1px solid #42ada8">
+                    <p>Order ID: <%= orders.orderId %></p>
+                    <hr>
+                    <ul>
+                        <% orders.items.forEach(item => { %>
+                            <li>
+                                <img src="/uploads/re-image/<%= item.productId.productImage[0]%>" alt="<%= item.productId.productName %>" style="width: 50px; height: 50px;"><br>
+                                <span><%= item.productId.productName %>    |    <%= item.quantity %> item</span><br>
+                                <span>Rs <%= orders.finalAmount %></span>
+
+                                <% if(item.rating){ %>
+                                    <p>
+                                        <span class="star-rating">
+                                            <% for (let i = 1; i <= 5; i++) { %>
+                                                <span class="star <%= i <= item.rating ? 'selected' : '' %>">&#9733;</span>
+                                            <% } %>
+                                        </span>
+                                    </p>
+                                    <p>Review: <%= item.review %></p>
+                                <% }else{ %>
+                                    <p>No ratings</p>
+                                <% } %>
+                            </li>
+                        <% }) %>
+                    </ul>
+                    
+                    <hr>
+                    <h5>Order Date: <%= orders.createdOn.toLocaleDateString() %></h5>
+                    
+                    
+                    <h5>Status: <%= orders.status %></h5>
+                    
+                    
+                    <h3>Delivered on <%=orders.deliveryDate.toLocaleDateString()%></h3>
+                    <div style="display: flex;flex-direction: column;">
+                        <button id="cancelBtn" class="btn-info">Cancel the order</button>
+                        <button id="returnBtn" class="btn-info">Return the order</button>
+                    </div>
+                    <div id="cancelDiv" style="display: none;">
+                    <form action="/cancelOrder/<%=orders._id%>" method="POST">
+                        <label for="cancellationReason">Write a cancellation reason</label><br>
+                        <textarea name="cancellationReason" id="cancellationReason" rows="3"></textarea>
+                        <button type="submit">Submit</button>
+                    </form>
+                    </div>
+                    <div id="returnDiv" style="display: none;">
+                    <form action="/returnOrder/<%=orders._id%>" method="POST">
+                        <label for="returnReason">Write a cancellation reason</label><br>
+                        <textarea name="returnReason" id="returnReason" rows="3"></textarea>
+                        <button type="submit">Submit</button>
+                    </form>
+                    </div>
+                </div>
+                <div class="order-card px-3 py-3 mx-3 my-3" style="border:1px solid #42ada8">
+                    <p>Rate the order</p>
+                    <hr>
+                    <% orders.items.forEach(item => { %>
+                        <form action="/rateProduct/<%= orders._id %>/<%= item.productId._id %>" method="POST">
+                            <label for="rating">Rate your product</label>
+                            <div class="star-rating">
+                                <span class="star" data-value="1">&#9733;</span>
+                                <span class="star" data-value="2">&#9733;</span>
+                                <span class="star" data-value="3">&#9733;</span>
+                                <span class="star" data-value="4">&#9733;</span>
+                                <span class="star" data-value="5">&#9733;</span>
+                            </div>
+                            <input type="hidden" name="rating" id="rating" value="0">
+                            
+                            <label for="review">Write a Review</label><br>
+                            <textarea name="review" id="review" rows="3" placeholder="Share your feedback"></textarea>
+                            <button type="submit">Submit</button>
+                            <hr>
+                        </form>
+                    <% }) %>
+                    
+
+                </div>
+                <div class="order-card px-3 py-3 mx-3 my-3" style="border:1px solid #42ada8">
+                    <p>Shipping Details</p>
+                    <hr>
+                    <% if (orders.addressDetails) { %>
+                        
+                          <address>
+                            <div class="bg-info text-white w-25 text-center" style="border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;"><h5 class="py-2"><%= orders.addressDetails.addressType%></h5></div>
+                            <%= orders.addressDetails.name %> <br>
+                            <%= orders.addressDetails.city %>, <%= orders.addressDetails.state %> <br>
+                            <%= orders.addressDetails.pincode %> <br>
+                            Phone: <%= orders.addressDetails.phone %> <br>
+                            Alt Phone: <%= orders.addressDetails.altPhone %>
+                          </address>
+                        
+                      <% } else { %>
+                        <p>No shipping address available.</p>
+                      <% } %>
+                      
+                    <h3>Delivered on <%=orders.deliveryDate.toLocaleDateString()%></h3>
+                </div>
+                <div class="order-card px-3 py-3 mx-3 my-3" style="border:1px solid #42ada8">
+                    <p>Price Details</p>
+                    <hr>
+                    <ul style="list-style: none;">
+                        <% orders.items.forEach(item => { %>
+                            <li>List Price : <%= item.productId.regularPrice %></li>
+                            <li>Selling Price : Rs <%= item.productId.salePrice %></li>
+                            <li>Delivery charge : FREE </li>
+                            <hr>
+                            
+                        <% }) %>
+                        <li>Total Amount : <%= orders.finalAmount%></li>
+                    </ul>
+                    <hr>
+                    <p>Payment Method: <%= orders.paymentMethod %></p>
+                </div>
+           
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            document.querySelectorAll(".star-rating .star").forEach(star => {
+    star.addEventListener("click", function() {
+        let rating = this.getAttribute("data-value");
+        
+        // Set the hidden input value
+        this.closest("form").querySelector("#rating").value = rating;
+        
+        // Update the stars visually
+        let stars = this.closest(".star-rating").querySelectorAll(".star");
+        stars.forEach(star => {
+            if (parseInt(star.getAttribute("data-value")) <= rating) {
+                star.classList.add("selected");
+            } else {
+                star.classList.remove("selected");
+            }
+        });
+    });
+});
+
+const cancelBtn = document.getElementById('cancelBtn');
+const cancelDiv = document.getElementById('cancelDiv');
+const returnDiv = document.getElementById('returnDiv');
+const returnBtn = document.getElementById('returnBtn');
+cancelBtn.addEventListener('click',()=>{
+    cancelBtn.style.display = 'none';
+    cancelDiv.style.display = 'block';
+    returnDiv.style.display = 'none';
+});
+
+returnDiv.addEventListener('click',() => {
+    returnBtn.style.display = 'none';
+    returnDiv.style.display = 'block';
+    cancelDiv.style.display = 'none';
+});
+
+document.querySelectorAll("#cancelDiv form, #returnDiv form").forEach(form => {
+        form.addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            let formData = {};
+            const formElements = this.elements;
+
+            for (let element of formElements) {
+                if (element.name) {
+                    formData[element.name] = element.value;
+                }
+            }
+
+            console.log("Form data being sent:", formData);
+
+            fetch(this.action, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                    Swal.fire({
+                        icon: data.type,
+                        title: data.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Something went wrong!',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                });
+        });
+    });
+</script>
+        
+<%- include('../../views/partials/user/footer') %>

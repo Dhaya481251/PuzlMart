@@ -3,13 +3,22 @@ const {Schema} = mongoose;
 const {v4:uuidv4} = require('uuid');
 
 const orderSchema = new Schema({
+    userId:{
+        type:Schema.Types.ObjectId,
+        ref:'User',
+        required:true
+    },
     orderId:{
         type:String,
         default:() => uuidv4(),
         unique:true
     },
-    orderedItems:[{
-        product:{
+    deliveryDate:{
+        type:Date,
+        required:true
+    },
+    items:[{
+        productId:{
             type:Schema.Types.ObjectId,
             ref:'Product',
             required:true
@@ -18,12 +27,17 @@ const orderSchema = new Schema({
             type:Number,
             required:true
         },
-        price:{
+        
+        rating :{
             type:Number,
-            default:0
+            min:1,
+            max:5
+        },
+        review:{
+            type:String
         }
     }],
-    totalPrice:{
+    finalAmount:{
         type:Number,
         required:true
     },
@@ -31,22 +45,42 @@ const orderSchema = new Schema({
         type:Number,
         default:0
     },
-    finalAmount:{
-        type:Number,
+    
+    addressId:{
+        type:Schema.Types.ObjectId,
+        ref:'Address',
         required:true
     },
-    address:{
-        type:Schema.Types.ObjectId,
-        ref:'User',
-        required:true
+    addressDetails:{
+        addressType:String,
+        name:String,
+        city:String,
+        landMark:String,
+        state:String,
+        pincode:String,
+        phone:String,
+        altPhone:String
     },
     invoiceDate:{
         type:Date
+    },
+    paymentMethod:{
+        type:String,
+        enum:['COD','PayPal','Razorpay'],
+        required:true
     },
     status:{
         type:String,
         required:true,
         enum:['Pending','Processing','Shipped','Delivered','Cancelled','Return Request','Returned']
+    },
+    cancellationReason:{
+        type:String,
+        default:'none'
+    },
+    returnReason:{
+        type:String,
+        default:'none'
     },
     createdOn:{
         type:Date,
@@ -56,9 +90,17 @@ const orderSchema = new Schema({
     couponApplied:{
         type:Boolean,
         default:false
+    },
+    paymentStatus:{
+        type:String,
+        required:true,
+        enum:['Not paid','Paid']
+    },
+    date:{
+        type:Date,
+        default:Date.now
     }
 })
-
 
 const Order = mongoose.model('Order',orderSchema);
 

@@ -20,8 +20,7 @@ const userSchema = new Schema({
     },
     googleId:{
         type:String,
-        unique:true,
-        
+        unique:false
     },
     password:{
         type:String,
@@ -40,8 +39,32 @@ const userSchema = new Schema({
         ref:"Cart"
     }],
     wallet:{
-        type:Number,
-        default:0
+        balance:{
+            type:Number,
+            default:0
+        },
+        /*transactions:[
+            {
+                transactionsType:{
+                    type:String,
+                    enum:['credit','debit'],
+                    required:true
+                },
+                amount:{
+                    type:Number,
+                    required:true
+                },
+                reason:{
+                    type:String,
+                    required:true
+                },
+                data:{
+                    type:Date,
+                    default:Date.now
+                }
+            }
+        ],
+        default:[]*/
     },
     wishlist:[{
         type:Schema.Types.ObjectId,

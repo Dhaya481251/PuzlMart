@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Puzl Mart SignUp form</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/signup.css">
+    <link rel="stylesheet" href="/css/signup.css">
 </head>
 <body>
     <div class="form-container">
@@ -13,7 +13,7 @@
             <h2>SignUp</h2>
             <form id="signform" method="POST" action="/signup">
                 <div class="form-group">
-                    <input type="text" class="form-control" placeholder="Username" name="name" id="name" >
+                    <input type="text" class="form-control" placeholder="Full Name" name="name" id="name" >
                     <div id="error1" class="error-message"></div>
                 </div>
                 <div class="form-group">
@@ -46,7 +46,7 @@
     <script>
         const nameid = document.getElementById('name');
         const emailid = document.getElementById('email');
-        const phoneid = document.getElementById('phone');  // Corrected ID
+        const phoneid = document.getElementById('phone');  
         const passid = document.getElementById('password');
         const cpassid = document.getElementById('confirm-password');
 
@@ -65,15 +65,15 @@
             if (nameVal.trim() === "") {
                 error1.style.display = 'block';
                 error1.innerHTML = 'Please enter a valid name';
-                return false;
+                
             } else if (!namePattern.test(nameVal)) {
                 error1.style.display = 'block';
                 error1.innerHTML = 'Name can only contain alphabets and spaces';
-                return false;
+                
             } else {
                 error1.style.display = 'none';
                 error1.innerHTML = '';
-                return true;
+                
             }
         }
 
@@ -84,25 +84,28 @@
             if (!emailPattern.test(emailVal)) {
                 error2.style.display = 'block';
                 error2.innerHTML = 'Invalid email format';
-                return false;
+                
             } else {
                 error2.style.display = 'none';
                 error2.innerHTML = '';
-                return true;
+               
             }
         }
 
         function phoneValidateChecking() {
             const phoneVal = phoneid.value;
 
-            if (phoneVal.trim() === '' || phoneVal.length !== 10) {
+            if (phoneVal.trim() === '') {
                 error3.style.display = 'block';
                 error3.innerHTML = 'Enter a valid 10-digit phone number';
-                return false;
-            } else {
+                
+            } else if(phoneVal.length<10 || phoneVal.length>10){
+                error3.style.display = 'block';
+                error3.innerHTML = 'Enter a 10 digit number';
+                
+            }else{
                 error3.style.display = 'none';
                 error3.innerHTML = '';
-                return true;
             }
         }
 
@@ -112,16 +115,16 @@
             const alpha = /[a-zA-Z]/;
             const digit = /\d/;
 
-            let isValid = true;
+            
 
             if (passVal.length < 8) {
                 error4.style.display = 'block';
                 error4.innerHTML = 'Password should contain at least 8 characters';
-                isValid = false;
+                
             } else if (!alpha.test(passVal) || !digit.test(passVal)) {
                 error4.style.display = 'block';
                 error4.innerHTML = 'Password should contain numbers and alphabets';
-                isValid = false;
+                
             } else {
                 error4.style.display = 'none';
                 error4.innerHTML = '';
@@ -130,7 +133,7 @@
             if (passVal !== cpassVal) {
                 error5.style.display = 'block';
                 error5.innerHTML = 'Passwords do not match';
-                isValid = false;
+                
             } else {
                 error5.style.display = 'none';
                 error5.innerHTML = '';
@@ -141,15 +144,18 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             signform.addEventListener('submit', function(e) {
-                // Check each validation, and if any return false, prevent submission
-                const isNameValid = nameValidateChecking();
-                const isEmailValid = emailValidateChecking();
-                const isPhoneValid = phoneValidateChecking();
-                const isPassValid = passValidateChecking();
-
-                if (!isNameValid || !isEmailValid || !isPhoneValid || !isPassValid) {
+            
+                nameValidateChecking();
+                emailValidateChecking();
+                phoneValidateChecking();
+                passValidateChecking();
+                if(!nameid || !emailid || !phoneid || !passid || !erro1 || !error2 || !error3 || !error4 || !error5 || !signform ){
+                    console.error('One or more elements not found');
+                }
+                if(error1.innerHTML || error2.innerHTML || error3.innerHTML || error4.innerHTML || error5.innerHTML){
                     e.preventDefault();
                 }
+                
             });
         });
     </script>

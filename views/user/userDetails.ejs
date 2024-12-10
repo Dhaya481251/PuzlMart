@@ -1,0 +1,66 @@
+<%-include('../../views/partials/user/header')%>
+<nav class="breadcrumbs mt-3 mb-3 container">
+    <a href="/userProfile" class="breadcrumbs-txt" style="text-decoration: none;">My Profile</a>&gt;
+    <a href="/userDetails" class="breadcrumbs-txt" style="text-decoration: none;">My Details</a>
+</nav>
+<div class="container-fluid" id="div1">
+    <div class="col-md-12">
+        <div class="border-info px-3 mt-4" style="border:0.15rem solid; border-top-left-radius: 5px;border-top-right-radius: 5px;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px; font-family: monospace;">
+            <div class="border-info mx-3 my-3 px-2 py-2" style="border: 1px solid; border-top-left-radius: 5px;border-top-right-radius: 5px;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;display:flex;flex-direction: row;justify-content:space-between;">
+                <h5 id="name">Name : <%=user.name%></h5><a class="btn" id="editNameBtn" href="" style="text-decoration: none;color: #42ada8;">Edit</a>
+            </div>
+            <div class="border-info mx-3 my-3 px-2 py-2" style="border: 1px solid;border-top-left-radius: 5px;border-top-right-radius: 5px;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;display:flex;flex-direction: row;justify-content:space-between;">
+                <h5>Email : <%=user.email%></h5><a class="btn" id="editEmailBtn" href="" style="text-decoration: none;color: #42ada8;">Edit</a>
+            </div>
+            <div class="border-info mx-3 my-3 px-2 py-2" style="border: 1px solid;border-top-left-radius: 5px;border-top-right-radius: 5px;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;display:flex;flex-direction: row;justify-content:space-between;">
+                <h5>Mobile Number : <%=user.phone%></h5>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid" style="display: none;" id="div2">
+    <div class="col-md-12">
+        <div class="border-info px-3 mt-4" style="border:0.15rem solid; border-top-left-radius: 5px;border-top-right-radius: 5px;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px; font-family: monospace;">
+            <p>Do you want to change the name?</p>
+           <form action="/editName" method="POST" >
+            <label for="">Name :</label>
+            <input type="text" value="<%=user.name%>" name="newName" style=" color: #42ada8;border-color: #42ada8;border: 1px solid; border-bottom-left-radius: 15px; border-top-left-radius: 5px;border-bottom-right-radius: 15px;border-top-right-radius: 5px;text-align: center;">
+            <button>Save</button>
+           </form>
+        </div>
+    </div>
+</div>
+<div class="container-fluid" style="display: none;" id="div3">
+    <div class="col-md-12">
+        <div class="border-info px-3 mt-4" style="border:0.15rem solid; border-top-left-radius: 5px;border-top-right-radius: 5px;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px; font-family: monospace;">
+            <p>Do you want to change the email?</p>
+            
+           <form action="/editEmail" method="POST" >
+            <label for="">Email :</label>
+            <input type="text" value="<%=user.email%>" name="newEmail" style=" color: #42ada8;border-color: #42ada8;border: 1px solid; border-bottom-left-radius: 15px; border-top-left-radius: 5px;border-bottom-right-radius: 15px;border-top-right-radius: 5px;text-align: center;">
+            <button type="submit">Save</button>
+           </form>
+        </div>
+    </div>
+</div>
+<script>
+    const editNameBtn = document.getElementById('editNameBtn');
+    const div1 = document.getElementById('div1');
+    const div2 = document.getElementById('div2');
+    editNameBtn.addEventListener('click',(event) =>  {
+       event.preventDefault();
+       div1.style.display = 'none';
+       div2.style.display = 'block';
+    })
+
+    const div3 = document.getElementById('div3');
+    const editEmailBtn = document.getElementById('editEmailBtn');
+    editEmailBtn.addEventListener('click',(event) => {
+        event.preventDefault();
+        div1.style.display = 'none';
+        div3.style.display = 'block';
+    })
+
+</script>
+
+<%-include('../../views/partials/user/footer')%>

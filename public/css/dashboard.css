@@ -1,0 +1,167 @@
+/* Styling for the main page */
+body {
+    font-family: 'Anonymous Pro', monospace;
+    background-color: #f8f9fa;
+  }
+
+  /* Sidebar styling */
+  .sidebar {
+    background-color: #42ADA8;
+    
+    padding-top: 1rem;
+    width: 220px;
+    height: 100vh;
+    position: fixed;
+    overflow-y:auto;
+    border-bottom-left-radius: 25px;
+    border-bottom-right-radius: 25px;
+  }
+  
+  ::-webkit-scrollbar{
+    width: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #d6f9f9; /* Light color for the track */
+    border-radius: 10px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background-color: #42ADA8; /* Thumb color */
+    border-radius: 10px;
+    border: 2px solid #d6f9f9; /* Adds space around the thumb */
+  }
+  
+  /* Optional: Hover effect on scrollbar thumb */
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: #6ecdc6;
+  }
+  
+  /* Firefox scrollbar customization */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #42ADA8 #d6f9f9;
+  }
+
+  .sidebar a {
+    display: block;
+    padding: 10px 20px;
+    color: #42ADA8;
+    background-color: #D6F9F9;
+    font-weight: bold;
+    text-decoration: none;
+  }
+
+  .sidebar .nav-item-heading {
+    font-size: 18px;
+    color: #fff;
+    padding: 15px 20px;
+  }
+
+  .sidebar a:hover {
+    background-color: #D6F9F9;
+    color: #42ADA8;
+  }
+
+  /* Main content styling */
+  .content {
+    margin-left: 240px;
+    padding: 1rem;
+  }
+
+  /* Top Navbar styling */
+  .navbar {
+    background-color: #42ADA8;
+    padding: 1rem;
+    border-bottom-left-radius: 25px;
+    border-bottom-right-radius: 25px;
+  }
+
+  .navbar-brand {
+    color: #D6F9F9;
+    font-weight: bold;
+    
+  }
+
+  .search-bar {
+    max-width: 500px;
+    width: 100%;
+    margin-right: 0.25rem;
+    background-color: #d6f9f9;
+  }
+
+  .search-btn{
+    background-color:#d6f9f9 ;
+    border-bottom-right-radius: 15px;
+    
+  }
+
+  .btn-logout {
+    background-color: #D6F9F9;
+    color: #42ADA8;
+    border-radius: 5px;
+    border-bottom-left-radius: 15px;
+  }
+  
+
+  .error-message{
+    color: red;
+  }
+
+  /* Media queries */
+  @media (max-width: 768px) {
+    .sidebar {
+      width: 100%;
+      height: auto;
+      position: relative;
+    }
+
+    .content {
+      margin-left: 0;
+    }
+
+    .search-bar {
+      max-width: 100%;
+      margin-top: 1rem;
+    }
+  }
+
+  input.form-control{
+    margin-top: 2rem;
+  }
+
+  .submit-btn{
+    margin-top: 1rem;
+    border-style: none;
+    background: #42ada8;
+    color: #d6f9f9;
+    border-bottom-right-radius: 15px;
+    border-bottom-left-radius: 15px;
+    width: 100%;
+    height: 3rem;
+  }
+
+  .image-upload {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #e0f7f4;
+    padding: 2rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+  }
+  .image-upload button {
+    background-color: #6ecdc6;
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1rem;
+    margin-top: 1rem;
+  }
+  .product-table th, .product-table td {
+    text-align: center;
+    vertical-align: middle;
+}
+.action-icons {
+    font-size: 1.2rem;
+    color: #4bc6b9;
+    cursor: pointer;
+}

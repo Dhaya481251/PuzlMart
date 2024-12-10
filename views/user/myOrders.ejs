@@ -1,0 +1,33 @@
+<%- include('../../views/partials/user/header') %>
+<main class="container">
+    <nav class="breadcrumbs mt-3 mb-3 container">
+        <a href="/" class="breadcrumbs-txt" style="text-decoration: none;">Home</a>&gt;
+        <a href="/userProfile" class="breadcrumbs-txt" style="text-decoration: none;">My Details</a>&gt;
+        <a href="/myOrders" class="breadcrumbs-txt" style="text-decoration: none;">My Orders</a>
+    </nav>
+    <h1>My Orders</h1>
+    <% if (orders && orders.length > 0) { %>
+        <div class="orders-list">
+            <% orders.forEach(order => { %>
+                <div class="order-card px-3 py-3 mx-3 my-3" style="border:1px solid #42ada8">
+                    
+                    <ul>
+                        <% order.items.forEach(item => { %>
+                            <li>
+                                <img src="/uploads/re-image/<%= item.productId.productImage[0]%>" alt="<%= item.productId.productName %>" style="width: 50px; height: 50px;">
+                                <span><%= item.productId.productName %> (Qty: <%= item.quantity %>)</span>
+                                
+                            </li>
+                        <% }) %>
+                        <span>Price: Rs <%= order.finalAmount %></span>
+                    </ul>
+                    <a href="/orderDetails/<%=order._id%>"><button class="btn-small text-white " style="background-color: #42ada8;border: none;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;">More Details </button></a>
+                    
+                </div>
+            <% }) %>
+        </div>
+    <% } else { %>
+        <p>No orders found. Start shopping now!</p>
+    <% } %>
+</main>
+<%- include('../../views/partials/user/footer') %>

@@ -1,0 +1,83 @@
+<%- include("../../views/partials/user/header") %>
+<main class="main">
+
+
+    <nav class="breadcrumbs mt-3 mb-3 container">
+        <a href="/userProfile" class="breadcrumbs-txt" style="text-decoration: none;">My Profile</a> /
+        <a href="/wishlist"class="breadcrumbs-txt" style="text-decoration: none;">My Wishlist</a> 
+    </nav>
+
+
+   <section class="mt-50 mb-50">
+       <div class="container">
+           <div class="row">
+               <div class="col-md-12">
+                   
+                       
+                             <% if(wishlist && wishlist.products && wishlist.products.length>0){ %>
+                                <% wishlist.products.forEach((product) => { %>
+                                    <div style="border: 1px solid #42ada8; display: flex;flex-direction: row;" class="item-row">
+
+                                        <div class="px-3 py-3" style="display:flex;flex-direction: column;justify-content: space-between; height: 100%;flex-grow:1">
+                                          <a href="/productDetails/<%=product.productsId._id%>" style="text-decoration: none;"><img src="/uploads/re-image/<%=product.productsId.productImage[0]%>" style="width: 40%;" alt="Item" class="img-fluid"></a>
+                                        </div>
+
+                                        <div>
+
+                                         <div>
+                                          <h3><%=product.productsId.productName%></h3>
+                                         </div>
+
+                                         <div>
+                                            <h4 class="item-price" style="text-decoration: line-through;"><%=product.productsId.regularPrice%></h4>
+                                         </div>
+
+                                          <div>
+                                          <h4 class="item-price"><%=product.productsId.salePrice%></h4>
+                                          </div>
+
+                                          
+                                        </div>
+
+                                        <div class="px-3 py-3" style="display: flex;flex-direction: column;justify-content: space-around;">
+                                          <a href="#" class="btn btn-danger btn-sm" data-id="<%= product.productsId._id %>">Delete</a>
+                                        </div>
+                                        
+                                      </div>
+                                    <% }) %>
+                                <% }else{ %>
+                                    <div class="text-center">
+                                      <p class="lead mb-4">No items found in Wishlist</p>
+                                    </div>
+                                <% }%>
+                           
+                   </div>
+               </div>
+           </div>
+       </div>
+   </section>
+</main>
+<%- include("../../views/partials/user/footer") %>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+   document.querySelectorAll('.btn-danger').forEach(button => {
+  button.addEventListener('click', function (e) {
+    e.preventDefault(); // Prevent the default anchor behavior
+    const productsId = this.getAttribute('data-id'); // Retrieve the product ID from the data-id attribute
+
+    fetch(`/removeFromWishlist/${productsId}`, {
+      method: 'DELETE'
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status) {
+          Swal.fire('Removed', 'The product has been removed from the wishlist.', 'success');
+          this.closest('.item-row').remove(); // Remove the corresponding item row from the DOM
+        }
+      })
+      .catch(error => console.error('Error while removing product from the wishlist:', error));
+  });
+});
+
+</script>

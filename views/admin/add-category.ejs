@@ -1,0 +1,137 @@
+<%- include("../../views/partials/admin/header") %>
+
+  <div class="header">
+    <h2 class="text-center">Add New Category</h2>
+  
+    
+    <form method="POST" action="/admin/addCategory" onsubmit=" return handleFormSubmit(event)" enctype="multipart/form-data">
+      <label for="product_name" class="form-label">Category Image</label>
+        <div class="input-upload">
+          <img src="" alt=""/>
+          <input class="form-control border" name="CategoryImage" type="file" id="categoryImage" />
+          <div id="images-error"></div>
+        </div>
+      <input type="text" class="form-control" placeholder="Category Name" name="name" id="name">
+      <div id="name-error" class="error-message"></div>
+      <textarea name="description" class="form-control border" placeholder="Category Description" id="descriptionId"></textarea>
+      <div id="description-error" class="error-message"></div>
+      
+      
+      <button type="submit" class="submit-btn">Create Category</button>
+    </form>
+    <button class="btn btn-primary"><a href="/admin/category" class="text-white">Go to Categories</a></button>
+  </div>
+  
+  
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>
+
+  <script>
+
+document.getElementById('categoryImage').addEventListener('change', function(event) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById('previewImage').src = e.target.result;
+      };
+      reader.readAsDataURL(event.target.files[0]);
+    });
+
+    function handleFormSubmit(event){
+      event.preventDefault();
+      if(!validateForm()){
+        return;
+      }else{
+        document.forms[0].submit();
+      }
+      const name = document.getElementsByName('name')[0].value;
+      const description = document.getElementById('descriptionId').value;
+      const image = document.getElementById('categoryImage').files[0];
+
+      const formData = new FormData();
+      formData.append('name', name);
+      formData.append('description', description);
+      if (image) {
+        formData.append('CategoryImage', image);
+      }
+
+      fetch(form.action, {
+        method: 'POST',
+        
+        body: formData,
+      })
+      .then(response => response.json())
+      .then(data => {
+        Swal.fire({
+          icon: data.type,
+          title: 'Success',
+          text:data.message,
+          showConfirmation:false,
+          timer:1500
+          
+        }).then(()=>{
+           window.location.href='/admin/category'
+        })
+       
+       
+      })
+      .catch(error => {
+        
+          Swal.fire({
+            icon:'error',
+            title:'Oops',
+            text:error.message,
+            showConfirmation:false,
+            timer:1500
+          })
+        
+      });
+    }
+
+    function validateForm(){
+      clearErrorMessages();
+      const name = document.getElementsByName('name')[0].value.trim();
+      const description = document.getElementById('descriptionId').value.trim();
+      const image = document.getElementById('categoryImage');
+      let isValid = true;
+
+      if(name === ''){
+      displayErrorMessage('name-error','Please enter a name');
+      isValid = false;
+    }else if(!/^[a-zA-Z0-9\s]+$/.test(name)){
+      displayErrorMessage('name-error','Category name should contain only alphanumeric characters');
+      isValid = false;
+    }
+    if(description === ''){
+      displayErrorMessage('description-error','Please enter a description');
+      isValid = false;
+    }
+    if(image.files.length===0){
+      displayErrorMessage('image-error','Please add an image');
+      isValid = false
+    }
+    return isValid;
+
+    }
+
+    function displayErrorMessage(elementId,message){
+
+      var errorElement = document.getElementById(elementId);
+      errorElement.innerText = message;
+      errorElement.style.display = 'block';
+  
+    }
+
+    function clearErrorMessages(){
+      const errorElements = document.getElementsByClassName('error-message');
+
+      Array.from(errorElements).forEach((element) => {
+        element.innerText = '';
+        element.style.display = 'none';
+      })
+    }
+
+  </script>
+</body>
+</html>

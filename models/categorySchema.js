@@ -16,8 +16,12 @@ const categorySchema = new Schema({
         default:true
     },
     categoryOffer:{
-        type:Number,
-        default:0
+        type:Schema.Types.ObjectId,
+        ref:'Offer'
+    },
+    categoryImage:{
+        type:String,
+        required:true
     },
     createdAt:{
         type:Date,

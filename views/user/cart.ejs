@@ -1,0 +1,135 @@
+<%- include('../../views/partials/user/header') %>
+
+<div class="container">
+    <h2 class="cart-title">Cart</h2>
+    <div class="row">
+      
+      <div class="col-lg-8">
+        
+          
+            <% if(cart && cart.items.length > 0){ %>
+              <% cart.items.forEach(item => { %>
+            <div style="border: 1px solid #42ada8; display: flex;flex-direction: row;" class="item-row">
+              <div class="px-3 py-3" style="display:flex;flex-direction: column;justify-content: space-between; height: 100%;flex-grow:1">
+                <a href="/productDetails/<%=item.productId._id%>" style="text-decoration: none;"><img src="/uploads/re-image/<%=item.productId.productImage[0]%>" style="width: 99%;" alt="Item" class="img-fluid"></a>
+              </div>
+              <div class="my-3">
+                <div>
+                <h3><%=item.productId.productName%></h3>
+                </div>
+                <div>
+                  <h4 class="item-price" style="text-decoration: line-through;"><%=item.productId.regularPrice%></h4>
+                </div>
+                <div>
+                <h4 class="item-price"><%=item.productId.salePrice%></h4>
+                </div>
+                
+                <div style="display: flex;flex-direction: row;">
+                  <a href="#" data-id="<%=item.productId._id%>" class="btn btn-info decrease-btn" style="text-decoration: none;">-</a>
+                    <input class="w-25 mx-3 text-center" type="text" value="<%=item.quantity%>">
+                  <a href="#" data-id="<%=item.productId._id%>" class="btn btn-info increase-btn" style="text-decoration: none;">+</a>
+                </div>
+                
+              </div>
+              <div class="px-3 py-3" style="display: flex;flex-direction: column;justify-content: space-around;">
+                <a href="/removeFromCart/<%=item.productId._id%>"><button class="btn btn-danger btn-sm">Delete</button></a>
+              </div>
+            </div>  
+            <% }) %>
+            <% }else{ %>
+            
+              <h4 colspan="4">Your cart is empty</h4>
+            
+            <% } %>
+         
+      </div>
+      <!-- Cart Summary -->
+      <% if(cart && cart.items.length > 0){ %>
+      <div class="col-lg-4">
+        <div class="cart-summary mx-3 my-3 px-3 py-3" style="border: 1px solid #42ada8;">
+          <h3>Total Price</h3>
+          <p>Price (<%= cart ? cart.items.length : 0 %> items): <%= cart ? cart.items.reduce((acc, item) => acc + item.productId.regularPrice * item.quantity, 0) : 0 %></p>
+          <p>Discount: <%= cart ? cart.items.reduce((acc, item) => acc + (item.productId.regularPrice - item.productId.salePrice) * item.quantity, 0) : 0 %></p>
+          <p>Total: <%= cart ? cart.items.reduce((acc, item) => acc + item.productId.salePrice * item.quantity, 0) : 0 %></p>
+          <a href="/buyNow"><button class="btn btn-primary w-99 mx-2 my-2" >Proceed to Buy</button></a>
+        </div>
+      </div>
+      <% } %>
+    </div>
+
+    <!-- Save for Later Section -->
+    <!--<div class="save-for-later">
+      <h5>Save for Later (2 items)</h5>
+      <div class="row">
+        <div class="col-md-4">
+          <img src="https://via.placeholder.com/80" alt="Saved Item" class="img-fluid">
+          <p>FIRSTCRY Tangram Puzzle</p>
+          <p>Rs. 329</p>
+          <button class="btn btn-primary btn-sm">Add to Cart</button>
+        </div>-->
+        <!-- Add more saved items as needed -->
+      <!--</div>
+    </div>-->
+
+    <!-- Browsed Section -->
+    <!--<div class="browsed-section">
+      <h5>Most viewers browsed puzzles</h5>
+      <div class="row">
+        <div class="col-md-3">
+          <img src="https://via.placeholder.com/80" alt="Browsed Item" class="img-fluid">
+          <p>FIRSTCRY Tangram Puzzle</p>
+          <p>Rs. 329</p>
+          <button class="btn btn-primary btn-sm">Add to Cart</button>
+        </div>-->
+        <!-- Add more browsed items as needed -->
+      <!--</div>
+    </div>
+  </div>-->
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  const sendRequest = async (url,method) => {
+    try {
+      const response = await fetch(url,{method});
+      const data = await response.json();
+
+      if(!response.ok){
+        Swal.fire({
+          icon:'error',
+          title:'Oops',
+          text:data.error || 'Something went wrong!'
+        });
+      }else{
+        Swal.fire({
+          icon:'success',
+          title:'success',
+          text:data.message || 'Action completed successfully'
+         }).then(() => location.reload());
+      }
+    } catch (error) {
+      Swal.fire({
+        icon:'error',
+        title:'Error',
+        text:error.message || 'An unexpected error occured!'
+      });
+    }
+  };
+
+  document.querySelectorAll('.increase-btn').forEach(button => {
+    button.addEventListener('click',(e) => {
+      e.preventDefault();
+      const productId = button.dataset.id;
+      sendRequest(`/increaseQuantity/${productId}`,'POST');
+    });
+  });
+
+  document.querySelectorAll('.decrease-btn').forEach(button => {
+    button.addEventListener('click',(e) => {
+      e.preventDefault();
+      const productId = button.dataset.id;
+      sendRequest(`/decreaseQuantity/${productId}`,'POST')
+    });
+  });
+</script>
+<%- include('../../views/partials/user/footer')%>

@@ -1,28 +1,157 @@
-<%- include("../partials/user/header") %>
+<%- include("../../views/partials/user/header") %>
 
   <!-- Products Section -->
-  <div class="container">
-    <h2 class="text-center my-4 product-title">Our Products</h2>
-    <div class="row">
-      <!-- Product Card -->
-      <div class="col-md-3">
-        <div class="product-card">
-          <img src="cube-image.jpg" class="img-fluid" alt="Cube">
-          <h5 class="product-title">CUBELELO Speed Cube</h5>
-          <p>Combo set of 2x2, 3x3 and Mirror Cube Puzzle</p>
-          <p class="product-price">Rs. 649</p>
-          <button class="btn btn-add btn-block">Add to Cart</button>
+   <nav class="breadcrumbs mt-3 mb-3 container">
+    <a href="/" class="breadcrumbs-txt" style="text-decoration: none;">Home</a>&gt;
+    <a href="/products" class="breadcrumbs-txt" style="text-decoration: none;">Products</a>
+   </nav>
+  <section class="featured-puzzles py-5" style="display: flex;flex-direction: row;">
+    <div class="product-list-container px-4 py-4" style="display: flex;flex-direction: row;">
+      <div class="sidebar" style="background-color: #42ada8; color: white; border-top-left-radius: 5px;border-top-right-radius: 5px;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;">
+        <div class="filter-section">
+          <div class="filter-title">Categories</div>
+          <div class="category-brand-container">
+            <ul>
+              <% for(let i=0 ; i<category.length ; i++){ %>
+                <li class="filter-item">
+                  <a href="/filter?category=<%=category[i]._id%>" class="text-white" style="font-family: monospace;text-decoration: none;"><%=category[i].name%></a>
+                </li>
+              <% } %>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="filter-section">
+          <div class="filter-title">Brands</div>
+          <div class="category-brand-container">
+            <ul>
+              <% for(let i=0 ; i<brand.length ; i++){ %>
+                <li class="filter-item">
+                  <a href="/filter?brand=<%=brand[i]._id%>" class="text-white" style="font-family: monospace;text-decoration: none;"><%=brand[i].brandName%></a>
+                </li>
+              <% } %>
+            </ul>
+          </div>
+        </div>
+
+        <div class="price-filter">
+          <div class="filter-title">Filter by Price</div>
+          <form id="price-filter-form">
+            <div class="price-options" style="display: flex;flex-direction: column;">
+              <a href="/filterPrice?gt=0&lt=500" class="text-white mx-3 my-3" style="text-decoration: none;">
+                <button type="button" style="font-family: monospace;text-decoration: none; background-color: #42ada8;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;border-top-left-radius: 5px;border-top-right-radius: 5px;background-color: white; color: #42ada8;width:100%" class="btn px-2 py-2">Under ₹500</button>
+              </a>
+              <a href="/filterPrice?gt=500&lt=1000" class="text-white mx-3 my-3" style="text-decoration: none;">
+                <button type="button" style="font-family: monospace;text-decoration: none; background-color: #42ada8;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;border-top-left-radius: 5px;border-top-right-radius: 5px;background-color: white; color: #42ada8;width: 100%;" class="btn px-2 py-2">₹500 - ₹1000</button>
+              </a>
+              <a href="/filterPrice?gt=1000&lt=1500" class="text-white mx-3 my-3" style="text-decoration: none;">
+                <button type="button" style="font-family: monospace;text-decoration: none; background-color: #42ada8;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;border-top-left-radius: 5px;border-top-right-radius: 5px;background-color: white; color: #42ada8;width: 100%;" class="btn px-2 py-2">₹1000- ₹1500</button>
+              </a>
+              <a href="/filterPrice?gt=1500&lt=1000000" class="text-white mx-3 my-3" style="text-decoration: none;">
+                <button type="button" style="font-family: monospace;text-decoration: none; background-color: #42ada8;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;border-top-left-radius: 5px;border-top-right-radius: 5px;background-color: white; color: #42ada8;width: 100%;" class="btn px-2 py-2">Above ₹1500</button>
+              </a>
+            </div>
+          </form>
+        </div>
+        
+        <div class="price-filter">
+          <div class="filter-title">Sort</div>
+          <form id="price-filter-form">
+            <div class="price-options" style="display: flex;flex-direction: column;">
+              <a href="/sortFilter?sort=popularity" class="text-white mx-3 my-3" style="text-decoration: none;">
+                <button type="button" style="font-family: monospace;text-decoration: none; background-color: #42ada8;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;border-top-left-radius: 5px;border-top-right-radius: 5px;background-color: white; color: #42ada8;width:100%" class="btn px-2 py-2">Popularity</button>
+              </a>
+              <a href="/sortFilter?sort=lowToHigh" class="text-white mx-3 my-3" style="text-decoration: none;">
+                <button type="button" style="font-family: monospace;text-decoration: none; background-color: #42ada8;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;border-top-left-radius: 5px;border-top-right-radius: 5px;background-color: white; color: #42ada8;width: 100%;" class="btn px-2 py-2">Price: low to high</button>
+              </a>
+              <a href="/sortFilter?sort=highToLow" class="text-white mx-3 my-3" style="text-decoration: none;">
+                <button type="button" style="font-family: monospace;text-decoration: none; background-color: #42ada8;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;border-top-left-radius: 5px;border-top-right-radius: 5px;background-color: white; color: #42ada8;width: 100%;" class="btn px-2 py-2">Price: high to low</button>
+              </a>
+              <a href="/sortFilter?sort=averageRatings" class="text-white mx-3 my-3" style="text-decoration: none;">
+                <button type="button" style="font-family: monospace;text-decoration: none; background-color: #42ada8;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;border-top-left-radius: 5px;border-top-right-radius: 5px;background-color: white; color: #42ada8;width: 100%;" class="btn px-2 py-2">Average ratings</button>
+              </a>
+              <a href="/sortFilter?sort=featured" class="text-white mx-3 my-3" style="text-decoration: none;">
+                <button type="button" style="font-family: monospace;text-decoration: none; background-color: #42ada8;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;border-top-left-radius: 5px;border-top-right-radius: 5px;background-color: white; color: #42ada8;width: 100%;" class="btn px-2 py-2">Featured</button>
+              </a>
+              <a href="/sortFilter?sort=newArrivals" class="text-white mx-3 my-3" style="text-decoration: none;">
+                <button type="button" style="font-family: monospace;text-decoration: none; background-color: #42ada8;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;border-top-left-radius: 5px;border-top-right-radius: 5px;background-color: white; color: #42ada8;width: 100%;" class="btn px-2 py-2">New Arrivals</button>
+              </a>
+              <a href="/sortFilter?sort=aToZ" class="text-white mx-3 my-3" style="text-decoration: none;">
+                <button type="button" style="font-family: monospace;text-decoration: none; background-color: #42ada8;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;border-top-left-radius: 5px;border-top-right-radius: 5px;background-color: white; color: #42ada8;width: 100%;" class="btn px-2 py-2">A - Z</button>
+              </a>
+              <a href="/sortFilter?sort=zToA" class="text-white mx-3 my-3" style="text-decoration: none;">
+                <button type="button" style="font-family: monospace;text-decoration: none; background-color: #42ada8;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;border-top-left-radius: 5px;border-top-right-radius: 5px;background-color: white; color: #42ada8;width: 100%;" class="btn px-2 py-2">Z - A</button>
+              </a>
+            </div>
+          </form>
         </div>
       </div>
-      <!-- Add more product cards here -->
     </div>
-    <div class="text-center">
-      <button class="btn btn-add">View More</button>
-    </div>
-  </div>
+        <div class="container">
+          
+          
+            <h3 class="text-start" style="text-decoration: none; color: #42ada8; font-size: 40px; font-weight: 600;">Our products</h3>
+            <div class="row">
+              <% if(products.length===0){ %>
+                <p>No Product Availabe</p>
+              <% }else{ %>
+                <% for(let i=0 ; i<products.length ; i++){ %>
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4 container-fluid">
+                    <div class="card mb-3">
+                      <div class="image-container position-relative">
+                        <a href="/productDetails/<%=products[i]._id%>">
+                            <img src="/uploads/re-image/<%=products[i].productImage[0]%>" class="card-img-top img-fluid" style="width:99%" alt="<%=products[i].productName%>">
+                        </a>
+                        <a onclick="addToWishlist('<%=products[i]._id%>')" class="wishlist-icon">
+                          <img src="/images/wishlist.svg" style="margin-left: 26rem;
+    margin-top: -32rem;">
+                        </a>
+                      </div>
+                        <div class="card-body text-center">
+                            <h5 class="card-title"><%=products[i].productName%></h5>
+                            <p class="card-text"><%=products[i].brand%></p>
+                            <p class="card-text"><%=products[i].description%></p>
+                            <div class="ratings">
+                              <div class="stars" style="display: flex;justify-content: start;">
+                                  <% for(let star=0 ; star<5 ; star++ ){ %>
+                                      <span class="star <%= star <= products[i].averageRating ? 'selected': '' %>">&#9733;</span>
+                                  <% } %>
+                              </div>
+                              <p></p>
+                          </div>
+                            <p class="card-text"><%=products[i].salePrice%></p>
+                            <div class=" card-footer">
+                               <a href="/addToCart/<%=products[i]._id%>" class="btn btn-success card-btn">Add to Cart</a>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+               <% } %>
+              <% } %>
+            </div>
+            <div class="pagination">
+              <% if (currentPage > 1) { %>
+                <a class="btn-primary" href="/products?page=<%= currentPage - 1 %>">Prev</a>
+              <% } %>
+         
+         
+              <% for (let i = 1; i <= totalPages; i++) { %>
+                <a class="btn <%= currentPage === i ? 'active' : '' %>" href="/products?page=<%= i %>"><%= i %></a>
+              <% } %>
+         
+         
+              <% if (currentPage < totalPages) { %>
+                <a class="btn" href="/products?page=<%= currentPage + 1 %>">Next</a>
+              <% } %>
+            </div>
+         
+          </div>
+        
+    </section>
 
   <!-- Popular Brands Section -->
-  <div class="container text-center my-4">
+  <div class="container text-center my-4" style="color: #42ada8;">
     <h3 class="product-title">Popular Brands</h3>
     <div class="row popular-brands">
       <div class="col-md-2"><img src="brand1-logo.jpg" alt="Brand 1"></div>
@@ -33,6 +162,40 @@
     </div>
   </div>
 
-  <%- include("../partials/user/footer") %>
+  
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+<script>
+  function addToWishlist(productId) {
+   
+    Swal.fire({
+        title: 'Adding to Wishlist',
+        text: 'Do you want to add this product to your wishlist?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            console.log('confirmed')
+            fetch(`/addToWishlist/${productId}`, {
+                method: 'POST',
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.success) {
+                        Swal.fire('Added!', data.message , 'success');
+                    } else {
+                        Swal.fire('Failed', data.message , 'error');
+                    }
+                })
+                .catch(() => {
+                    Swal.fire('Error!', 'Internal server error', 'error');
+                });
+        }
+    });
+}
+
+</script>
+<%- include("../../views/partials/user/footer") %>
   

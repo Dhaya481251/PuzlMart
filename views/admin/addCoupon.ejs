@@ -1,0 +1,132 @@
+<%- include('../../views/partials/admin/header') %>
+<div class="header" id="addCoupon">
+    <h2 class="text-center">Add New Coupon</h2>
+    <form action="/admin/addCoupon" method="POST" onsubmit="validateAndSubmit(event)">
+        <label class="form-label">Coupon Name</label>
+        <input type="text" class="form-control" name="name" />
+        <div id="name-error" class="error-message"></div>
+    
+        <label class="form-label">Offer Price (%)</label>
+        <input type="number" class="form-control" name="offerPrice" />
+        <div id="offerPrice-error" class="error-message"></div>
+    
+        <label class="form-label">Minimum Price</label>
+        <input type="number" class="form-control" name="minimumPrice" />
+        <div id="minimumPrice-error" class="error-message"></div>
+    
+        <label class="form-label">Expires On</label>
+        <input type="date" class="form-control" name="expireOn" />
+        <div id="expireOn-error" class="error-message"></div>
+
+        <button type="submit">Save</button>
+    </form>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+function validateAndSubmit(event) {
+    event.preventDefault();
+
+    if (!validateForm()) return;
+
+    const form = event.target;
+    const formData = Object.fromEntries(new FormData(form));
+
+    fetch(form.action, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('HTTP error: ' + response.status);
+            }
+            return response.json();
+        })
+        .then(data => {
+            Swal.fire({
+                icon: data.type,
+                title: data.message,
+                showConfirmButton: true,
+                timer: 1500,
+            }).then(() => {
+                if (data.type === 'success') {
+                    window.location.href = '/admin/coupons';
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Something went wrong!',
+                showConfirmButton: true,
+                timer: 1500,
+            });
+        });
+}
+
+
+    function validateForm(){
+
+        clearErrorMessages();
+        const name = document.getElementsByName('name').value;
+        const offerPrice = document.getElementsByName('offerPrice')[0].value;
+        const minimumPrice = document.getElementsByName('minimumPrice')[0].value;
+        const expireOn = document.getElementsByName('expireOn').value;
+        console.log(offerPrice, typeof(offerPrice))
+        let isValid = true;
+
+        if(name === ""){
+            displayErrorMessage('name-error','Please enter a coupon name');
+            isValid = false;
+        }
+
+        if (!/^\d+(\.\d{1,2})?$/.test(offerPrice) || parseFloat(offerPrice) < 0) {
+    displayErrorMessage('offerPrice-error', 'Please enter a valid non-negative offer price.');
+    isValid = false;
+}
+
+if (!/^\d+(\.\d{1,2})?$/.test(minimumPrice) || parseFloat(minimumPrice) < 0) {
+    displayErrorMessage('minimumPrice-error', 'Please enter a valid non-negative minimum price.');
+    isValid = false;
+}
+
+// Compare offerPrice and minimumPrice after individual validations
+if (parseFloat(minimumPrice) >= parseFloat(offerPrice)) {
+    displayErrorMessage('minimumPrice-error', 'Minimum price must be less than the offer price.');
+    isValid = false;
+}
+
+
+        if(expireOn === ""){
+            displayErrorMessage('expireOn-error','Please enter a expired date of coupon');
+            isValid = false;
+        }
+        
+        return isValid;
+    }
+
+    function displayErrorMessage(elementId, message) {
+        var errorElement = document.getElementById(elementId);
+        errorElement.innerText = message;
+        errorElement.style.display = "block";
+    }
+    
+    
+    function clearErrorMessages() {
+        const errorElements = document.getElementsByClassName('error-message');
+        Array.from(errorElements).forEach(element => {
+            element.innerText = '';
+            element.style.display = 'none';
+        });
+       
+    }
+</script>
+
+</body>
+</html>

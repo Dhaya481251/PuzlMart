@@ -29,7 +29,7 @@ const addressSchema = new Schema({
             required:true
         },
         pincode:{
-            type:Number,
+            type:String,
             required:true
         },
         phone:{
@@ -41,7 +41,7 @@ const addressSchema = new Schema({
             required:true
         }
     }]
-})
+});
 
 const Address = mongoose.model('Address',addressSchema);
 
