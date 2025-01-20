@@ -1,8 +1,8 @@
 <%- include("../../views/partials/admin/header") %>
   
-  <div class="container">
-    <table class="table table-striped category-table">
-      <thead>
+  <div class="container mt-4">
+    <table class="table table-hover table-bordered category-table" style="box-shadow: 1px 1px 8px black;">
+      <thead style="background-color: #04625f;color:white">
         <tr>
           <th>Orders ID</th>
           <th>Order Date</th>
@@ -13,9 +13,10 @@
           <th>Status</th>
           <th>Payment Status</th>
           <th class="text-start">Action</th>
+          <th>More details</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody style="background-color: #f0ffff;color:#04625f">
         <% if (orders && orders.length > 0) { %>
             <% orders.forEach(order => { %>
         <tr id="">
@@ -27,9 +28,9 @@
             <ul>
                 <% order.items.forEach(item => { %>
                     <li>
-                        <img src="/uploads/re-image/<%=item.productId?.productImage%>" alt="<%= item.productId.name %>" style="width: 50px; height: 50px;">
+                        <img src="/uploads/re-image/<%=item.productId?.productImage[0]%>" alt="" style="width: 50px; height: 50px;">
                         <span><%= item.productId?.productName %> (Qty: <%= item.quantity %>)</span>
-                        <span>Price: $<%= item.price %></span>
+                        <span>Price: $<%= item.productId?.salePrice %></span>
                     </li>
                 <% }) %>
             </ul>
@@ -53,14 +54,17 @@
                     <option value="Return Request" <%= order.status === 'Return Request' ? 'selected' : '' %>>Return Request</option>
                     <option value="Returned" <%= order.status === 'Returned' ? 'selected' : '' %>>Returned</option>
                 </select>
-                <button type="submit">Update Status</button>
+                <button type="submit"class="text-white px-2 py-2" style="background-color: #04625f;border-radius: 5px;">Update Status</button>
             </form>
           </td>
           <td><%= order.paymentStatus %></td>
           <td>
             <form action="/admin/orders/<%= order._id %>/cancel" method="POST">
-                <button type="submit" <% if (order.status !== 'Pending') { %>disabled<% } %>>Cancel Order</button>
+                <button type="submit" class="px-2 py-2 text-white" style="background-color:#04625f;border-radius: 5px;" <% if (order.status !== 'Pending') { %>disabled<% } %> >Cancel Order</button>
             </form>
+          </td>
+          <td>
+            <button class="px-2 py-2 text-white" style="background-color:#04625f;border-radius: 5px;"><a href="/admin/moreDetails/<%=order._id%>" style="text-decoration:none;">More Details</a></button>
           </td>
         </tr>
       <%})%>

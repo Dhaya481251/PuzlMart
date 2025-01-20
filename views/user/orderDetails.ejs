@@ -2,14 +2,15 @@
 
 <main class="container">
     <nav class="breadcrumbs mt-3 mb-3 container">
-        <a href="/" class="breadcrumbs-txt" style="text-decoration: none;">Home</a>/
-        <a href="/userProfile" class="breadcrumbs-txt" style="text-decoration: none;">My Details</a>/
-        <a href="/myOrders" class="breadcrumbs-txt" style="text-decoration: none;">My Orders</a>/
-        <a href="" class="breadcrumbs-txt" style="text-decoration: none;">Order</a>
+        <a href="/" class="breadcrumbs-txt" style="text-decoration: none;">Home /</a>
+        <a href="/userProfile" class="breadcrumbs-txt" style="text-decoration: none;"> My Details /</a>
+        <a href="/myOrders" class="breadcrumbs-txt" style="text-decoration: none;"> My Orders /</a>
+        <a href="" class="breadcrumbs-txt" style="text-decoration: none;"> Order</a>
     </nav>
         <div class="orders-list">
            
-                <div class="order-card px-3 py-3 mx-3 my-3" style="border:1px solid #42ada8">
+                <div class="order-card px-3 py-3 mx-3 my-3" style="border:1px solid #04625f;box-shadow: inset 0px 0px 9px 0px #04625f;
+    border-radius: 8px;">
                     <p>Order ID: <%= orders.orderId %></p>
                     <hr>
                     <ul>
@@ -43,30 +44,31 @@
                     
                     
                     <h3>Delivered on <%=orders.deliveryDate.toLocaleDateString()%></h3>
-                    <div style="display: flex;flex-direction: column;">
-                        <button id="cancelBtn" class="btn-info">Cancel the order</button>
-                        <button id="returnBtn" class="btn-info">Return the order</button>
+                    <div style="display: flex;flex-direction: column;gap:1rem">
+                        <button id="cancelBtn" class="btn text-white" style="border-color:unset; border-radius: 8px;background-color:#04625f">Cancel the order</button>
+                        <button id="returnBtn" class="btn text-white" style="border-color:unset; border-radius: 8px;background-color:#04625f">Return the order</button>
                     </div>
                     <div id="cancelDiv" style="display: none;">
                     <form action="/cancelOrder/<%=orders._id%>" method="POST">
                         <label for="cancellationReason">Write a cancellation reason</label><br>
                         <textarea name="cancellationReason" id="cancellationReason" rows="3"></textarea>
-                        <button type="submit">Submit</button>
+                        <button type="submit" class="px-1 py-1 text-white" style="background:#04625f">Submit</button>
                     </form>
                     </div>
                     <div id="returnDiv" style="display: none;">
                     <form action="/returnOrder/<%=orders._id%>" method="POST">
                         <label for="returnReason">Write a cancellation reason</label><br>
                         <textarea name="returnReason" id="returnReason" rows="3"></textarea>
-                        <button type="submit">Submit</button>
+                        <button type="submit" class="px-1 py-1 text-white" style="background:#04625f">Submit</button>
                     </form>
                     </div>
                 </div>
-                <div class="order-card px-3 py-3 mx-3 my-3" style="border:1px solid #42ada8">
+                <div id="rateDiv" class="order-card px-3 py-3 mx-3 my-3" style="border:1px solid #04625f;box-shadow: inset 0px 0px 9px 0px #04625f;
+    border-radius: 8px;">
                     <p>Rate the order</p>
                     <hr>
                     <% orders.items.forEach(item => { %>
-                        <form action="/rateProduct/<%= orders._id %>/<%= item.productId._id %>" method="POST">
+                        <form class="rate-form" action="/rateProduct/<%= orders._id %>/<%= item.productId._id %>" method="POST">
                             <label for="rating">Rate your product</label>
                             <div class="star-rating">
                                 <span class="star" data-value="1">&#9733;</span>
@@ -79,20 +81,21 @@
                             
                             <label for="review">Write a Review</label><br>
                             <textarea name="review" id="review" rows="3" placeholder="Share your feedback"></textarea>
-                            <button type="submit">Submit</button>
+                            <button type="submit" class="px-1 py-1 text-white" style="background:#04625f;border:none;border-radius:5px;margin-left:1rem">Submit</button>
                             <hr>
                         </form>
                     <% }) %>
                     
 
                 </div>
-                <div class="order-card px-3 py-3 mx-3 my-3" style="border:1px solid #42ada8">
+                <div class="order-card px-3 py-3 mx-3 my-3" style="border:1px solid #04625f;box-shadow: inset 0px 0px 9px 0px #04625f;
+    border-radius: 8px;">
                     <p>Shipping Details</p>
                     <hr>
                     <% if (orders.addressDetails) { %>
                         
                           <address>
-                            <div class="bg-info text-white w-25 text-center" style="border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;"><h5 class="py-2"><%= orders.addressDetails.addressType%></h5></div>
+                            <div class=" text-white w-25 text-center" style="border-radius: 10px;background:#04625f"><h5 class="py-2"><%= orders.addressDetails.addressType%></h5></div>
                             <%= orders.addressDetails.name %> <br>
                             <%= orders.addressDetails.city %>, <%= orders.addressDetails.state %> <br>
                             <%= orders.addressDetails.pincode %> <br>
@@ -106,7 +109,8 @@
                       
                     <h3>Delivered on <%=orders.deliveryDate.toLocaleDateString()%></h3>
                 </div>
-                <div class="order-card px-3 py-3 mx-3 my-3" style="border:1px solid #42ada8">
+                <div class="order-card px-3 py-3 mx-3 my-3" style="border:1px solid #04625f;box-shadow: inset 0px 0px 9px 0px #04625f;
+    border-radius: 8px;">
                     <p>Price Details</p>
                     <hr>
                     <ul style="list-style: none;">
@@ -124,16 +128,14 @@
                 </div>
            
         </div>
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        
         <script>
-            document.querySelectorAll(".star-rating .star").forEach(star => {
+document.querySelectorAll(".star-rating .star").forEach(star => {
     star.addEventListener("click", function() {
         let rating = this.getAttribute("data-value");
         
-        // Set the hidden input value
         this.closest("form").querySelector("#rating").value = rating;
         
-        // Update the stars visually
         let stars = this.closest(".star-rating").querySelectorAll(".star");
         stars.forEach(star => {
             if (parseInt(star.getAttribute("data-value")) <= rating) {
@@ -145,10 +147,24 @@
     });
 });
 
+
 const cancelBtn = document.getElementById('cancelBtn');
 const cancelDiv = document.getElementById('cancelDiv');
 const returnDiv = document.getElementById('returnDiv');
 const returnBtn = document.getElementById('returnBtn');
+if('<%=orders.status%>' === 'Pending' || '<%=orders.status%>' === 'Processing'){
+    cancelBtn.style.display = 'block';
+    returnBtn.style.display = 'none';
+}
+
+if('<%=orders.status%>' === 'Delivered'){
+    returnBtn.style.display = 'Block';
+    cancelBtn.style.display = 'none';
+}
+if('<%=orders.status%>' === 'Shipped'){
+    cancelBtn.style.display = 'none';
+    returnBtn.style.display = 'none'
+}
 cancelBtn.addEventListener('click',()=>{
     cancelBtn.style.display = 'none';
     cancelDiv.style.display = 'block';
@@ -161,7 +177,7 @@ returnDiv.addEventListener('click',() => {
     cancelDiv.style.display = 'none';
 });
 
-document.querySelectorAll("#cancelDiv form, #returnDiv form").forEach(form => {
+document.querySelectorAll("#cancelDiv form, #returnDiv form,#rateDiv .rate-form").forEach(form => {
         form.addEventListener("submit", function(event) {
             event.preventDefault();
 
@@ -210,6 +226,9 @@ document.querySelectorAll("#cancelDiv form, #returnDiv form").forEach(form => {
                 });
         });
     });
+    
+
+
 </script>
         
 <%- include('../../views/partials/user/footer') %>

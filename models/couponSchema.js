@@ -4,6 +4,10 @@ const {Schema} = mongoose;
 const couponSchema = new Schema({
     name:{
         type:String,
+        required:true
+    },
+    code:{
+        type:String,
         required:true,
         unique:true
     },
@@ -16,29 +20,42 @@ const couponSchema = new Schema({
         type:Date,
         required:true
     },
-    offerPrice:{
-        type:Number,
-        required:true
-    },
     minimumPrice:{
         type:Number,
         required:true
     },
-    isList:{
+    isActive:{
         type:Boolean,
         default:true
     },
-    userId:[{
-        type:Schema.Types.ObjectId,
-        ref:'User'
-    }],
+    appliedusers:[
+        {
+            userId:{
+                type:Schema.Types.ObjectId,
+                ref:'User'
+            },
+            appliedAt:{
+                type:Date,
+                default:Date.now
+            }
+        }
+    ],
     discountType:{
         type:String,
+        enum:['Percentage','Flat'],
         required:true
     },
     discount:{
         type:Number,
         required:true
+    },
+    usageLimit:{
+        type:Number,
+        default:1
+    },
+    usedCount:{
+        type:Number,
+        default:0
     }
 })
 

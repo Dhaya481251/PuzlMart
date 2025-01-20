@@ -2,7 +2,8 @@ const Product = require('../../models/productSchema');
 const Category = require('../../models/categorySchema');
 const Brand = require('../../models/brandSchema');
 const User = require('../../models/userSchema');
-
+const Cart = require('../../models/cartSchema');
+const Wishlist = require('../../models/wishlistSchema');
 
 
 const fs = require('fs');
@@ -13,7 +14,11 @@ const loadProductpage = async(req,res) => {
     try {
         const userId = req.session.user;
         const userData = await User.findById(userId);
-        
+        const cart = await Cart.findOne({ userId }).populate('items.productId');
+        const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');
+        if (cart && cart.items) {
+            cart.items = cart.items.filter(item => item.productId); // Remove items with null productId
+          }
 
         const category = await Category.find({isListed:true});
         const categoryIds = category.map((category) => category._id.toString());
@@ -23,15 +28,13 @@ const loadProductpage = async(req,res) => {
         let productData = await Product.find({
             isBlocked:false,
             category:{$in:categoryIds},
-            quantity:{$gt:0},
             
         })
         .sort({createdOn:-1}).skip(skip).limit(limit);
-
+        const discount = Math.ceil(((productData.regularPrice-productData.salePrice)/productData.regularPrice)*100);
         const totalProducts = await Product.countDocuments({
             isBlocked:false,
             category:{$in:categoryIds},
-            quantity:{$gt:0}
         });
 
         const totalPages = Math.ceil(totalProducts/limit);
@@ -46,7 +49,11 @@ const loadProductpage = async(req,res) => {
         brand:brands,
         totalProducts:totalProducts,
         currentPage:page,
-        totalPages:totalPages
+        totalPages:totalPages,
+        cart,
+        wishlist,
+        discount,
+        appliedFilters:[]
     });
 
        console.log('Products page loaded');
@@ -57,9 +64,22 @@ const loadProductpage = async(req,res) => {
     }
 }
 
+const incrementProductView = async(productId) =>{
+    await Product.findByIdAndUpdate(productId,{$inc:{views:1}})
+}
+
+const updatePopularityScore = async(productId) => {
+    const product = await Product.findById(productId);
+    await Product.findByIdAndUpdate(productId,{$inc:{popularity:1}});
+}
+
 const loadProductDetailspage = async(req,res) => {
     try {
+        const userId = req.session.user;
+        const userData = await User.findById(userId);
         const id = req.params.id;
+        await incrementProductView(id);
+        await updatePopularityScore(id);
         const product = await Product.findOne({_id:id})
         .populate('category')
         .populate('brand')
@@ -72,238 +92,149 @@ const loadProductDetailspage = async(req,res) => {
         }
         const category = await Category.findOne({});
         const brand = await Brand.find({});
-        
-        
-        res.render('productDetails',{isAuthenticated: req.isAuthenticated(),user:req.session.user,product:product,cat:category,brand:brand,relatedProducts:product.relatedProducts || []});
+        const cart = await Cart.findOne({ userId }).populate('items.productId');
+        const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');
+        const discount = Math.ceil(((product.regularPrice-product.salePrice)/product.regularPrice)*100);
+        res.render('productDetails',{isAuthenticated: req.isAuthenticated(),user:userData,product:product,cat:category,brand:brand,relatedProducts:product.relatedProducts || [],cart,discount,wishlist});
     } catch (error) {
         res.status(500).send('Internal Server Error');
     }
 }
 
-const filterProduct = async(req,res) => {
+const filterProductByCategory = async (req, res) => {
     try {
         const user = req.session.user;
-        const category = req.query.category;
-        const brand = req.query.brand;
+        const userData = await User.findById(user);
+        const cart = await Cart.findOne({ user }).populate('items.productId');
+        const wishlist = await Wishlist.findOne({user}).populate('products.productsId');
+        const { category, brand, minPrice, maxPrice, sort , query } = req.query;
 
-        const findCategory = category ? await Category.findOne({_id:category}) : null;
-        const findBrand = brand ? await Brand.findOne({_id:brand}) : null;
+        let filter = {$or:[{isBlocked:false},{isListed:true}]};
+        if (category) {
+            const categoriesArray = Array.isArray(category) ? category : [category];
+            const categoryDocs = await Category.find({ name: { $in: categoriesArray } });
+            const categoryIds = categoryDocs.map((cat) => cat._id);
+            filter.category = { $in: categoryIds };
+        }
+        if (brand) {
+            const brandsArray = Array.isArray(brand) ? brand : [brand];
+            filter.brand = { $in: brandsArray };
+        }
+        if (minPrice || maxPrice) {
+            filter.salePrice = {};
+            if (minPrice) filter.salePrice.$gte = parseInt(minPrice);
+            if (maxPrice) filter.salePrice.$lte = parseInt(maxPrice);
+        }
+        if (query) { 
+            filter.productName = { $regex: `.*${query}.*`, $options: "i" };
+        }
+
+        let sortOrder = {};
+        switch (sort) {
+            case 'popularity':
+                sortOrder.popularity = -1;
+                break;
+            case 'priceLowToHigh':
+                sortOrder.salePrice = 1;
+                break;
+            case 'priceHighToLow':
+                sortOrder.salePrice = -1;
+                break;
+            case 'rating':
+                sortOrder.averageRating = -1;
+                break;
+            case 'featured':
+                sortOrder.featured = -1;
+                break;
+            case 'newArrivals':
+                sortOrder.createdOn = -1;
+                break;
+            case 'aToZ':
+                sortOrder.productName = 1;
+                break;
+            case 'zToA':
+                sortOrder.productName = -1;
+                break;
+            default:
+                sortOrder.createdOn = -1;
+                break;
+        }
         
-        const brands = await Brand.find({}).lean();
+        const page = parseInt(req.query.page) || 1;
+        const limit = 4;
+        const skip = (page - 1) * limit;
 
-        const query = {
-            isBlocked:false,
-            quantity:{$gt:0}
-        }
+        const products = await Product.find(filter).sort(sortOrder).skip(skip).limit(limit);
+        const totalProducts = await Product.countDocuments(filter);
+        const totalPages = Math.ceil(totalProducts / limit);
 
-        if(findCategory){
-            query.category = findCategory._id;
-        }
-
-        if(findBrand){
-            query.brand = findBrand.brandName;
-        }
-        console.log(findBrand);
-        let findProducts = await Product.find(query).lean();
-
-        findProducts.sort((a,b) =>  new Date(b.createdOn) - new Date(a.createdOn));
-        
         const categories = await Category.find({isListed:true});
-        let itemsPerPage = 6;
-        let currentPage = parseInt(req.query.page) || 1;
+        const brands = await Brand.find({ isBlocked: false });
 
-        let startIndex = (currentPage - 1)*itemsPerPage;
-        let endIndex = startIndex+itemsPerPage;
-        let totalPages = Math.ceil(findProducts.length/itemsPerPage);
-        const currentProduct = findProducts.slice(startIndex,endIndex);
-        let userData = null;
-
-        if(user){
-            userData = await User.findOne({_id:user});
-            if(userData){
-                const searchEntry = {
-                    category : findCategory ? findCategory._id : null,
-                    brand : findBrand ? findBrand.brandName : null,
-                    searchedOn : new Date()
-                }
-                userData.searchHistory.push(searchEntry);
-                await userData.save();
-            }
-        }
-
-        req.session.filteredProducts = currentProduct;
-        res.render('products',{
-            user:userData,
-            products:currentProduct,
-            category:categories,
-            brand:brands,
-            totalPages,
-            currentPage,
-            selectedCategory:category || null,
-            selectedBrand:brand || null
-        })
+        res.render('products', {
+            isAuthenticated: req.isAuthenticated(),
+            user: userData,
+            products,
+            appliedFilters: req.query,
+            category: categories,
+            brand: brands,
+            currentPage: page,
+            totalPages: totalPages,
+            cart,
+            wishlist
+        });
     } catch (error) {
-        console.error('filter error',error);
+        console.error('filter error', error);
         res.status(500).send('Internal Server Error');
     }
 }
 
-const filterByPrice = async(req,res) => {
-    try {
-        
-        const user = req.session.user;
-        const userData = await User.findOne({_id:user});
-        const brands = await Brand.find({}).lean();
-        const categories = await Category.find({isListed:true}).lean();
-        
-        let findProducts = await Product.find({
-            salePrice:{$gt:req.query.gt,$lt:req.query.lt},
-            isBlocked:false,
-            quantity:{$gt:0}
-        }).lean();
-
-        findProducts.sort((a,b) => new Date(b.createdOn) - new Date(a.createdOn));
-
-        let itemsPerPage = 6;
-        let currentPage = parseInt (req.query.page) || 1;
-        let startIndex = (currentPage - 1)*itemsPerPage;
-        let endIndex = startIndex + itemsPerPage;
-        let totalPages = Math.ceil(findProducts.length/itemsPerPage);
-        const currentProduct = findProducts.slice(startIndex,endIndex);
-        req.session.filteredProducts = findProducts;
-
-        res.render('products',{
-            user:userData,
-            products:currentProduct,
-            category:categories,
-            brand:brands,
-            totalPages,
-            currentPage,
-        })
-    } catch (error) {
-        console.error('filter price error',error);
-        res.status(500).send('Internal Server Error');
-    }
-}
-
-const searchProducts = async(req,res) =>  {
+const searchProducts = async (req, res) => {
     try {
         const user = req.session.user;
-        const userData = await User.findOne({_id:user});
+        const userData = await User.findOne({ _id: user });
+        const cart = await Cart.findOne({ user }).populate('items.productId');
+        const wishlist = await Wishlist.findOne({ user }).populate('products.productsId');
         let search = req.body.query || "";
-        console.log('Search Query : ',search);
-        
-        const brands = await Brand.find({}).lean();
-        const categories = await Category.find({isListed:true}).lean();
+
+        const brands = await Brand.find({ isBlocked: false }).lean();
+        const categories = await Category.find({ isListed: true }).lean();
         const categoryIds = categories.map(category => category._id.toString());
         let searchResult = [];
-        
-    if(search.trim().length > 0){
-        if(req.session.filteredProducts && req.session.filteredProducts.length>0){
-            searchResult = req.session.filteredProducts.filter(product =>
-                product.productName && product.productName.toLowerCase().includes(search?.toLowerCase() || "")
-            );
-            
-        }else{
+
+        if (search.trim().length > 0) {
             searchResult = await Product.find({
-                productName: {$regex:`.*${search || ""}.*`,$options:"i"},
-                isBlocked:false,
-                quantity:{$gt:0},
-                category:{$in:categoryIds}
+                productName: { $regex: `.*${search || ""}.*`, $options: "i" },
+                isBlocked: false,
+                quantity: { $gt: 0 },
+                category: { $in: categoryIds }
             }).lean();
         }
-    }
 
-        searchResult.sort((a,b) => new Date(b.createdOn) - new Date(a.createdOn));
+        searchResult.sort((a, b) => new Date(b.createdOn) - new Date(a.createdOn));
 
-        let itemsPerPage = 6;
-        let currentPage = parseInt (req.query.page) || 1;
-        let startIndex = (currentPage - 1)*itemsPerPage;
+        let itemsPerPage = 4;
+        let currentPage = parseInt(req.query.page) || 1;
+        let startIndex = (currentPage - 1) * itemsPerPage;
         let endIndex = startIndex + itemsPerPage;
-        let totalPages = Math.ceil(searchResult.length/itemsPerPage);
-        const currentProduct = searchResult.slice(startIndex,endIndex);
-        
-        res.render('products',{
-            user:userData,
-            products:currentProduct,
-            category:categories,
-            brand:brands,
+        let totalPages = Math.ceil(searchResult.length / itemsPerPage);
+        const currentProduct = searchResult.slice(startIndex, endIndex);
+
+        res.render('products', {
+            user: userData,
+            products: currentProduct,
+            category: categories,
+            brand: brands,
             totalPages,
             currentPage,
-            count:searchResult.length
-        })
+            count: searchResult.length,
+            wishlist,
+            cart,
+            appliedFilters: { ...req.query, query: search }
+        });
     } catch (error) {
-        console.error('search products error',error);
+        console.error('search products error', error);
         res.status(500).send('Internal Server Error');
-    }
-}
-
-const sortFilter = async(req,res) => {
-    try {
-        const user = req.session.user;
-        const userData = await User.findOne({_id:user});
-        const brands = await Brand.find({}).lean();
-        const categories = await Category.find({isListed:true}).lean();
-
-        const sort = req.query.sort;
-
-    let filterConditions = {
-        isBlocked:false,
-        quantity:{$gt:0}
-    };
-
-    let sortConditions = {};
-
-if (sort === 'popularity') {
-  sortConditions = { popularity: -1 };
-}
-if (sort === 'lowToHigh') {
-  sortConditions = {salePrice:1} ;
-}
-if (sort === 'highToLow') {
-  sortConditions = {salePrice:-1} ;
-}
-if (sort === 'averageRatings') {
-  sortConditions = { averageRating: -1 };
-}
-if (sort === 'featured'){
-  sortConditions = { featured : true };
-}
-if (sort === 'newArrivals') {
-  sortConditions = { createdOn: -1 };
-}
-if (sort === 'aToZ') {
-  sortConditions = {productName:1};
-}
-if (sort === 'zToA') {
-  sortConditions = {productName:-1};
-}
-
-    
-    const totalProducts = await Product.countDocuments(filterConditions);
-    let products = await Product.find(filterConditions)
-    .sort(sortConditions)
-    .lean();
-    
-    let itemsPerPage = 6;
-    let currentPage = parseInt(req.query.page) || 1;
-    let startIndex = (currentPage - 1)*itemsPerPage;
-    let endIndex = startIndex + itemsPerPage;
-    let totalPages = Math.ceil(totalProducts/itemsPerPage);
-    let currentProduct = products.slice(startIndex,endIndex);
-    req.session.filteredProducts = products;
-    
-    res.render('products',{
-        user:userData,
-        products:currentProduct,
-        category:categories,
-        brand:brands,
-        totalPages,
-        currentPage,
-    });
-    } catch (error) {
-        console.error('sorting error',error);
-        res.status(500).send('Internal server error');
     }
 }
 
@@ -311,8 +242,6 @@ if (sort === 'zToA') {
 module.exports = {
     loadProductpage,
     loadProductDetailspage,
-    filterProduct,
-    filterByPrice,
-    searchProducts,
-    sortFilter,
+    filterProductByCategory,
+    searchProducts
 }

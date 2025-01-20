@@ -6,181 +6,280 @@
         <a href="/products" class="breadcrumbs-txt" style="text-decoration: none;">Products / </a>
         <span class="breadcrumbs-txt"><%= product.productName %></span>
     </nav>
-    
-<div class="product-details-page">
-    <section class="row product-details">
-        <div class="col-md-6" style="display: flex;flex-direction: row;">
-            <div class="column productGalleryRow" style="display: flex; flex-direction: column;">
-                <% for (let i=0; i<product.productImage.length ; i++){ %>
-                    <div class="row productGalleryColumn" >
-                        <img class="img-fluid" src="/uploads/re-image/<%= product.productImage[i] %>" alt="<%= product.productName %>" onclick="myFunction(this)">
-                    </div>
-                <% } %>
-            </div>
-            <div id="carouselExampleControls" class="carousel slide">
-                <div class="carousel-inner">
-                    <% for(let i=0 ; i<product.productImage.length ; i++){ %>
-                        <div class="carousel-item <%= i === 0 ? 'active' : '' %>" data-bs-interval="false">
-                            <div class="img-zoom-container">
-                                <img src="/uploads/re-image/<%= product.productImage[i] %>" class="d-block w-100 img-fluid" alt="<%= product.productName %>" id="expandedImg" data-index="<%= i %>" onmouseover="zoomLensVisible(this)" onmouseout="zoomLensHidden(this)">
-                                <div id="myresult" class="img-zoom-result"></div>
-                            </div>
+
+    <div class="product-details-page">
+        <section class="row product-details">
+            <div class="col-md-6" style="display: flex;flex-direction: row;">
+                <div class="column productGalleryRow" style="display: flex; flex-direction: column;">
+                    <% for (let i=0; i<product.productImage.length ; i++){ %>
+                        <div class="row productGalleryColumn" >
+                            <img class="img-fluid" src="/uploads/re-image/<%= product.productImage[i] %>" alt="<%= product.productName %>" onclick="myFunction(this)">
                         </div>
                     <% } %>
                 </div>
-                <div style="gap: 2rem;">
-                    <a href="/addToCart/<%=product._id%>" class="btn" style="background-color: #42ada8; color: white;margin-left: 8rem;font-size: 1.5rem;font-family: monospace; border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;">Add To Cart</a>
+                <div id="carouselExampleControls" class="carousel slide">
+                    <div class="carousel-inner">
+                        <% for(let i=0 ; i<product.productImage.length ; i++){ %>
+                            <div class="carousel-item <%= i === 0 ? 'active' : '' %>" data-bs-interval="false">
+                                <div class="img-zoom-container">
+                                    <img src="/uploads/re-image/<%= product.productImage[i] %>" class="d-block w-100 img-fluid" alt="<%= product.productName %>" id="expandedImg" data-index="<%= i %>" onmouseover="zoomLensVisible(this)" onmouseout="zoomLensHidden(this)">
+                                    
+                                </div>
+                            </div>
+                        <% } %>
+                    </div>
+                    <div style="display:flex;justify-content:center;align-items:center;gap:2rem;margin-left: 2rem;margin-top: 1rem;">
+                        <a href="/addToCart/<%= product._id %>" data-id="<%=product._id%>" class="btn cart-btn" style="background-color: #04625f;color:#f0ffff">Add To Cart</a>
+                        <a href="/addToWishlist/<%= product._id %>" data-id="<%=product._id%>" class=" btn wishlist-btn" style="background-color: #04625f;color:#f0ffff">Add to Wishlist</a>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="col-md-6" style="margin-top: -3rem;">
+                <div class="product-details">
+                <h2 class="productName"><%=product.productName%></h2>
+                <h5 class="productBrand"><%=product.brand%></h5>
+                <div class="ratings">
+                    <div class="stars">
+                        <% for(let i=0 ; i<5 ; i++ ){ %>
+                            <span class="star <%= i <= product.averageRating ? 'selected': '' %>">&#9733;</span>
+                        <% } %>
+                    </div>
                     
                 </div>
-            </div>
-            
-        </div>
-        <div class="col-md-6">
-            <h2 class="productName"><%=product.productName%></h2>
-            <h5 class="productBrand"><%=product.brand%></h5>
-            <div class="ratings">
-                <div class="stars">
-                    <% for(let i=0 ; i<5 ; i++ ){ %>
-                        <span class="star <%= i <= product.averageRating ? 'selected': '' %>">&#9733;</span>
-                    <% } %>
+                <div class="price">
+                        <p><%=product.salePrice%>  <span style="text-decoration: line-through;">Rs. <%=product.regularPrice%></span>  <span style="color:green"><%=discount%>% off</span></p>
                 </div>
-                
-            </div>
-            <div class="price">
-                <% if(product.discount){ %>
-                    <p><%=product.salePrice%>  <span style="text-decoration: line-through;">Rs. <%=product.regularPrice%></span>  <%=product.discount%>% off</p>
-                <% }else{ %>
-                <p>Rs. <%= product.salePrice%> <span style="text-decoration: line-through;">Rs. <%=product.regularPrice%></span></p>
-                <% } %>
-                
-            </div>
-            <div class="offers">
-                <p>Available Offers</p>
-                <div class="card" style="width: 18rem;">
-                    <div class="card-body">
-                      <h5 class="card-title">Offer 1: <%=product.offer%></h5>
-                      <p class="card-text"></p> 
+                <div class="offers">
+                    <p>Available Offers</p>
+                    <div class="card" style="width: 18rem;">
+                        <div class="card-body">
+                          <h5 class="card-title">Offer 1: <%=product.offer%></h5>
+                          <p class="card-text"></p> 
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="stock">
-                <% if(product.quantity > 0 && product.status === 'Available'){ %>
-                    <p><%=product.quantity%> items available</p>
-                <% }else if(product.status === 'Out of stock'){ %>
-                    <p>Out of stock</p>
-                <% }else if(product.status === 'Discontinued'){ %>
-                    <p>Product has been discontinued</p>
-                <% }else{ %>
-                    <p>Stock information unavailable</p>
-                <% } %>
-            </div>
-            <div class="description">
-                <h2>About this item</h2>
-                <p><%=product.description%></p>
-            </div>
-        
-            <div class="highlights">
-                <h2>Product Highlights</h2>
-                <ul style="font-family: monospace;">
-                   <li>Materials:plastic</li>
-                   <li>Age 3+ Years</li>
-                   <li>Skillset : Analysis & Critical Thinking, Hand & Eye Co-ordination,Object Recognition,Time Management,Creativity & Imagination</li>
-                </ul>
-            </div>
-            <div class="reviews" style="border: 1px solid #42ada8; padding-left: 1rem; padding-top: 1rem;">
-                    <div style="display: flex; flex-direction: row; justify-content: space-around;">
-                        <h2>Ratings and Reviews</h2>
-                       
-                    </div>
-                    <% if(product.reviews.length>0){ %>
-                    <div class="ratings" style="margin-top: 2rem;">
-                        <% product.reviews.forEach(review => { %>
-                                <div class="card-body text-center" style="border:1px solid #42ada8;">
-                                    <h5 class="card-title" class="stars">
-                                        <% for(let i = 1 ; i<=5 ; i++){ %>
-                                            <span class="star <%= i <= review.rating ? 'selected' : '' %>">&#9733;</span>
-                                        <% } %>
-                                    </h5>
-                         
-                                    <p class="card-text" style="font-weight: 100;"><%= review.review %></p>
-                                    <p class="card-footer" style="font-style: italic;">- <%= review.userId.name%></p>
-                                    <!--<p><small><%= new Date(review.createdOn).toLocaleString() %></small></p>-->
-                                </div>
-                        <% }) %>
-                                
-                    </div>
+                <div class="stock">
+                    <% if(product.quantity > 0 && product.status === 'Available'){ %>
+                        <p style="color:green;font-weight: lighter;font-size: 2rem;"><%=product.quantity%> items available</p>
+                    <% }else if(product.quantity<=0 || product.status === 'Out of stock'){ %>
+                        <p style="color:red;font-weight: lighter;font-size: 2.5rem;">Out of stock</p>
+                    <% }else if(product.status === 'Discontinued'){ %>
+                        <p>Product has been discontinued</p>
                     <% }else{ %>
-                        <p>No ratings and reviews yet</p>
+                        <p>Stock information unavailable</p>
                     <% } %>
-                
-            </div>
-           
-        </div>
-    
-    </section>
-    <section>
-        <div class="related-products">
-            <h2>Related Products</h2>
-            <div style="display:flex;flex-direction: row;">
-            <% if (product.relatedProducts && product.relatedProducts.length > 0) { %>
-                <% product.relatedProducts.forEach(relatedProduct =>{ %>
-            <div class="card mb-3" style="width: 15rem; margin-left: 1rem;">
-            
-                <a href="/productDetails/<%=relatedProduct._id%>">
-                    <img src="/uploads/re-image/<%=relatedProduct.productImage[0]%>" class="card-img-top img-fluid" style="width:99%" alt="<%=relatedProduct.productName%>">
-                </a>
-                <div class="card-body text-center">
-                    <h5 class="card-title"><%=relatedProduct.productName%></h5>
-                    <p class="card-text"><%=relatedProduct.description%></p>
-                    <p class="card-text"><%=relatedProduct.salePrice%></p>
-                    <div class=" card-footer">
-                       <a href="/addToCart?id=<%=relatedProduct._id%>" class="btn btn-success card-btn">Add to Cart</a>
-                    </div>
                 </div>
+                <div class="description">
+                    <h2>About this item</h2>
+                    <p><%=product.description%></p>
+                </div>
+            
+                <div class="highlights">
+                    <h2>Product Highlights</h2>
+                    <ul style="font-family: monospace;">
+                       <li>Materials:plastic</li>
+                       <li>Age 3+ Years</li>
+                       <li>Skillset : Analysis & Critical Thinking, Hand & Eye Co-ordination,Object Recognition,Time Management,Creativity & Imagination</li>
+                    </ul>
+                </div>
+                <div class="reviews" style="border: 1px solid #42ada8; padding-left: 1rem; padding-top: 1rem;">
+                        <div style="display: flex; flex-direction: row; justify-content: space-around;">
+                            <h2>Ratings and Reviews</h2>
+                           
+                        </div>
+                        <% if(product.reviews.length>0){ %>
+                        <div class="ratings" style="margin-top: 2rem;">
+                            <% product.reviews.forEach(review => { %>
+                                    <div class="card-body text-center" style="border:1px solid #42ada8;">
+                                        <h5 class="card-title" class="stars">
+                                            <% for(let i = 1 ; i<=5 ; i++){ %>
+                                                <span class="star <%= i <= review.rating ? 'selected' : '' %>">&#9733;</span>
+                                            <% } %>
+                                        </h5>
+                             
+                                        <p class="card-text" style="font-weight: 100;"><%= review.review %></p>
+                                        <p class="card-footer" style="font-style: italic;">- <%= review.userId.name%></p>
+                                        <!--<p><small><%= new Date(review.createdOn).toLocaleString() %></small></p>-->
+                                    </div>
+                            <% }) %>
+                                    
+                        </div>
+                        <% }else{ %>
+                            <p>No ratings and reviews yet</p>
+                        <% } %>
+                    
+                </div>
+                </div>
+                <div id="myresult" class="img-zoom-result"></div>
+            </div>
+            
+        </section>
+        <section>
+            <div class="related-products">
+                <h2 style="color:#04625f;margin-left: 2rem;">Related Products</h2>
+                <div class="shop-content" style="margin-left:2rem;display:flex;flex-direction: row;">
+                <% if (product.relatedProducts && product.relatedProducts.length > 0) { %>
+                    <% product.relatedProducts.forEach(relatedProduct =>{ %>
+                <div class="product-box">
                 
+                    <a href="/productDetails/<%=relatedProduct._id%>">
+                        <img src="/uploads/re-image/<%=relatedProduct.productImage[0]%>" class="proudct-img" alt="<%=relatedProduct.productName%>">
+                    </a>
+                    <h2 class="product-title"><%=relatedProduct.productName%></h5>
+                    <p class="card-text"><%=relatedProduct.brand%></p>
+                    <div class="ratings">
+                            <div class="stars" style="display: flex;justify-content: start;">
+                              <% for(let star=0 ; star<5 ; star++ ){ %>
+                                <span class="star <%= star <= relatedProduct.averageRating ? 'selected': '' %>">&#9733;</span>
+                              <% } %>
+                            </div>
+                          </div>
+                        <span class="price"><%=relatedProduct.salePrice%></span>
+                        <a href="/addToCart?id=<%=relatedProduct._id%>" data-id="<%=relatedProduct._id%>" class="btn cart-btn">
+                            <i class="bx bx-shopping-bag add-cart"></i>
+                        </a>
+                        <a href="/addToWishlist/<%= relatedProduct._id %>" data-id="<%=relatedProduct._id%>" class="btn wishlist-btn">
+                            <i class='bx bxs-heart add-wishlist' ></i>
+                        </a>
+                </div>
+                <% }) %>
+                </div>
+                <% } else { %>
+                    <p>No related products available.</p>
+                <% } %>
             </div>
-            <% }) %>
-            </div>
-            <% } else { %>
-                <p>No related products available.</p>
-            <% } %>
-        </div>
-    </section>
-</div>
-
+        </section>
+    </div>
 <script>
+
+function myFunction(imgs) {
     
-    function myFunction(imgs) {
+    var expandImg = document.getElementById('expandedImg')
+    expandImg.src = imgs.src;  // Set the source of the expanded image to the clicked thumbnail
+    expandImg.parentElement.style.display = 'block';  // Show the expanded image
     
-        var expandImg = document.getElementById('expandedImg')
-        expandImg.src = imgs.src;  // Set the source of the expanded image to the clicked thumbnail
-        expandImg.parentElement.style.display = 'block';  // Show the expanded image
-        
-        imageZoom("expandedImg", "myresult");
-    }
+    imageZoom("expandedImg", "myresult");
+}
+
+function zoomLensVisible(imgs){
+    var result = document.getElementById('myresult');
+    var lens = document.createElement('DIV');
+    const productDetails = document.getElementsByClassName('product-details');
+    lens.setAttribute('class','img-zoom-lens');
+    imgs.parentElement.insertBefore(lens,imgs);
+
+    result.style.display = 'block';
     
-    function zoomLensVisible(imgs){
-        var result = document.getElementById('myresult');
-        var lens = document.createElement('DIV');
+    imageZoom('expandedImg','myresult');
+ 
+    lens.style.visibility = 'visible';
+}
 
-        lens.setAttribute('class','img-zoom-lens');
-        imgs.parentElement.insertBefore(lens,imgs);
+function zoomLensHidden(imgs){
+    var result = document.getElementById('myresult');
+    var lens = document.querySelector('.img-zoom-lens');
 
-        result.style.display = 'block';
-        
-        imageZoom('expandedImg','myresult');
+    result.style.display = 'none';
 
-        lens.style.visibility = 'visible';
+    lens.style.visibility = 'visible'
+}
+document.querySelectorAll('.cart-btn').forEach(button => {
+  button.addEventListener('click',(e) => {
+    e.preventDefault();
+    
+    const productId = button.getAttribute('data-id');
+    
+    fetch(`/addToCart/${productId}`, {
+   method: 'GET',
+   headers: { 'Content-Type': 'application/json' }
+})
+.then(response => {
+    if (!response.ok) {
+        return response.json().then(errData => {
+            throw new Error(errData.error || 'Something went wrong');
+        });
     }
-
-    function zoomLensHidden(imgs){
-        var result = document.getElementById('myresult');
-        var lens = document.querySelector('.img-zoom-lens');
-
-        result.style.display = 'none';
-
-        lens.style.visibility = 'hidden'
+    return response.json();
+})
+.then(data => {
+    if (data.success) {
+        Swal.fire({
+            title: 'Added to cart',
+            text: data.message,
+            icon: 'success',
+            confirmButtonText: 'OK'
+        }).then(() => location.reload());
+    } else {
+        Swal.fire({
+            title: 'Error',
+            text: data.error || 'An unknown error occurred',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
     }
+})
+.catch(error => {
+    console.log(error);
+    Swal.fire({
+        title: 'Error',
+        text: error.message,
+        icon: 'error',
+        confirmButtonText: 'OK'
+    });
+});
+
+  })
+})
+
+document.querySelectorAll('.wishlist-btn').forEach(button => {
+  button.addEventListener('click',(e) => {
+    e.preventDefault();
+    
+    const productId = button.getAttribute('data-id');
+    
+    fetch(`/addToWishlist/${productId}`, {
+   method: 'GET',
+   headers: { 'Content-Type': 'application/json' }
+})
+.then(response => {
+    if (!response.ok) {
+        return response.json().then(errData => {
+            throw new Error(errData.error || 'Something went wrong');
+        });
+    }
+    return response.json();
+})
+.then(data => {
+    if (data.success) {
+        Swal.fire({
+            title: 'Added to wishlist',
+            text: data.message,
+            icon: 'success',
+            confirmButtonText: 'OK'
+        }).then(() => location.reload());
+    } else {
+        Swal.fire({
+            title: 'Error',
+            text: data.error || 'An unknown error occurred',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+    }
+})
+.catch(error => {
+    console.log(error);
+    Swal.fire({
+        title: 'Error',
+        text: error.message,
+        icon: 'error',
+        confirmButtonText: 'OK'
+    });
+});
+
+  })
+})
 
 </script>
 

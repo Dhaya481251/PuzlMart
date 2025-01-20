@@ -1,19 +1,23 @@
 const User = require('../../models/userSchema');
 const Category = require('../../models/categorySchema');
 const Product = require('../../models/productSchema');
-const Brand = require('../../models/brandSchema')
+const Brand = require('../../models/brandSchema');
+const Cart = require('../../models/cartSchema');
+const Wishlist = require('../../models/wishlistSchema');
 const env = require('dotenv').config();
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
-
-
-
 
 const loadHomepage = async(req,res) => {
     try {
         const userId = req.session.user;
         const userData = await User.findById(userId);
         const categories = await Category.find({isListed:true});
+        const cart = await Cart.findOne({ userId }).populate('items.productId');
+        const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');
+        if (cart && cart.items) {
+            cart.items = cart.items.filter(item => item.productId); // Remove items with null productId
+          }
         let productData = await Product.find({
             isBlocked:false,
             category:{$in:categories.map(category => category._id)},
@@ -22,7 +26,7 @@ const loadHomepage = async(req,res) => {
         .sort({createdOn:-1})
         .limit(4);
         if(userId){
-        res.render('home',{user:userData,products:productData});
+        res.render('home',{user:userData,products:productData,cart,wishlist});
         }
         console.log('Home Page loaded');
     } catch (error) {

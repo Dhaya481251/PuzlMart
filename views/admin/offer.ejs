@@ -4,11 +4,11 @@
     <h3 class="my-4">Offers</h3>
     <div>
         <div>
-            <a href="/admin/addOffer" class="btn btn-red mb-4">Add Offer</a>
+            <a href="/admin/addOffer" class="btn px-2 py-2 text-white mb-4" style="background-color: #04625f;border-radius: 5px;">Add Offer</a>
         </div>
     </div>
-    <table class="table table-bordered product-table">
-        <thead class="thead-light">
+    <table class="table table-hover table-bordered product-table" style="box-shadow: 1px 1px 8px black;">
+        <thead class="thead-light" style="background-color: #04625f;color:white">
             <tr>
                 <th scope="col">Offer Type</th>
                 <th scope="col">Discount Type</th>
@@ -20,7 +20,7 @@
                 <th scope="col">Actions</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody style="background-color: #f0ffff;color:#04625f">
             <% if (offers && offers.length > 0) { %>
                 <% offers.forEach(offer => { %>
                 <tr id="offer-<%= offer._id %>">

@@ -2,9 +2,15 @@
 	"folders": [
 		{
 			"path": "../.."
+		},
+		{
+			"path": "../../../Testing"
+		},
+		{
+			"path": "../../../My Projects"
 		}
 	],
 	"settings": {
-		"liveServer.settings.multiRootWorkspaceName": "Puzl Mart Project"
+		"liveServer.settings.multiRootWorkspaceName": "Testing"
 	}
 }

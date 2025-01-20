@@ -5,10 +5,10 @@
         <label class="form-label">Coupon Name</label>
         <input type="text" class="form-control" name="name" />
         <div id="name-error" class="error-message"></div>
-    
-        <label class="form-label">Offer Price (%)</label>
-        <input type="number" class="form-control" name="offerPrice" />
-        <div id="offerPrice-error" class="error-message"></div>
+        
+        <label class="form-label">Coupon Code</label>
+        <input type="text" class="form-control" name="code" />
+        <div id="code-error" class="error-message"></div>
     
         <label class="form-label">Minimum Price</label>
         <input type="number" class="form-control" name="minimumPrice" />
@@ -18,7 +18,22 @@
         <input type="date" class="form-control" name="expireOn" />
         <div id="expireOn-error" class="error-message"></div>
 
-        <button type="submit">Save</button>
+        <label class="form-label" for="">Discount Type</label>
+        <select name="discountType" class="form-control" id="">
+            <option value="Percentage">Percentage</option>
+            <option value="Flat">Flat</option>
+        </select>
+        <div id="discountType-error" class="error-message"></div>
+
+        <label class="form-label" for="">Discount</label>
+        <input type="number" class="form-control" name="discount">
+        <div id="discount-error" class="error-message"></div>
+        
+        <label class="form-label" for="">Usage Limit (Max uses per user):</label>
+        <input type="number" class="form-control" id="usageLimit" name="usageLimit" >
+        <div id="usageLimit-error" class="error-message"></div>
+
+        <button type="submit" class="px-2 py-2 my-2 text-white" style="background-color: #04625f;border-radius: 5px;">Save</button>
     </form>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -74,11 +89,13 @@ function validateAndSubmit(event) {
     function validateForm(){
 
         clearErrorMessages();
-        const name = document.getElementsByName('name').value;
-        const offerPrice = document.getElementsByName('offerPrice')[0].value;
+        const name = document.getElementsByName('name')[0].value;
+        const code = document.getElementsByName('code')[0].value;
         const minimumPrice = document.getElementsByName('minimumPrice')[0].value;
-        const expireOn = document.getElementsByName('expireOn').value;
-        console.log(offerPrice, typeof(offerPrice))
+        const expireOn = document.getElementsByName('expireOn')[0].value;
+        const discountType = document.getElementsByName('discountType')[0].value;
+        const discount = document.getElementsByName('discount')[0].value;
+        const usageLimit = document.getElementsByName('usageLimit')[0].value;
         let isValid = true;
 
         if(name === ""){
@@ -86,30 +103,43 @@ function validateAndSubmit(event) {
             isValid = false;
         }
 
-        if (!/^\d+(\.\d{1,2})?$/.test(offerPrice) || parseFloat(offerPrice) < 0) {
-    displayErrorMessage('offerPrice-error', 'Please enter a valid non-negative offer price.');
-    isValid = false;
-}
-
+        
+        if(code === ""){
+            displayErrorMessage('code-error','Please enter a coupon code');
+            isValid = false;
+        }
 if (!/^\d+(\.\d{1,2})?$/.test(minimumPrice) || parseFloat(minimumPrice) < 0) {
     displayErrorMessage('minimumPrice-error', 'Please enter a valid non-negative minimum price.');
     isValid = false;
 }
 
-// Compare offerPrice and minimumPrice after individual validations
-if (parseFloat(minimumPrice) >= parseFloat(offerPrice)) {
-    displayErrorMessage('minimumPrice-error', 'Minimum price must be less than the offer price.');
-    isValid = false;
-}
+
 
 
         if(expireOn === ""){
             displayErrorMessage('expireOn-error','Please enter a expired date of coupon');
             isValid = false;
         }
+
+        if(!discountType){
+        displayErrorMessage('discountType-error','Please select a discount type.');
+        isValid = false;
+    }
+
+    if(!/^\d+(\.\d{1,2})?$/.test(discount) || parseFloat(discount) <= 0){
+        displayErrorMessage('discount-error','Please enter a valid discount');
+        isValid = false;
+    }
+
+    if(!/^\d+(\.\d{1,2})?$/.test(usageLimit) || parseFloat(usageLimit) <= 0){
+        displayErrorMessage('usageLimit-error','Please enter a usageLimit');
+        isValid = false;
+    }
         
         return isValid;
     }
+
+    
 
     function displayErrorMessage(elementId, message) {
         var errorElement = document.getElementById(elementId);

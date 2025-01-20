@@ -52,13 +52,8 @@ router.get('/auth/google/callback',passport.authenticate('google',{failureRedire
 //Product management
 router.get("/products",userAuth,productController.loadProductpage);
 router.get('/productDetails/:id',userAuth,productController.loadProductDetailspage);
-router.get('/filter',userAuth,productController.filterProduct);
-router.get('/filterPrice',userAuth,productController.filterByPrice);
-
+router.get('/filterProductByCategory',userAuth,productController.filterProductByCategory);
 router.post('/search',userAuth,productController.searchProducts);
-router.get('/sortFilter',userAuth,productController.sortFilter);
-
-
 //User profile management
 router.get('/userProfile',userAuth,profileController.loadUserProfilePage);
 router.get('/userDetails',userAuth,profileController.loadUserDetailsPage);
@@ -72,9 +67,11 @@ router.post('/addAddress',userAuth,profileController.addAddress);
 router.get('/editAddress',userAuth,profileController.loadEditAddress);
 router.post('/editAddress',userAuth,profileController.editAddress);
 router.get('/deleteAddress',userAuth,profileController.deleteAddress);
+// router.get('/coupons',userAuth,profileController.loadCoupon);
+// router.post('/addCoupon',userAuth,profileController.addCoupon);
 
 //Cart management
-router.get('/cart',userAuth,cartController.loadCart);
+
 router.get('/addToCart/:id',userAuth,cartController.addToCart);
 router.get('/removeFromCart/:id',userAuth,cartController.removeFromCart);
 router.post('/increaseQuantity/:id',userAuth,cartController.increaseQuantity);
@@ -97,10 +94,9 @@ router.post('/applyCoupon',userAuth,orderController.applyCoupon);
 router.post('/removeCoupon',userAuth,orderController.removeCoupon);
 
 //Wishlist management
-router.get('/wishlist',userAuth,wishlistController.loadWishlist);
-router.post('/addToWishlist/:id',userAuth,wishlistController.addToWishlist);
-router.delete('/removeFromWishlist/:id',userAuth,wishlistController.removeFromWishlist);
-
+router.get('/addToWishlist/:id',userAuth,wishlistController.addToWishlist);
+router.get('/removeFromWishlist/:id',userAuth,wishlistController.removeFromWishlist);
 //wallet management
 router.get('/wallet',userAuth,walletController.loadWallet);
+
 module.exports = router;

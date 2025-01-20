@@ -91,6 +91,31 @@ const orderSchema = new Schema({
         type:Boolean,
         default:false
     },
+    couponId:{
+        type:Schema.Types.ObjectId,
+        ref:'Coupon'
+    },
+    appliedCouponDetails:{
+        name:{
+            type:String,
+        },
+        discountType:{
+            type:String,
+            enum:['Percentage','Flat']
+        },
+        discount:{
+            type:Number
+        },
+        maxDiscount:{
+            type:Number
+        }
+    },
+    couponValidation:{
+        isValid:{
+            type:Boolean,
+            default:false
+        }
+    },
     paymentStatus:{
         type:String,
         required:true,

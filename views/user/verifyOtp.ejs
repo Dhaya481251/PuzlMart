@@ -24,12 +24,15 @@
                 <div class="heading_s1">
                     <h3>Email Verification Page</h3>
                 </div>
-                <form id="otpForm" action="/verifyOtp" method="POST" onsubmit="return validateOTPForm()">
+                <form id="otpForm"  action="/verifyOtp" method="POST" onsubmit="return validateOTPForm()" style="background-color:#f0ffff; padding:2rem;box-shadow: 0 0 10px #04625f;">
                     <div class="form-group">
-                        <label for="otp">Enter OTP</label>
+                        <label for="otp">Enter OTP: </label>
                         <input type="text" id="otp" name="otp" class="form-control" required maxlength="6" pattern="\d*">
                     </div>
-                    <button type="submit" class="btn">Verify Email</button>
+                    <button type="submit" class="btn" style="border-radius: 5px;
+                    background: #04625f;
+                    padding: 0.5rem;
+                    color: white;border:none">Verify Email</button>
                     <div class="form-group text-center" style="display: flex;
                     flex-direction: row;
                     justify-content: center;">

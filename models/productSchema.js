@@ -8,7 +8,8 @@ const productSchema = new Schema({
     },
     description:{
         type:String,
-        required:true
+        required:true,
+        default:'No description available'
     },
     brand:{
         type:String,
@@ -49,8 +50,7 @@ const productSchema = new Schema({
         {
             userId:{
                 type:Schema.Types.ObjectId,
-                ref:'User',
-                required:true
+                ref:'User'
             },
             review:{
                 type:String
@@ -100,8 +100,21 @@ const productSchema = new Schema({
     featured:{
         type:Boolean,
         default:false
+    },
+    popularity:{
+        type:Number,
+        default:0
+    },
+    views:{
+        type:Number,
+        default:0
+    },
+    purchases:{
+        type:Number,
+        default:0
     }
 },{timestamps:true});
+
 
 const Product = mongoose.model("Product",productSchema);
 

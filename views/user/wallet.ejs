@@ -1,7 +1,7 @@
 <%- include("../../views/partials/user/header") %>
 <nav class="breadcrumbs mt-3 mb-3 container">
     <a href="/" class="breadcrumbs-txt" style="text-decoration: none;">Home</a>/
-    <a href="/userProfile" class="breadcrumbs-txt" style="text-decoration: none;">My Details</a>/
+    <a href="/userProfile" class="breadcrumbs-txt" style="text-decoration: none;">My Account</a>/
     <a href="/Wallet" class="breadcrumbs-txt" style="text-decoration: none;">My Wallet</a>
 </nav>
 <div class="container my-5">
@@ -9,14 +9,38 @@
       <div class="col-md-8 offset-md-2">
         <h2 class="text-center mb-4">My Wallet</h2>
 
-        
         <div class="wallet-card text-center mb-4" style="background-color: #f8f9fa;border-radius: 8px;padding:20px;box-shadow:0px 4px 4px 6px rgba(0,0,0,0.1)">
           <p class="mb-1">Wallet Balance Amount</p>
-          <p class="balance" style="font-size: 1.5rem; font-weight: bold; color:#28a745"><%= user.wallet.balance %></p>
+          <p class="balance" style="font-size: 1.5rem; font-weight: bold; color:#28a745"><%= user.wallet ? user.wallet.balance : 0 %></p>
         </div>
 
-        
-        
+        <div class="transactions-card text-center mb-4" style="background-color: #f8f9fa;border-radius: 8px;padding:20px;box-shadow:0px 4px 4px 6px rgba(0,0,0,0.1)">
+          <h3>Recent Transactions</h3>
+          <% if (user.wallet && user.wallet.transactions && user.wallet.transactions.length > 0) { %>
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Description</th>
+                  <th>Amount</th>
+                  <th>Type</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% user.wallet.transactions.forEach(transaction => { %>
+                  <tr>
+                    <td><%= new Date(transaction.date).toLocaleDateString() %></td>
+                    <td><%= transaction.reason %></td>
+                    <td><%= transaction.amount %></td>
+                    <td><%= transaction.transactionsType %></td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          <% } else { %>
+            <p>No transactions available.</p>
+          <% } %>
+        </div>
       </div>
     </div>
   </div>

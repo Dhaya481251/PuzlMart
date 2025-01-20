@@ -19,7 +19,7 @@
 .form-box h2 {
     text-align: center;
     margin-bottom: 1.5rem;
-    color: #36B5B1;
+    color: #04625f;
     text-shadow: 1px -1px black;
 }
 
@@ -32,7 +32,7 @@
 }
 
 .form-box .btn-primary {
-    background-color: #36B5B1;
+    background-color: #04625f;
     border: none;
     width: 100%;
     margin-bottom: 1rem;
@@ -46,7 +46,7 @@
 }
 
 .form-box a {
-    color: #36B5B1;
+    color: #04625f;
     text-decoration: none;
 }
 
@@ -63,7 +63,9 @@
     .form-box h2 {
         font-size: 1.5rem;
     }
+    
 }
+
 .eye-icon, .closeEye-icon{
     width: 35px;
     height: 35px;
@@ -85,6 +87,6 @@
 }
 
 .closeEye-icon{
-    left: calc(18rem + 0.25rem);
+    left: calc(18rem);
     
 }

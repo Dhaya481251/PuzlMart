@@ -7,7 +7,7 @@
     <div class="container form-container">
     
       
-      <form method="POST" action="/admin/editCategory/<%= category._id %>" enctype="multipart/form-data" onsubmit="return handleFormSubmit(event)">
+      <form  action="" enctype="multipart/form-data" onsubmit="return handleFormSubmit(event)">
         <input type="hidden" name="existingCategoryImage" value="<%= category.categoryImage %>" />
         
         <label for="categoryImage" class="form-label">Category Image</label>
@@ -58,43 +58,37 @@
   event.preventDefault();
   if (!validateForm()) {
     return;
-  }else{
-    document.forms[0].submit();
   }
 
-  const name = document.getElementsByName('name')[0].value.trim();
-  const description = document.getElementById('descriptionId').value.trim();
-  const image = document.getElementById('categoryImage').files[0];
+  const form = event.target;
 
-  const formData = new FormData();
-  formData.append('name', name);
-  formData.append('description', description);
-  if (image) {
-    formData.append('CategoryImage', image); 
-  }
+  // const name = document.getElementsByName('name')[0].value.trim();
+  // const description = document.getElementById('descriptionId').value.trim();
+  // const image = document.getElementById('categoryImage').files[0];
 
-  fetch(form.action, {
+  const formData = new FormData(form);
+  // formData.append('name', name);
+  // formData.append('description', description);
+  // if (image) {
+  //   formData.append('CategoryImage', image); 
+  // }
+
+  fetch('/admin/editCategory/<%= category._id %>', {
     method: 'POST',
-    headers:{'Content-Type':'application/json'},
-    body: JSON.stringify(formData),
+    body: formData,
   })
   .then((response) => {
     if (!response.ok) {
-                
-                throw new Error('HTTP error: ' + response.status || 'Failed to update category');
-            }
+      throw new Error('HTTP error: ' + response.status || 'Failed to update category');
+    }
     return response.json();
-    
   })
   .then(data => {
-    
-    
     Swal.fire({
       icon: data.type,
-      title: 'Success',
-      text:data.message,
+      title: data.message,
       showConfirmButton:true,
-      
+      timer:1500
     }).then(() => {
         if(data.type==='success'){
           window.location.href = '/admin/category';
@@ -104,23 +98,17 @@
   })
   .catch(error => {
     console.error("Error during form submission:", error);
-    
     Swal.fire({
         icon: 'error',
-        title: 'Oops',
-        text: error.message || 'An error occurred while editing the category',
+        title: 'Something went wrong!',
         showConfirmButton:true,
-        
+        timer:1500
     });
   });
-
-
   }
 
-
-    
-    function validateForm() {
-      clearErrorMessages();
+  function validateForm() {
+    clearErrorMessages();
 
       const name = document.getElementsByName('name')[0].value.trim();
       const description = document.getElementById('descriptionId').value.trim();

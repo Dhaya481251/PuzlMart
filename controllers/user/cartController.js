@@ -3,39 +3,29 @@ const Cart = require('../../models/cartSchema');
 const Product = require('../../models/productSchema');
 
 
-const loadCart = async (req, res) => {
-    try {
-        const userId = req.session.user;
-        const userData = await User.findById(userId);
-
-        const cart = await Cart.findOne({ userId }).populate('items.productId');
-        if (!cart) {
-            return res.render('cart', { isAuthenticated: req.isAuthenticated(), user: userData, cart: null });
-        }
-
-        res.render('cart', { isAuthenticated: req.isAuthenticated(), user: userData, cart });
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Internal Server Error');
-    }
-};
-
-
+const incrementProductPurchase = async(productId) => {
+    await Product.findByIdAndUpdate(productId,{$in:{purchases:1}})
+}
+const updatePopularityScore = async(productId) => {
+    const product = await Product.findById(productId);
+    await Product.findByIdAndUpdate(productId,{$inc:{popularity:1}});
+}
 const addToCart = async (req, res) => {
     try {
         const userId = req.session.user;
         const productId = req.params.id;
         const quantityToAdd = parseInt(req.body.quantity) || 1;
-
+        await incrementProductPurchase(productId);
+        await updatePopularityScore(productId);
         const product = await Product.findById(productId);
 
         if (!product) {
-            return res.status(404).send('Product not found');
+            return res.status(400).json({success:false,error:'Product not found'});
         }
 
         
         if (quantityToAdd > product.quantity) {
-            return res.status(400).send('Requested quantity exceeds available stock');
+            return res.status(400).json({success:false,error:'Requested quantity exceeds available stock'});
         }
 
         let cart = await Cart.findOne({ userId });
@@ -48,7 +38,10 @@ const addToCart = async (req, res) => {
                 
                 const existingItem = cart.items[existingItemIndex];
                 if (existingItem.quantity + quantityToAdd > product.quantity) {
-                    return res.status(400).send('Cannot add more than available stock');
+                    return res.status(400).json({success:false,error:'Cannot add more than available stock'});
+                }
+                if(existingItem.quantity + quantityToAdd > 10 ){
+                    return res.status(400).json({success:false,error:'You can buy max 10 products'});
                 }
 
                 existingItem.quantity += quantityToAdd;
@@ -75,10 +68,11 @@ const addToCart = async (req, res) => {
         }
 
         await cart.save();
-        res.redirect('/products');
+        
+        res.status(200).json({success:true,message:'Product added to the cart successfully'});
     } catch (error) {
         console.error(error);
-        res.status(500).send('Internal Server Error');
+        res.status(500).json({error:'Internal Server Error'});
     }
 };
 
@@ -98,7 +92,7 @@ const removeFromCart = async (req, res) => {
         cart.items = cart.items.filter(item => item.productId.toString() !== productId);
 
         await cart.save();
-        res.redirect('/cart');
+        res.status(200).json({items:cart.items, total:cart.items.reduce((acc,item) => acc+item.productId.salePrice*item.quantity,0)});
     } catch (error) {
         console.error(error);
         res.status(500).send('Internal Server Error');
@@ -135,7 +129,7 @@ const increaseQuantity = async(req,res) => {
             return res.status(400).json({error:'You can buy maximum 10 products'});
         }
         await cart.save();
-        res.json({success:true,message:'Quantity increased successfully'})
+        res.json({success:true})
        
     } catch (error) {
         console.error('increase quantity error',error);
@@ -172,7 +166,7 @@ const decreaseQuantity = async(req,res) => {
             return res.status(400).json({error:'You can buy min 1 products'});
         }
         await cart.save();
-        res.json({success:true,message:'Quantity decreased successfully'})
+        res.json({success:true})
        
     } catch (error) {
         console.error('increase quantity error',error);
@@ -181,7 +175,6 @@ const decreaseQuantity = async(req,res) => {
 }
 
 module.exports = {
-    loadCart,
     addToCart,
     removeFromCart,
     increaseQuantity,

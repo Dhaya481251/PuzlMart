@@ -1,16 +1,22 @@
 const User = require('../../models/userSchema');
 const Address = require('../../models/addressSchema');
+const Cart = require('../../models/cartSchema');
+const Wishlist = require('../../models/wishlistSchema');
 const nodemailer = require('nodemailer');
 const env = require('dotenv').config();
 const bcrypt = require('bcrypt');
 const session = require('express-session');
+const Coupon = require('../../models/couponSchema');
+
 
 
 const loadUserProfilePage = async(req,res) => {
     try {
         const userId = req.session.user;
         const userData =await User.findById(userId);
-        res.render('userProfile',{isAuthenticated: req.isAuthenticated(),user:userData});
+        const cart = await Cart.findOne({userId}).populate('items.productId');
+        const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');
+        res.render('userProfile',{isAuthenticated: req.isAuthenticated(),user:userData,cart,wishlist});
     } catch (error) {
         res.status(500).send('Internal Server Error');
     }
@@ -18,10 +24,12 @@ const loadUserProfilePage = async(req,res) => {
 const loadUserDetailsPage = async(req,res) => {
     try {
         const userId = req.session.user;
+        const cart = await Cart.findOne({userId}).populate('items.productId');
+        const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');
         console.log(userId)
         const userData =await User.findById(userId);
         console.log(userData);
-        res.render('userDetails',{isAuthenticated: req.isAuthenticated(),user:userData});
+        res.render('userDetails',{isAuthenticated: req.isAuthenticated(),user:userData,cart,wishlist});
     } catch (error) {
         res.status(500).send('Internal Server Error');
     }
@@ -32,9 +40,11 @@ const editName = async(req,res) => {
         const newName = req.body.newName;
         const userId = req.session.user;
         const user = await User.findById(userId);
+        const cart = await Cart.findOne({userId}).populate('items.productId');
+        const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');        
         user.name = newName;
         await user.save();
-        res.redirect('/userDetails');
+        res.redirect('/userDetails',{cart,wishlist});
 
     } catch (error) {
         res.status(500).send('Internal server error');
@@ -82,7 +92,6 @@ const editEmail = async(req,res) => {
         const newEmail = req.body.newEmail;
         const userId = req.session.user;
         const findUser = await User.findById(userId);
-
         const otp = generateOtp();
         console.log(otp);
         
@@ -92,10 +101,6 @@ const editEmail = async(req,res) => {
             return res.json('email-error');
         }
         req.session.userOtp = otp;
-
-       
-       
-       
         res.render('verifyOtp');
 
     } catch (error) {
@@ -158,8 +163,10 @@ const loadUserAddressPage = async (req, res) => {
     try {
         const userId = req.session.user;
         const userData = await User.findById(userId);
+        const cart = await Cart.findOne({userId}).populate('items.productId');
+        const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');
         const addressData = await Address.findOne({userId:userData._id});
-        res.render('userAddressPage',{user:userData,userAddress:addressData});
+        res.render('userAddressPage',{user:userData,userAddress:addressData,cart,wishlist});
     } catch (error) {
         console.error(error);
         res.status(500).send('Internal Server Error');
@@ -169,8 +176,9 @@ const loadUserAddressPage = async (req, res) => {
 const loadAddAddress = async (req, res) => {
     try {
         const user = req.session.user;
-
-        res.render('addAddressPage',{user:user});
+        const cart = await Cart.findOne({user}).populate('items.productId');
+        const wishlist = await Wishlist.findOne({user}).populate('products.productsId');
+        res.render('addAddressPage',{user:user,cart,wishlist});
        
     } catch (error) {
         console.error(error);
@@ -183,7 +191,8 @@ const addAddress = async(req,res) => {
         const userId = req.session.user;
         const userData = await User.findOne({_id:userId});
         const {addressType,name,city,landMark,state,pincode,phone,altPhone} = req.body;
-
+        const cart = await Cart.findOne({userId}).populate('items.productId');
+        const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');
         const userAddress = await Address.findOne({userId:userData._id});
         if(!userAddress){
             const newAddress = new Address({
@@ -192,10 +201,10 @@ const addAddress = async(req,res) => {
             });
             await newAddress.save();
         }else{
-            userAddress.address.push({addressType,name,city,landMark,state,pincode,phone,altPhone});
+            userAddress.address.push({addressType,name,city,landMark,state,pincode,phone,altPhone,cart});
             await userAddress.save();
         }
-        res.redirect('/userProfile')
+        res.redirect('/userAddress');
     } catch (error) {
         console.error('Error adding address',error);
         res.status(500).send('Internal server error');
@@ -206,7 +215,9 @@ const loadEditAddress = async(req,res) => {
     try {
         const addressId = req.query.id;
         const user = req.session.user;
+        const cart = await Cart.findOne({user}).populate('items.productId');
         const currentAddress = await Address.findOne({'address._id':addressId});
+        const wishlist = await Wishlist.findOne({user}).populate('products.productsId');
         if(!currentAddress){
             return res.status(404).send('Address not found');
         }
@@ -219,7 +230,7 @@ const loadEditAddress = async(req,res) => {
             return res.status(404).send('Address not found');
         }
 
-        res.render('editAddressPage',{address:addressData,user:user});
+        res.render('editAddressPage',{address:addressData,user:user,cart,wishlist});
     } catch (error) {
         console.error('editpage error',error);
         res.status(500).send('Internal server error');
@@ -231,6 +242,8 @@ const editAddress = async(req,res) => {
         const data = req.body;
         const addressId = req.query.id;
         const user = req.session.user;
+        const cart = await Cart.findOne({user}).populate('items.productId');
+        const wishlist = await Wishlist.findOne({user}).populate('products.productsId');
         const findAddress = await Address.findOne({'address._id':addressId});
         
         if(!findAddress){
@@ -254,7 +267,7 @@ const editAddress = async(req,res) => {
             }}
         )
 
-        res.redirect('/userProfile');
+        res.redirect('/userAddress');
     } catch (error) {
         console.error('editting error',error);
         res.status(500).send('Internal server error');
@@ -263,6 +276,9 @@ const editAddress = async(req,res) => {
 
 const deleteAddress = async(req,res) => {
     try {
+        const userId = req.session.user;
+        const cart = await Cart.findOne({userId}).populate('items.productId');
+        const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');
         const addressId = req.query.id;
         const findAddress = await Address.findOne({'address._id':addressId});
         if(!findAddress){
@@ -275,15 +291,12 @@ const deleteAddress = async(req,res) => {
                 address:{_id:addressId}
             }}
         )
-        res.redirect('/userProfile')
+        res.redirect('/userAddress')
     } catch (error) {
         console.error('deleting error',error);
         res.status(500).send('Internal server error');
     }
 }
-
-
-
 
 
 module.exports = {
@@ -298,6 +311,5 @@ module.exports = {
     addAddress,
     loadEditAddress,
     editAddress,
-    deleteAddress,
-    
+    deleteAddress
 }

@@ -3,7 +3,7 @@
 
 
     <nav class="breadcrumbs mt-3 mb-3 container">
-        <a href="/userProfile" class="breadcrumbs-txt" style="text-decoration: none;">My Profile</a> /
+        <a href="/userProfile" class="breadcrumbs-txt" style="text-decoration: none;">My Account</a> /
         <a href="/wishlist"class="breadcrumbs-txt" style="text-decoration: none;">My Wishlist</a> 
     </nav>
 
@@ -19,7 +19,9 @@
                                     <div style="border: 1px solid #42ada8; display: flex;flex-direction: row;" class="item-row">
 
                                         <div class="px-3 py-3" style="display:flex;flex-direction: column;justify-content: space-between; height: 100%;flex-grow:1">
-                                          <a href="/productDetails/<%=product.productsId._id%>" style="text-decoration: none;"><img src="/uploads/re-image/<%=product.productsId.productImage[0]%>" style="width: 40%;" alt="Item" class="img-fluid"></a>
+                                          <a href="/productDetails/<%=product.productsId._id%>" style="text-decoration: none;">
+                                            <img src="/uploads/re-image/<%=product.productsId.productImage[0]%>" style="width: 40%;" alt="Item" class="img-fluid">
+                                          </a>
                                         </div>
 
                                         <div>

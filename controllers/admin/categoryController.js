@@ -40,12 +40,16 @@ const loadAddCategory = async(req,res) => {
 const addCategory = async (req, res) => {
     try {
         console.log(req.body);
+        console.log('Uploaded File:', req.file);
         const { name, description } = req.body;
 
-        
+        if (!name || !description || !req.file) {
+            return res.status(400).json({ message: 'All fields are required, including the image.', type: 'error' });
+        }
+
         const existingCategory = await Category.findOne({ name:name });
         if (existingCategory) {
-             res.status(400).json({ message: 'Category already exists' ,type:'error'});
+            return res.status(400).json({ message: 'Category already exists' ,type:'error'});
         }
 
         
@@ -101,7 +105,7 @@ const addCategoryOffer = async(req,res) => {
         await Category.updateOne({_id:categoryId},{$set:{categoryOffer:percentage}});
         newOffer.value = (percentage/100);
         await newOffer.save();
-        const discount = Math.floor(roducts.regularPrice*(percentage/100));
+        const discount = Math.floor(products.regularPrice*(percentage/100));
         products.salePrice = products.regularPrice -discount;
         products.categoryOffer = newOffer._id;
         for(const product of products){
@@ -183,10 +187,10 @@ const editCategory = async (req, res) => {
     try {
         const id = req.params.id;
         const { name, description } = req.body;
-        const existingCategory = await Category.findOne({ name: name });
+        const existingCategory = await Category.findOne({ name: name});
 
-        if (existingCategory && existingCategory._id.toString() !== id) { 
-             res.status(400).json({ 
+        if (existingCategory) { 
+            return res.status(400).json({ 
                 message: 'Category already exists. Please choose another name', 
                 type: 'error' 
             });
@@ -205,13 +209,13 @@ const editCategory = async (req, res) => {
 
         if (updateCategory) {
             
-             res.status(200).json({ message: 'Category updated successfully',type:'success' });
+            return res.status(200).json({ message: 'Category updated successfully',type:'success' });
         } else {
-             res.status(404).json({ message: 'Category not found',type:'error' });
+            return res.status(404).json({ message: 'Category not found',type:'error' });
         }
     } catch (error) {
         console.error("Error while updating category:", error);
-        res.status(500).json({ message: 'Internal Server Error',type:'error' });
+        return res.status(500).json({ message: 'Internal Server Error',type:'error' });
     }
 };
 

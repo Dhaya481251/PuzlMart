@@ -21,27 +21,37 @@
     <section class="featured-puzzles py-5">
         <div class="container">
             <h3 class="text-start featured-txt">Featured Puzzles</h3>
-            <div class="row">
-                <% for(let i=0 ; i<products.length ; i++){ %>
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="card">
-                        <a href="/productDetails/<%=products[i]._id%>">
-                            <img src="/uploads/re-image/<%=products[i].productImage[0]%>" class="card-img-top" alt="<%=products[i].productName%>">
-                        </a>
-                        <div class="card-body text-center">
-                            <h5 class="card-title"><%=products[i].productName%></h5>
-                            <p class="card-text"><%=products[i].description%></p>
-                            <p class="card-text"><%=products[i].salePrice%></p>
-                            <div class="puzzle-card1">
-                               <a href="/addToCart/<%=products[i]._id%>" class="btn btn-success card-btn">Add to Cart</a>
-                            </div>
-                        </div>
+            <div class="shop-content">
+                <% if(products.length===0){ %>
+                  <p>No Product Availabe</p>
+                <% }else{ %>
+                  <% for(let i=0 ; i<products.length ; i++){ %>
+                  <div class="product-box col-lg-3 col-sm-2 col-md-6">
+                    <a href="/productDetails/<%=products[i]._id%>">
+                      <img src="/uploads/re-image/<%=products[i].productImage[0]%>" class="product-img" alt="<%=products[i].productName%>">
+                    </a>
+                      <h2 class="product-title"><%=products[i].productName%></h2>
+                      <p class="card-text"><%=products[i].brand%></p>
+                      
+                    <div class="ratings">
+                      <div class="stars" style="display: flex;justify-content: start;">
+                        <% for(let star=0 ; star<5 ; star++ ){ %>
+                          <span class="star <%= star <= products[i].averageRating ? 'selected': '' %>">&#9733;</span>
+                        <% } %>
+                      </div>
                     </div>
-                </div>
-               <% } %>
-            </div>
+                    <span class="price">Rs <%=products[i].salePrice%></span>
+                    
+                      <a href="/addToCart/<%=products[i]._id%>" data-id="<%=products[i]._id%>" class="btn cart-btn"><i class="bx bx-shopping-bag add-cart"></i></a>
+                      <a href="/addToWishlist/<%= products[i]._id %>" data-id="<%=products[i]._id%>" class="btn wishlist-btn">
+                        <i class='bx bxs-heart add-wishlist' ></i>
+                      </a>
+                  </div>
+                 <% } %>
+                <% } %>
+              </div>
             <div class="text-center">
-                <a href="/products" class="btn" style="background: white; color: #42ADAB; font-weight: 600; border: 2px solid currentColor; border-bottom-left-radius: 15px; border-bottom-right-radius: 15px; width: 45%">View More</a>
+                <a href="/products" class="btn btn-sm px-3 py-3" style="margin-top:1rem;background:#04625f; color: #f0ffff; font-weight: 600; border: 2px solid currentColor;border-radius: 10px;">View More</a>
             </div>
         </div>
     </section>
@@ -78,7 +88,7 @@
                 <!-- Add more categories as needed -->
             </div>
             <div class="text-center">
-                <a href="#" class="btn browse">Browse Categories</a>
+                <a href="#" class="btn browse btn-sm px-3 py-3">Browse Categories</a>
             </div>
         </div>
     </section>

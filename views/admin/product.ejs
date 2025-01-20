@@ -2,9 +2,9 @@
 
 <main class="col-md-10 ml-sm-auto px-4">
     <h3 class="my-4">Product List</h3>
-    <a href="/admin/addProducts" class="btn btn-primary mb-4">Add New Product</a>
-    <table class="table table-bordered product-table">
-        <thead class="thead-light">
+    <a href="/admin/addProducts" class="btn px-2 py-2 mb-4 text-white" style="background-color: #04625f;">Add New Product</a>
+    <table class="table table-hover table-bordered product-table" style="box-shadow: 1px 1px 8px black;">
+        <thead class="thead-light" style="background-color: #04625f;color:white">
             <tr>
                 <th scope="col">Image</th>
                 <th scope="col">Product Name</th>
@@ -20,7 +20,7 @@
                 <th scope="col">Remove</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody style="background-color: #f0ffff;color:#04625f">
             <% for(let i=data.length-1 ; i>=0 ; i--) { %>
             <tr id="product-<%=data[i]._id%>">
                 <td><img src="/uploads/re-image/<%=data[i].productImage[0]%>" alt="" width=""></td>

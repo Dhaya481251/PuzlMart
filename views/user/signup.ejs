@@ -37,7 +37,7 @@
                         <%=message%>
                     </div>
                 <%}%>
-                <button type="submit" class="btn btn-primary" action>SignUp</button>
+                <button type="submit" class="btn btn-primary" >SignUp</button>
             </form>
             <p class="text-center">Already have an account? <a href="/login">Login</a></p>
         </div>
@@ -65,15 +65,15 @@
             if (nameVal.trim() === "") {
                 error1.style.display = 'block';
                 error1.innerHTML = 'Please enter a valid name';
-                
+                return false;
             } else if (!namePattern.test(nameVal)) {
                 error1.style.display = 'block';
                 error1.innerHTML = 'Name can only contain alphabets and spaces';
-                
+                return false;
             } else {
                 error1.style.display = 'none';
                 error1.innerHTML = '';
-                
+                return true;
             }
         }
 
@@ -84,11 +84,11 @@
             if (!emailPattern.test(emailVal)) {
                 error2.style.display = 'block';
                 error2.innerHTML = 'Invalid email format';
-                
+                return false;
             } else {
                 error2.style.display = 'none';
                 error2.innerHTML = '';
-               
+                return true;
             }
         }
 
@@ -98,14 +98,15 @@
             if (phoneVal.trim() === '') {
                 error3.style.display = 'block';
                 error3.innerHTML = 'Enter a valid 10-digit phone number';
-                
-            } else if(phoneVal.length<10 || phoneVal.length>10){
+                return false;
+            } else if(phoneVal.length < 10 || phoneVal.length > 10){
                 error3.style.display = 'block';
                 error3.innerHTML = 'Enter a 10 digit number';
-                
-            }else{
+                return false;
+            } else {
                 error3.style.display = 'none';
                 error3.innerHTML = '';
+                return true;
             }
         }
 
@@ -115,16 +116,14 @@
             const alpha = /[a-zA-Z]/;
             const digit = /\d/;
 
-            
-
             if (passVal.length < 8) {
                 error4.style.display = 'block';
                 error4.innerHTML = 'Password should contain at least 8 characters';
-                
+                return false;
             } else if (!alpha.test(passVal) || !digit.test(passVal)) {
                 error4.style.display = 'block';
                 error4.innerHTML = 'Password should contain numbers and alphabets';
-                
+                return false;
             } else {
                 error4.style.display = 'none';
                 error4.innerHTML = '';
@@ -133,29 +132,26 @@
             if (passVal !== cpassVal) {
                 error5.style.display = 'block';
                 error5.innerHTML = 'Passwords do not match';
-                
+                return false;
             } else {
                 error5.style.display = 'none';
                 error5.innerHTML = '';
+                return true;
             }
-
-            return isValid;
         }
 
         document.addEventListener('DOMContentLoaded', function() {
             signform.addEventListener('submit', function(e) {
-            
-                nameValidateChecking();
-                emailValidateChecking();
-                phoneValidateChecking();
-                passValidateChecking();
-                if(!nameid || !emailid || !phoneid || !passid || !erro1 || !error2 || !error3 || !error4 || !error5 || !signform ){
-                    console.error('One or more elements not found');
+                e.preventDefault();
+
+                const isNameValid = nameValidateChecking();
+                const isEmailValid = emailValidateChecking();
+                const isPhoneValid = phoneValidateChecking();
+                const isPasswordValid = passValidateChecking();
+
+                if(isNameValid && isEmailValid && isPhoneValid && isPasswordValid ){
+                    signform.submit(); // Correct reference to form element
                 }
-                if(error1.innerHTML || error2.innerHTML || error3.innerHTML || error4.innerHTML || error5.innerHTML){
-                    e.preventDefault();
-                }
-                
             });
         });
     </script>

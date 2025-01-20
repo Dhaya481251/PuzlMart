@@ -38,33 +38,32 @@ const userSchema = new Schema({
         type:Schema.Types.ObjectId,
         ref:"Cart"
     }],
-    wallet:{
-        balance:{
-            type:Number,
-            default:0
-        },
-        /*transactions:[
-            {
-                transactionsType:{
-                    type:String,
-                    enum:['credit','debit'],
-                    required:true
-                },
-                amount:{
-                    type:Number,
-                    required:true
-                },
-                reason:{
-                    type:String,
-                    required:true
-                },
-                data:{
-                    type:Date,
-                    default:Date.now
+    wallet: {
+        type: {
+            balance: {
+                type: Number,
+                default: 0
+            },
+            transactions: [
+                {
+                    transactionsType: {
+                        type: String,
+                        enum: ['credit', 'debit']
+                    },
+                    amount: {
+                        type: Number
+                    },
+                    reason: {
+                        type: String
+                    },
+                    date: {
+                        type: Date,
+                        default: Date.now
+                    }
                 }
-            }
-        ],
-        default:[]*/
+            ]
+        },
+        default: { balance: 0, transactions: [] }
     },
     wishlist:[{
         type:Schema.Types.ObjectId,
@@ -93,14 +92,26 @@ const userSchema = new Schema({
             type:Schema.Types.ObjectId,
             ref:'Category'
         },
-        brand:{
+        brand:[{
             type:String
-        },
+        }],
         searchOn:{
             type:Date,
             default:Date.now
         }
-    }]
+    }],
+    coupons:[{
+        type:Schema.Types.ObjectId,
+        ref:'Coupon'
+    }],
+    referralCode:{
+        type:String,
+        default:null
+    },
+    referralReward:{
+        type:Number,
+        default:0
+    }
 })
 
 const User = mongoose.model("User",userSchema);

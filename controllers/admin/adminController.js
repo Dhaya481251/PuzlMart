@@ -10,6 +10,9 @@ const XLSX = require('xlsx');
 
 const loadLogin = async(req,res) => {
     try {
+        if(req.session.admin){
+            res.redirect('/admin')
+        }
         console.log('Admin login page');
         return res.render('admin-login');
     } catch (error) {
@@ -125,18 +128,24 @@ const filterSalesReport = async(req,res) => {
         }else if(filter === '1 Year'){
             startDate = moment().subtract(1,'years').startOf('day').toDate();
             endDate = moment().endOf('day').toDate();
+        }else if(filter === 'Custom date'){
+            const customStartDate = req.query.startDate;
+            const customEndDate = req.query.endDate
+            startDate = moment(customStartDate, 'YYYY-MM-DD').startOf('day').toDate();
+            endDate = moment(customEndDate, 'YYYY-MM-DD').endOf('day').toDate();
         }
+    
         
         const page = parseInt(req.query.page) || 1;
         const limit = 4;
         const skip = (page-1)*limit;
 
-        const orders = await Order.find({status:'Delivered',date:{$gte:startDate,$lte:endDate}})
+        const orders = await Order.find({status:'Delivered',deliveryDate:{$gte:startDate,$lte:endDate}})
         .populate('items.productId')
         .sort({createdOn:-1})
         .skip(skip)
         .limit(limit);
-        const totalOrders = await Order.find({status:'Delivered',date:{$gte:startDate,$lte:endDate}}).countDocuments();
+        const totalOrders = await Order.countDocuments({status:'Delivered',deliveryDate:{$gte:startDate,$lte:endDate}}).countDocuments();
         const totalPages = Math.ceil(totalOrders/limit);
         let totalOrderAmount = 0;
         let totalDiscount = 0;
@@ -168,7 +177,7 @@ const downloadPDF = async(req,res) => {
         doc.addPage();
         doc.fontSize(18).text('Sales Report',{align:'center'});
         
-        const headers = ['Product Name','Brand','Category','Regular Price','Sales Price','Quantity','Discount','Order Status','Payment Method','Payment Status','Total'];
+        const headers = ['Product Name','Regular Price','Sales Price','Quantity','Discount','Order Status','Payment Method','Payment Status','Total'];
         const startX = 10;
         const startY = 100;
         const cellHeight = 50;
@@ -199,7 +208,6 @@ const downloadPDF = async(req,res) => {
                 currentX = startX;
                 const rowData = [
                     item.productId.productName,
-                    item.productId.brand,
                     item.productId.regularPrice,
                     item.productId.salePrice,
                     item.quantity,
@@ -216,6 +224,9 @@ const downloadPDF = async(req,res) => {
                 });
                 
                 currentY += cellHeight;
+                if (currentY + cellHeight > doc.page.height - doc.page.margins.bottom) { 
+                    doc.addPage(); currentY = startY; 
+                }
             });
         });
 
@@ -225,8 +236,12 @@ const downloadPDF = async(req,res) => {
         currentY+=20;
 
         const boxPadding = 10;
-        const boxHeight = 100;
+        const boxHeight = 120;
         const boxWidth = cellWidth*headers.length;
+        
+        if (currentY + boxHeight + boxPadding > doc.page.height - doc.page.margins.bottom) { 
+            doc.addPage(); currentY = startY; 
+        }
 
         doc.rect(startX,currentY,boxWidth, boxHeight).stroke();
 
@@ -236,9 +251,9 @@ const downloadPDF = async(req,res) => {
         currentY+=20;
         doc.fontSize(10).font('Helvetica');
         doc.text(`Total Sales : ${totalOrders}`,startX + boxPadding,currentY);
-        currentY += 15;
+        currentY += 20;
         doc.text(`Total Order Amount : ${totalOrderAmount}`,startX + boxPadding, currentY);
-        currentY += 15
+        currentY += 20;
         doc.text(`Total Discount : ${totalDiscount}`,startX + boxPadding, currentY);
         
 
@@ -259,8 +274,6 @@ const downloadEXCEL = async(req,res) => {
             order.items.forEach(item => {
                 data.push({
                     productName:item.productId.productName,
-                    Brand:item.productId.brand,
-                    Category:item.productId.category,
                     RegularPrice:item.productId.regularPrice,
                     SalePrice:item.productId.salePrice,
                     Quantity:item.quantity,

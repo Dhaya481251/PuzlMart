@@ -1,44 +1,44 @@
 <%-include('../../views/partials/user/header')%>
 <nav class="breadcrumbs mt-3 mb-3 container">
-    <a href="/userProfile" class="breadcrumbs-txt" style="text-decoration: none;">My Profile</a>&gt;
+    <a href="/userProfile" class="breadcrumbs-txt" style="text-decoration: none;">My Account</a>&gt;
     <a href="/userDetails" class="breadcrumbs-txt" style="text-decoration: none;">My Details</a>
 </nav>
 <div class="container-fluid" id="div1">
     <div class="col-md-12">
-        <div class="border-info px-3 mt-4" style="border:0.15rem solid; border-top-left-radius: 5px;border-top-right-radius: 5px;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px; font-family: monospace;">
-            <div class="border-info mx-3 my-3 px-2 py-2" style="border: 1px solid; border-top-left-radius: 5px;border-top-right-radius: 5px;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;display:flex;flex-direction: row;justify-content:space-between;">
-                <h5 id="name">Name : <%=user.name%></h5><a class="btn" id="editNameBtn" href="" style="text-decoration: none;color: #42ada8;">Edit</a>
+        <div class="border-info py-3 px-3 mt-4" style="border-radius: 10px; background-color: #f0ffff; font-family: monospace;">
+            <div class="border-info mx-3 my-3 px-2 py-2" style="border: 1px solid; background-color: #04625f;color:white;border-radius: 10px;display:flex;flex-direction: row;justify-content:space-between;">
+                <h5 id="name" class="mx-1 my-1">Name : <%=user.name%></h5><a class="btn" id="editNameBtn" href="" style="text-decoration: none;color: #04625f;background-color: white;font-weight: 600;">Edit</a>
             </div>
-            <div class="border-info mx-3 my-3 px-2 py-2" style="border: 1px solid;border-top-left-radius: 5px;border-top-right-radius: 5px;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;display:flex;flex-direction: row;justify-content:space-between;">
-                <h5>Email : <%=user.email%></h5><a class="btn" id="editEmailBtn" href="" style="text-decoration: none;color: #42ada8;">Edit</a>
+            <div class="border-info mx-3 my-3 px-2 py-2" style="border: 1px solid;background-color: #04625f;color:white;border-radius: 10px;display:flex;flex-direction: row;justify-content:space-between;">
+                <h5 id="email" class="mx-1 my-1">Email : <%=user.email%></h5><a class="btn " id="editEmailBtn" href="" style="text-decoration: none;color: #04625f;background-color: white;font-weight: 600;">Edit</a>
             </div>
-            <div class="border-info mx-3 my-3 px-2 py-2" style="border: 1px solid;border-top-left-radius: 5px;border-top-right-radius: 5px;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;display:flex;flex-direction: row;justify-content:space-between;">
-                <h5>Mobile Number : <%=user.phone%></h5>
+            <div class="border-info mx-3 my-3 px-2 py-2" style="border: 1px solid;background-color: #04625f;color:white;border-radius: 10px;display:flex;flex-direction: row;justify-content:space-between;">
+                <h5 id="phone" class="mx-1 my-1">Mobile Number : <%=user.phone%></h5>
             </div>
         </div>
     </div>
 </div>
 <div class="container-fluid" style="display: none;" id="div2">
     <div class="col-md-12">
-        <div class="border-info px-3 mt-4" style="border:0.15rem solid; border-top-left-radius: 5px;border-top-right-radius: 5px;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px; font-family: monospace;">
-            <p>Do you want to change the name?</p>
+        <div class="border-info px-3 py-3 mt-4" style="border-radius: 10px; background-color: #f0ffff; font-family: monospace;">
+            <p style="color: #04625f;font-size: larger;font-weight: 600;">Do you want to change the name?</p>
            <form action="/editName" method="POST" >
-            <label for="">Name :</label>
-            <input type="text" value="<%=user.name%>" name="newName" style=" color: #42ada8;border-color: #42ada8;border: 1px solid; border-bottom-left-radius: 15px; border-top-left-radius: 5px;border-bottom-right-radius: 15px;border-top-right-radius: 5px;text-align: center;">
-            <button>Save</button>
+            <label for="" style="color:#04625f;font-size: large;font-weight: 500;">Name :</label>
+            <input type="text" value="<%=user.name%>" name="newName" style="border-radius:5px;text-align: center;border-color: #04625f;width:86%;height: 20%;font-size: 1.25rem;">
+            <button class="px-2 py-1" style="background-color: #04625f;color:white;border-radius: 5px;border:none">Save</button>
            </form>
         </div>
     </div>
 </div>
 <div class="container-fluid" style="display: none;" id="div3">
     <div class="col-md-12">
-        <div class="border-info px-3 mt-4" style="border:0.15rem solid; border-top-left-radius: 5px;border-top-right-radius: 5px;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px; font-family: monospace;">
-            <p>Do you want to change the email?</p>
+        <div class="border-info px-3 py-3 mt-4" style="border-radius: 10px; background-color: #f0ffff; font-family: monospace;">
+            <p style="color: #04625f;font-size: larger;font-weight: 600;">Do you want to change the email?</p>
             
            <form action="/editEmail" method="POST" >
-            <label for="">Email :</label>
-            <input type="text" value="<%=user.email%>" name="newEmail" style=" color: #42ada8;border-color: #42ada8;border: 1px solid; border-bottom-left-radius: 15px; border-top-left-radius: 5px;border-bottom-right-radius: 15px;border-top-right-radius: 5px;text-align: center;">
-            <button type="submit">Save</button>
+            <label for=""style="color:#04625f;font-size: 1.15rem;font-weight: 500;">Email :</label>
+            <input type="text" value="<%=user.email%>" name="newEmail" style="border-radius:5px;text-align: center;border-color: #04625f;width:90%;height: 20%;font-size: 1.25rem;">
+            <button type="submit" class="px-2 py-1" style="background-color: #04625f;color:white;border-radius: 5px;border:none">Save</button>
            </form>
         </div>
     </div>

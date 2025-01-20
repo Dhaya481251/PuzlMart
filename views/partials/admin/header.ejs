@@ -13,7 +13,7 @@
 <body>
 
   <!-- Sidebar -->
-  <div class="sidebar">
+  <div class="sidebar" style="background-color: #04625f;color:white">
     <div class="ms-2"><img class="img-fluid" src="/images/logo.svg" alt=""></div>
 
     <div class="nav-item-heading"><a href="/admin">Dashboard</a></div>
@@ -26,6 +26,7 @@
     <div class="nav-item-heading"><a href="/admin/orders">Orders List</a></div>
     <div class="nav-item-heading">Users</div>
     <div class="nav-item-heading"><a href="/admin/users">User List</a></div>
+    <div class="nav-item-heading"><a href="/admin/referrals">Referral</a></div>
     <div class="nav-item-heading">Offers and Coupons</div>
     <div class="nav-item-heading"><a href="/admin/offer">Offer</a></div>
     <div class="nav-item-heading"><a href="/admin/coupons">Coupon</a></div>
@@ -37,11 +38,43 @@
   <!-- Main content -->
   <div class="content">
     <!-- Top Navbar -->
-    <nav class="navbar navbar-expand-lg">
-      <a class="navbar-brand" href="#">Puzl Mart</a>
-      <div class="d-flex flex-grow-1 align-items-center">
-        <input type="text" class="form-control search-bar" placeholder="Search..." style="margin-top:0rem">
-        <button class="btn btn-light search-btn"><img src="/images/Search.svg" style="height:22px" alt=""></button>
+    <nav class="navbar navbar-expand-lg" style="background-color: #04625f;color:white">
+      <div class="logo" style="display: flex;flex-direction: row;">
+        <div class="logo-text">
+            <img src="/images/PuzlMart.svg" alt="" style="width: 200px;">
+        </div>
+        <div class="rubik-cube">
+          <div class="face front">
+            <div></div><div></div><div></div>
+            <div></div><div></div><div></div>
+            <div></div><div></div><div></div>
+          </div>
+          <div class="face back">
+            <div></div><div></div><div></div>
+            <div></div><div></div><div></div>
+            <div></div><div></div><div></div>
+          </div>
+          <div class="face right">
+            <div></div><div></div><div></div>
+            <div></div><div></div><div></div>
+            <div></div><div></div><div></div>
+          </div>
+          <div class="face left">
+            <div></div><div></div><div></div>
+            <div></div><div></div><div></div>
+            <div></div><div></div><div></div>
+          </div>
+          <div class="face top">
+            <div></div><div></div><div></div>
+            <div></div><div></div><div></div>
+            <div></div><div></div><div></div>
+          </div>
+          <div class="face bottom">
+            <div></div><div></div><div></div>
+            <div></div><div></div><div></div>
+            <div></div><div></div><div></div>
+          </div>
+        </div>
       </div>
       <div class="d-flex align-items-center ms-auto">
         <a href="#" class="btn btn-link text-light"><i class="bi bi-envelope"></i></a>

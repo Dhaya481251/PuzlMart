@@ -3,7 +3,7 @@ const Order = require('../../models/orderSchema');
 
 const listOrders = async (req, res) => {
     try {
-        const orders = await Order.find()
+        const orders = await Order.find().populate('items.productId').sort({createdOn:-1});
         res.render('orders',{orders});
     } catch (error) {
         console.error('Error fetching orders: ', error);
@@ -27,6 +27,7 @@ const changeOrderStatus = async (req, res) => {
 
         order.status = status;
         if(order.status === 'Delivered'){
+            order.deliveryDate = new Date(Date.now());
             order.paymentStatus = 'Paid';
             await order.save();
         }
@@ -63,9 +64,26 @@ const cancelOrder = async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 };
+const moreDetails = async(req,res) => {
+    try{
+        
+        const id = req.params.id;
+        const order = await Order.findById(id)
 
+        if(!order){
+        return  res.status(404).send('Order not found');
+        }
+       
+        
+        res.render('orderMoreDetails',{orders:order});
+    }catch(error){
+        console.error('error while loading order details',error);
+        res.status(500).send('Internal server error');
+    }
+}
 module.exports = {
     listOrders,
     changeOrderStatus,
-    cancelOrder
+    cancelOrder,
+    moreDetails
 };

@@ -1,157 +1,155 @@
 <%- include("../../views/partials/user/header") %>
-
   <!-- Products Section -->
    <nav class="breadcrumbs mt-3 mb-3 container">
-    <a href="/" class="breadcrumbs-txt" style="text-decoration: none;">Home</a>&gt;
+    <a href="/" class="breadcrumbs-txt" style="text-decoration: none;">Home /</a>
     <a href="/products" class="breadcrumbs-txt" style="text-decoration: none;">Products</a>
    </nav>
-  <section class="featured-puzzles py-5" style="display: flex;flex-direction: row;">
-    <div class="product-list-container px-4 py-4" style="display: flex;flex-direction: row;">
-      <div class="sidebar" style="background-color: #42ada8; color: white; border-top-left-radius: 5px;border-top-right-radius: 5px;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;">
-        <div class="filter-section">
-          <div class="filter-title">Categories</div>
-          <div class="category-brand-container">
-            <ul>
-              <% for(let i=0 ; i<category.length ; i++){ %>
-                <li class="filter-item">
-                  <a href="/filter?category=<%=category[i]._id%>" class="text-white" style="font-family: monospace;text-decoration: none;"><%=category[i].name%></a>
-                </li>
-              <% } %>
-            </ul>
-          </div>
-        </div>
-        
-        <div class="filter-section">
-          <div class="filter-title">Brands</div>
-          <div class="category-brand-container">
-            <ul>
-              <% for(let i=0 ; i<brand.length ; i++){ %>
-                <li class="filter-item">
-                  <a href="/filter?brand=<%=brand[i]._id%>" class="text-white" style="font-family: monospace;text-decoration: none;"><%=brand[i].brandName%></a>
-                </li>
-              <% } %>
-            </ul>
-          </div>
-        </div>
-
-        <div class="price-filter">
-          <div class="filter-title">Filter by Price</div>
-          <form id="price-filter-form">
-            <div class="price-options" style="display: flex;flex-direction: column;">
-              <a href="/filterPrice?gt=0&lt=500" class="text-white mx-3 my-3" style="text-decoration: none;">
-                <button type="button" style="font-family: monospace;text-decoration: none; background-color: #42ada8;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;border-top-left-radius: 5px;border-top-right-radius: 5px;background-color: white; color: #42ada8;width:100%" class="btn px-2 py-2">Under ₹500</button>
-              </a>
-              <a href="/filterPrice?gt=500&lt=1000" class="text-white mx-3 my-3" style="text-decoration: none;">
-                <button type="button" style="font-family: monospace;text-decoration: none; background-color: #42ada8;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;border-top-left-radius: 5px;border-top-right-radius: 5px;background-color: white; color: #42ada8;width: 100%;" class="btn px-2 py-2">₹500 - ₹1000</button>
-              </a>
-              <a href="/filterPrice?gt=1000&lt=1500" class="text-white mx-3 my-3" style="text-decoration: none;">
-                <button type="button" style="font-family: monospace;text-decoration: none; background-color: #42ada8;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;border-top-left-radius: 5px;border-top-right-radius: 5px;background-color: white; color: #42ada8;width: 100%;" class="btn px-2 py-2">₹1000- ₹1500</button>
-              </a>
-              <a href="/filterPrice?gt=1500&lt=1000000" class="text-white mx-3 my-3" style="text-decoration: none;">
-                <button type="button" style="font-family: monospace;text-decoration: none; background-color: #42ada8;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;border-top-left-radius: 5px;border-top-right-radius: 5px;background-color: white; color: #42ada8;width: 100%;" class="btn px-2 py-2">Above ₹1500</button>
-              </a>
-            </div>
-          </form>
-        </div>
-        
-        <div class="price-filter">
-          <div class="filter-title">Sort</div>
-          <form id="price-filter-form">
-            <div class="price-options" style="display: flex;flex-direction: column;">
-              <a href="/sortFilter?sort=popularity" class="text-white mx-3 my-3" style="text-decoration: none;">
-                <button type="button" style="font-family: monospace;text-decoration: none; background-color: #42ada8;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;border-top-left-radius: 5px;border-top-right-radius: 5px;background-color: white; color: #42ada8;width:100%" class="btn px-2 py-2">Popularity</button>
-              </a>
-              <a href="/sortFilter?sort=lowToHigh" class="text-white mx-3 my-3" style="text-decoration: none;">
-                <button type="button" style="font-family: monospace;text-decoration: none; background-color: #42ada8;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;border-top-left-radius: 5px;border-top-right-radius: 5px;background-color: white; color: #42ada8;width: 100%;" class="btn px-2 py-2">Price: low to high</button>
-              </a>
-              <a href="/sortFilter?sort=highToLow" class="text-white mx-3 my-3" style="text-decoration: none;">
-                <button type="button" style="font-family: monospace;text-decoration: none; background-color: #42ada8;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;border-top-left-radius: 5px;border-top-right-radius: 5px;background-color: white; color: #42ada8;width: 100%;" class="btn px-2 py-2">Price: high to low</button>
-              </a>
-              <a href="/sortFilter?sort=averageRatings" class="text-white mx-3 my-3" style="text-decoration: none;">
-                <button type="button" style="font-family: monospace;text-decoration: none; background-color: #42ada8;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;border-top-left-radius: 5px;border-top-right-radius: 5px;background-color: white; color: #42ada8;width: 100%;" class="btn px-2 py-2">Average ratings</button>
-              </a>
-              <a href="/sortFilter?sort=featured" class="text-white mx-3 my-3" style="text-decoration: none;">
-                <button type="button" style="font-family: monospace;text-decoration: none; background-color: #42ada8;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;border-top-left-radius: 5px;border-top-right-radius: 5px;background-color: white; color: #42ada8;width: 100%;" class="btn px-2 py-2">Featured</button>
-              </a>
-              <a href="/sortFilter?sort=newArrivals" class="text-white mx-3 my-3" style="text-decoration: none;">
-                <button type="button" style="font-family: monospace;text-decoration: none; background-color: #42ada8;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;border-top-left-radius: 5px;border-top-right-radius: 5px;background-color: white; color: #42ada8;width: 100%;" class="btn px-2 py-2">New Arrivals</button>
-              </a>
-              <a href="/sortFilter?sort=aToZ" class="text-white mx-3 my-3" style="text-decoration: none;">
-                <button type="button" style="font-family: monospace;text-decoration: none; background-color: #42ada8;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;border-top-left-radius: 5px;border-top-right-radius: 5px;background-color: white; color: #42ada8;width: 100%;" class="btn px-2 py-2">A - Z</button>
-              </a>
-              <a href="/sortFilter?sort=zToA" class="text-white mx-3 my-3" style="text-decoration: none;">
-                <button type="button" style="font-family: monospace;text-decoration: none; background-color: #42ada8;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;border-top-left-radius: 5px;border-top-right-radius: 5px;background-color: white; color: #42ada8;width: 100%;" class="btn px-2 py-2">Z - A</button>
-              </a>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-        <div class="container">
-          
-          
-            <h3 class="text-start" style="text-decoration: none; color: #42ada8; font-size: 40px; font-weight: 600;">Our products</h3>
-            <div class="row">
-              <% if(products.length===0){ %>
-                <p>No Product Availabe</p>
-              <% }else{ %>
-                <% for(let i=0 ; i<products.length ; i++){ %>
-                <div class="col-lg-3 col-md-6 col-sm-12 mb-4 container-fluid">
-                    <div class="card mb-3">
-                      <div class="image-container position-relative">
-                        <a href="/productDetails/<%=products[i]._id%>">
-                            <img src="/uploads/re-image/<%=products[i].productImage[0]%>" class="card-img-top img-fluid" style="width:99%" alt="<%=products[i].productName%>">
-                        </a>
-                        <a onclick="addToWishlist('<%=products[i]._id%>')" class="wishlist-icon">
-                          <img src="/images/wishlist.svg" style="margin-left: 26rem;
-    margin-top: -32rem;">
-                        </a>
-                      </div>
-                        <div class="card-body text-center">
-                            <h5 class="card-title"><%=products[i].productName%></h5>
-                            <p class="card-text"><%=products[i].brand%></p>
-                            <p class="card-text"><%=products[i].description%></p>
-                            <div class="ratings">
-                              <div class="stars" style="display: flex;justify-content: start;">
-                                  <% for(let star=0 ; star<5 ; star++ ){ %>
-                                      <span class="star <%= star <= products[i].averageRating ? 'selected': '' %>">&#9733;</span>
-                                  <% } %>
-                              </div>
-                              <p></p>
-                          </div>
-                            <p class="card-text"><%=products[i].salePrice%></p>
-                            <div class=" card-footer">
-                               <a href="/addToCart/<%=products[i]._id%>" class="btn btn-success card-btn">Add to Cart</a>
+   
+       <section class="featured-puzzles py-5" style="display: flex; flex-direction: row;">
+           <div class="product-list-container py-2" style="display: flex; flex-direction: row;">
+               <div class="sidebar px-4 py-3" style="background-color: #04625f; color: #f0ffff; border-radius: 10px; display: flex; flex-direction: column;">
+                   <h3>Filters</h3>
+                   <!--<div class="filter-section" style="display: flex; justify-content: flex-end; padding: 10px;"> 
+                    <% if (appliedFilters.category) { %>
+                      <% (Array.isArray(appliedFilters.category) ? appliedFilters.category : [appliedFilters.category]).forEach(cat => { %>
+                          <input type="hidden" name="category" value="<%= cat %>">
+                          <div class="px-2 py-2 mr-2" style="border-radius: 5px;border:1px solid white;"><%=cat%></div>
+                      <% }) %>
+                  <% } %>
+                  <% if (appliedFilters.brand) { %>
+                      <% (Array.isArray(appliedFilters.brand) ? appliedFilters.brand : [appliedFilters.brand]).forEach(br => { %>
+                          <input type="hidden" name="brand" value="<%= br %>">
+                          <div class="px-2 py-2 mr-2" style="border-radius: 5px;border:1px solid white;"><%=br%></div>
+                      <% }) %>
+                  <% } %>
+                  <% if (appliedFilters.sort) { %>
+                      <% (Array.isArray(appliedFilters.sort) ? appliedFilters.sort : [appliedFilters.sort]).forEach(srt => { %>
+                          <input type="hidden" name="brand" value="<%= srt %>">
+                          <div class="px-2 py-2 mr-2" style="border-radius: 5px;border:1px solid white;"><%=srt%></div>
+                      <% }) %>
+                  <% } %>
+                   </div>-->
+                   <form id="filterForm" action="/filterProductByCategory" method="GET">
+                       <div class="filter-section px-3">
+                           <h4>Category</h4>
+                           <ul class="px-2">
+                               <% category.forEach(cat => { %>
+                                   <li>
+                                       <input type="checkbox" name="category" value="<%= cat.name %>" <%= appliedFilters.category && appliedFilters.category.includes(cat.name) ? 'checked' : '' %>> <%= cat.name %>
+                                   </li>
+                               <% }) %>
+                           </ul>
+                       </div>
+                       <div class="filter-section px-3">
+                           <h4>Brand</h4>
+                           <ul class="px-2">
+                               <% brand.forEach(br => { %>
+                                   <li>
+                                       <input type="checkbox" name="brand" value="<%= br.brandName %>" <%= appliedFilters.brand && appliedFilters.brand.includes(br.brandName) ? 'checked' : '' %>> <%= br.brandName %>
+                                   </li>
+                               <% }) %>
+                           </ul>
+                       </div>
+                       <div class="filter-section px-3">
+                           <h4>Price</h4>
+                           <div class="px-2" style="display: flex; flex-direction: row; gap: 1rem;">
+                            <div>
+                           <input style="width:100px" type="number" name="minPrice" placeholder="Min Price" value="<%= appliedFilters.minPrice || '' %>">
                             </div>
-                            
-                        </div>
-                    </div>
-                </div>
-               <% } %>
-              <% } %>
+                            to
+                            <div>
+                           <input style="width: 100px;" type="number" name="maxPrice" placeholder="Max Price" value="<%= appliedFilters.maxPrice || '' %>">
+                            </div>
+                           </div>
+                       </div>
+                       
+                       <button class="mx-4 my-4 px-1 py-1" style="background:#f0ffff; color:#04625f;border-radius: 5px;font-size: larger;font-weight: 500;border: none;" type="submit">Apply filters</button>
+                       <button id="clearFiltersBtn" class="mx-4 my-4 px-1 py-1" style="background:#f0ffff; color:#04625f;border-radius: 5px;font-size: larger;font-weight: 500;border: none;" type="submit">Clear All filters</button>
+                   </form>
+               </div>
+           </div>
+           <section class="shop container">
+            <h2 class="section-title">Our Products</h2>
+            <form id="sortForm" action="/filterProductByCategory" method="GET">
+            
+            <div class="filter-section" style="display: flex; justify-content: flex-end; padding: 10px;"> 
+              <% if (appliedFilters.category) { %>
+                <% (Array.isArray(appliedFilters.category) ? appliedFilters.category : [appliedFilters.category]).forEach(cat => { %>
+                    <input type="hidden" name="category" value="<%= cat %>">
+                <% }) %>
+            <% } %>
+            <% if (appliedFilters.brand) { %>
+                <% (Array.isArray(appliedFilters.brand) ? appliedFilters.brand : [appliedFilters.brand]).forEach(br => { %>
+                    <input type="hidden" name="brand" value="<%= br %>">
+                <% }) %>
+            <% } %>
+            <% if (appliedFilters.sort) { %>
+                <% (Array.isArray(appliedFilters.sort) ? appliedFilters.sort : [appliedFilters.sort]).forEach(srt => { %>
+                    <input type="hidden" name="brand" value="<%= srt %>">
+                <% }) %>
+            <% } %>
+            <input type="hidden" name="minPrice" value="<%= appliedFilters.minPrice || '' %>">
+            <input type="hidden" name="maxPrice" value="<%= appliedFilters.maxPrice || '' %>">
+              <select class="px-1 py-1" name="sort" style="width: 90px; border: none;border-radius: 10px;background-color: #04625f;color:#f0ffff;"> 
+                <option value="">Sort by</option> 
+                <option value="popularity" <%= appliedFilters.sort === 'popularity' ? 'selected' : '' %>>Popularity</option> 
+                <option value="priceLowToHigh" <%= appliedFilters.sort === 'priceLowToHigh' ? 'selected' : '' %>>Price: Low to High</option> 
+                <option value="priceHighToLow" <%= appliedFilters.sort === 'priceHighToLow' ? 'selected' : '' %>>Price: High to Low</option> 
+                <option value="rating" <%= appliedFilters.sort === 'rating' ? 'selected' : '' %>>Average Ratings</option> 
+                <option value="featured" <%= appliedFilters.sort === 'featured' ? 'selected' : '' %>>Featured</option> 
+                <option value="newArrivals"<%= appliedFilters.sort === 'newArrivals' ? 'selected' : '' %>>New Arrivals</option> 
+                <option value="aToZ" <%= appliedFilters.sort === 'aToZ' ? 'selected' : '' %>>Name: A to Z</option> 
+                <option value="zToA" <%= appliedFilters.sort === 'zToA' ? 'selected' : '' %>>Name: Z to A</option> 
+              </select> 
+              <button class="mx-1 my-1 px-1 py-1" style="background-color:#f0ffff; color:#04625f;border-radius: 5px;font-size: larger;font-weight: 500;border:1px solid #076a66;" type="submit">Sort</button>
             </div>
-            <div class="pagination">
-              <% if (currentPage > 1) { %>
-                <a class="btn-primary" href="/products?page=<%= currentPage - 1 %>">Prev</a>
-              <% } %>
-         
-         
-              <% for (let i = 1; i <= totalPages; i++) { %>
-                <a class="btn <%= currentPage === i ? 'active' : '' %>" href="/products?page=<%= i %>"><%= i %></a>
-              <% } %>
-         
-         
-              <% if (currentPage < totalPages) { %>
-                <a class="btn" href="/products?page=<%= currentPage + 1 %>">Next</a>
-              <% } %>
-            </div>
-         
-          </div>
-        
-    </section>
+            </form>
+               <div class="shop-content">
+                   <% if (products.length === 0) { %>
+                       <p>No Products Available</p>
+                   <% } else { %>
+                       <% products.forEach(product => { %>
+                           <div class="product-box">
+                               <a href="/productDetails/<%= product._id %>">
+                                   <img src="/uploads/re-image/<%= product.productImage[0] %>" class="product-img" alt="<%= product.productName %>">
+                               </a>
+                               <h2 class="product-title"><%= product.productName %></h2>
+                               <p class="card-text"><%= product.brand %></p>
+                               <div class="ratings">
+                                   <div class="stars" style="display: flex; justify-content: start;">
+                                       <% for (let star = 0; star < 5; star++) { %>
+                                           <span class="star <%= star <= product.averageRating ? 'selected' : '' %>">&#9733;</span>
+                                       <% } %>
+                                   </div>
+                               </div>
+                               <span class="price">Rs <%= product.salePrice %> <span style="text-decoration: line-through; font-size: 1rem; font-family: monospace;"> Rs <%= product.regularPrice %></span> <span class="discount"><%= Math.ceil(((product.regularPrice - product.salePrice) / product.regularPrice) * 100) %>% off</span></span>
+                               <a href="/addToCart/<%= product._id %>" data-id="<%= product._id %>" class="btn cart-btn"><i class="bx bx-shopping-bag add-cart"></i></a>
+                               <a href="/addToWishlist/<%= product._id %>" data-id="<%=product._id%>" class="btn wishlist-btn">
+                                <i class='bx bxs-heart add-wishlist' ></i>
+                               </a>
+                           </div>
+                       <% }) %>
+                   <% } %>
+               </div>
+               <div class="pagination" style="display: flex; justify-content: center;">
+                   <% if (currentPage > 1) { %>
+                       <a class="btn mx-1 my-1" style="background: #04625f; color:#f0ffff; text-decoration: none;" href="/products?page=<%= currentPage - 1 %>">Prev</a>
+                   <% } %>
+                   <% for (let i = 1; i <= totalPages; i++) { %>
+                       <a class="btn mx-1 my-1 <%= currentPage === i ? 'active' : '' %>" style="background: #04625f; color: #f0ffff; text-decoration: none;" href="/products?page=<%= i %>"><%= i %></a>
+                   <% } %>
+                   <% if (currentPage < totalPages) { %>
+                       <a class="btn mx-1 my-1" style="background: #04625f; color: #f0ffff; text-decoration: none;" href="/products?page=<%= currentPage + 1 %>">Next</a>
+                   <% } %>
+               </div>
+           </section>
+       </section>
+   </body>
+   </html>
+   
 
   <!-- Popular Brands Section -->
-  <div class="container text-center my-4" style="color: #42ada8;">
+  <div class="container text-center my-4" style="color: #04625f;background-color: #f0ffff;">
     <h3 class="product-title">Popular Brands</h3>
     <div class="row popular-brands">
       <div class="col-md-2"><img src="brand1-logo.jpg" alt="Brand 1"></div>
@@ -164,37 +162,240 @@
 
   
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+  
 <script>
-  function addToWishlist(productId) {
-   
-    Swal.fire({
-        title: 'Adding to Wishlist',
-        text: 'Do you want to add this product to your wishlist?',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'Yes',
-        cancelButtonText: 'No',
-    }).then((result) => {
-        if (result.isConfirmed) {
-            console.log('confirmed')
-            fetch(`/addToWishlist/${productId}`, {
-                method: 'POST',
-            })
-                .then((response) => response.json())
-                .then((data) => {
-                    if (data.success) {
-                        Swal.fire('Added!', data.message , 'success');
-                    } else {
-                        Swal.fire('Failed', data.message , 'error');
-                    }
-                })
-                .catch(() => {
-                    Swal.fire('Error!', 'Internal server error', 'error');
-                });
-        }
-    });
+
+
+let wishlist = document.querySelector('.wishlist');
+function openWishlist(){
+    wishlist.classList.add('active');
+    wishlist.style.display = 'block'
 }
+function closeWishlist(){
+    wishlist.style.display = 'none'
+    wishlist.classList.remove('active');
+}
+
+let cart = document.querySelector('.cart'); 
+function openCart() {
+  cart.style.display = 'block';
+  cart.classList.add('active');
+}
+
+function closeCart() {
+  cart.style.display = 'none';
+  cart.classList.remove('active');
+}
+
+document.querySelectorAll('.cart-remove').forEach(button => {
+        button.addEventListener('click', async (event) => {
+            event.preventDefault();
+            
+            const confirmation = await Swal.fire({
+                title: 'Are you sure?',
+                text: "Do you want to remove this item from your cart?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, remove it!',
+                cancelButtonText: 'Cancel',
+                reverseButtons: true
+            });
+
+            if (confirmation.isConfirmed) {
+                const productId = event.target.closest('a').getAttribute('href').split('/').pop();
+
+                try {
+                    const response = await fetch(`/removeFromCart/${productId}`, {
+                        method: 'GET', 
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        Swal.fire('Removed!', 'The item has been removed from your cart.', 'success').then(() => location.reload());
+                    } else {
+                        Swal.fire('Error!', 'There was an issue removing the item. Please try again.', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error removing item:', error);
+                    Swal.fire('Error!', 'An error occurred while removing the item. Please try again.', 'error');
+                }
+            } else {
+                Swal.fire('Cancelled', 'The item is still in your cart.', 'info');
+            }
+        });
+    });
+
+
+
+document.querySelectorAll('.cart-btn').forEach(button => {
+  button.addEventListener('click',(e) => {
+    e.preventDefault();
+    
+    const productId = button.getAttribute('data-id');
+    
+    fetch(`/addToCart/${productId}`, {
+   method: 'GET',
+   headers: { 'Content-Type': 'application/json' }
+})
+.then(response => {
+    if (!response.ok) {
+        return response.json().then(errData => {
+            throw new Error(errData.error || 'Something went wrong');
+        });
+    }
+    return response.json();
+})
+.then(data => {
+    if (data.success) {
+        Swal.fire({
+            title: 'Added to cart',
+            text: data.message,
+            icon: 'success',
+            confirmButtonText: 'OK'
+        }).then(() => location.reload());
+    } else {
+        Swal.fire({
+            title: 'Error',
+            text: data.error || 'An unknown error occurred',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+    }
+})
+.catch(error => {
+    console.log(error);
+    Swal.fire({
+        title: 'Error',
+        text: error.message,
+        icon: 'error',
+        confirmButtonText: 'OK'
+    });
+});
+
+  })
+})
+
+document.querySelectorAll('.wishlist-btn').forEach(button => {
+  button.addEventListener('click',(e) => {
+    e.preventDefault();
+    
+    const productId = button.getAttribute('data-id');
+    
+    fetch(`/addToWishlist/${productId}`, {
+   method: 'GET',
+   headers: { 'Content-Type': 'application/json' }
+})
+.then(response => {
+    if (!response.ok) {
+        return response.json().then(errData => {
+            throw new Error(errData.error || 'Something went wrong');
+        });
+    }
+    return response.json();
+})
+.then(data => {
+    if (data.success) {
+        Swal.fire({
+            title: 'Added to wishlist',
+            text: data.message,
+            icon: 'success',
+            confirmButtonText: 'OK'
+        }).then(() => location.reload());
+    } else {
+        Swal.fire({
+            title: 'Error',
+            text: data.error || 'An unknown error occurred',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+    }
+})
+.catch(error => {
+    console.log(error);
+    Swal.fire({
+        title: 'Error',
+        text: error.message,
+        icon: 'error',
+        confirmButtonText: 'OK'
+    });
+});
+
+  })
+})
+const sendRequest = async (url,method) => {
+    try {
+      const response = await fetch(url,{method});
+      const data = await response.json();
+
+      if(!response.ok){
+        Swal.fire({
+          icon:'error',
+          title:'Oops',
+          text:data.error || 'Something went wrong!'
+        });
+      }else{
+        Swal.fire({
+          icon:'success',
+          title:'success',
+          text:data.message || 'Action completed successfully'
+         }).then(() => location.reload());
+      }
+    } catch (error) {
+      Swal.fire({
+        icon:'error',
+        title:'Error',
+        text:error.message || 'An unexpected error occured!'
+      });
+    }
+  };
+
+  document.querySelectorAll('.increase-btn').forEach(button => {
+    button.addEventListener('click',(e) => {
+      e.preventDefault();
+      const productId = button.dataset.id;
+      sendRequest(`/increaseQuantity/${productId}`,'POST');
+    });
+  });
+
+  document.querySelectorAll('.decrease-btn').forEach(button => {
+    button.addEventListener('click',(e) => {
+      e.preventDefault();
+      const productId = button.dataset.id;
+      sendRequest(`/decreaseQuantity/${productId}`,'POST')
+    });
+  });
+  document.addEventListener('DOMContentLoaded', () => {
+    const filterForm = document.getElementById('filterForm');
+    const clearFiltersBtn = document.getElementById('clearFiltersBtn');
+    const sortForm = document.getElementById('sortForm');
+
+    clearFiltersBtn.addEventListener('click', () => {
+        
+        filterForm.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.checked = false;
+        });
+
+        
+        filterForm.querySelectorAll('input[type="number"], input[type="hidden"]').forEach(input => {
+            input.value = '';
+        });
+
+        
+        sortForm.querySelector('select[name="sort"]').selectedIndex = 0;
+
+        
+        filterForm.querySelectorAll('input[type="hidden"]').forEach(input => {
+            input.value = '';
+        });
+
+        
+        filterForm.submit();
+    });
+});
 
 </script>
 <%- include("../../views/partials/user/footer") %>

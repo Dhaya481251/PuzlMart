@@ -1,39 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 body {
-    font-family: monospace;
+    font-family: "Poppins", serif;
     background-color: white;
-    color: #42ada8;
+    
+    color: #04625f;
+    margin-right: 0;
 }
 
 /* Main navbar styling */
 .navbar {
-    background-color: #42ADA8;
-    border-bottom-left-radius: 25px;
-    border-bottom-right-radius: 25px;
+    background-color: #04625f;
     padding: 1rem;
+    z-index:100;
 }
 
 /* Adjusting the navbar links */
 .nav-link {
-    
+    color: #f0ffff;
+    font-family: monospace;
     font-size: 20px;
     font-weight: bold;
 }
 .navbar-dark .navbar-nav .nav-link {
-    color: #2dbbb4;
+    color: #f0ffff;
 }
 .nav-item a{
-    color: #2dbbb4;
+    background-color: #04625f;
+    color:#f0ffff;
     font-size: 20px;
     font-weight: bold;
 }
 
 /* Styling for individual nav items */
 .nav-item {
-    background-color: #D6F9F9;
-    
+
     border-radius: 15px; /* Simplified radius to work better on smaller screens */
 }
-
+.nav-item:hover{
+    cursor:pointer
+}
 /* Adding gap between navbar items */
 .navbar-nav {
     gap: 1.5rem; /* Reduced gap for better spacing on smaller screens */
@@ -51,7 +56,6 @@ body {
 .form-inline.search{
     flex-grow: 0;
     display: flex;
-    margin-left: 1rem;
 }
 .form-control {
     background: #D6F9F9;
@@ -68,7 +72,63 @@ body {
     width: auto;
 }
 /* Responsive design for smaller screens */
+@media (max-width:2560px) {
+    .searchDiv{
+        position: absolute;
+    }
+    .logo-text{
+        width: 200px;
+        margin-left: -1rem;
+    }
+    .form-inline.search{
+        margin-left: 60rem;
+    }
+}
+@media (min-width:1440px){
+    .form-inline.search{
+        margin-left: 4rem;
+    }
+}
+@media (max-width:1440px) {
+    .searchDiv{
+        position: absolute;
+    }
+    .form-inline.search{
+        margin-left: 30rem;
+    }
+    .logo-text{
+        width: 200px;
+        margin-left: -1rem;
+    }
+}
+@media (max-width:1024px) {
+    body{
+        margin-right: 0;
+    }
+    .logo-text{
+        width: 125px;
+        margin-left: -0.5rem;
+    }
+    .navbar-nav{
+        gap:0;
+    }
+    .form-inline.search{
+        margin-left: 22rem;
+    }
+    .form-inline .form-control{
+        width: 6rem;
+        height: 2rem;
+    }
+    .search-btn{
+        width: 4rem;
+        height: 2rem;
+    }
+    #cart-icon{
+        left: 1rem;
+    }
+}
 @media (max-width: 768px) {
+
     .navbar {
         padding: 0.5rem 1rem;
         
@@ -80,33 +140,35 @@ body {
         font-size: 18px; /* Slightly smaller font size */
     }
 
-    .form-control {
-        width: 100%; /* Full width for the search bar on smaller screens */
-    }
-
     .navbar-nav {
         gap: 1rem; /* Less gap between items */
-    }
-
-    .search-btn {
-        padding: 0.3rem 1rem; /* Adjust button padding */
     }
 
     .navbar-brand img {
         max-width: 150px; /* Adjust logo size */
     }
-    
+     
+    body{
+    margin-right: 0;
+    }
+    .form-inline.search{
+        margin-top: 4.5rem;
+        margin-left: 13rem;
+    }
+    .form-inline .form-control{
+        width: 14rem;
+        height: 2.5rem;
+    }
+    .search-btn{
+        width: 4rem;
+        height: 2.5rem;
+    }
 }
 
 /* Additional responsive tweaks for mobile devices */
 @media (max-width: 576px) {
     .nav-link {
         font-size: 16px;
-    }
-
-    .form-control {
-        width: 100%; 
-        margin-bottom: 0; 
     }
 
     .navbar-nav {
@@ -118,13 +180,25 @@ body {
         margin-bottom: 0.5rem; /* Spacing between stacked nav items */
     }
     .search-btn{
-        width: auto;
+        width: 4rem;
+        height: 2rem;
+    }
+    body{
+        margin-right: 0;
+    }
+    .form-inline.search{
+        margin-left: 7rem;
+        margin-top: 2.5rem;
+    }
+    .form-inline .form-control{
+        width: 6rem;
+        height: 2rem;
     }
 }
 
 
 .hero {
-    background-color: #C7F0F0;
+    background-color: #f0ffff;
     width: 100%;
     margin-left: 0; /* Removed margin-left for better responsiveness */
     border-bottom-left-radius: 25px;
@@ -139,28 +213,28 @@ body {
     display: block;
     margin: 0 auto; /* Centers the image */
     border-bottom-left-radius: 25px;
-    border-bottom-right-radius: 25p;
+    border-bottom-right-radius: 25px;
 }
 
 .section1-text {
     position: relative;
     top: -50px; /* Adjust this as needed */
-    color: #42ADA8;
+    color: #04625f;
 }
 
 .section1-text h2 {
     font-size: 2.5rem; /* Adjust font-size for different screens */
-    color: #42ADA8;
+    color: #04625f;
 }
 
 .section1-text p {
     font-size: 1.25rem; /* Adjust font-size */
-    color: #42ADA8;
+    color: #04625f;
 }
 
 .section1-text a {
-    color: #D6F9F9;
-    background-color: #42ADA8;
+    color: #f0ffff;
+    background-color: #04625f;
     padding: 10px 20px;
     font-size: 1.2rem;
 }
@@ -182,17 +256,22 @@ body {
     .section1-text a {
         font-size: 1rem;
     }
+
+    .searchDiv{
+        position:absolute;
+        margin-left:11rem;
+        margin-top:-21rem;
+    }
 }
 
-
 .featured-puzzles {
-    background-color: #d2f0f0;
+    background-color: #f0ffff;
     margin-top: 2rem;
 }
 .featured-txt{
     font-size:48px;
     font-weight: bold;
-    color:#1B9B95 ;
+    color:#04625f ;
 }
 
 .card{
@@ -219,10 +298,13 @@ body {
 }
 .card-text{
     text-align: start;
-    color: black;
+    color: #f0ffff;
+    font-family: monospace;
+    text-transform: uppercase;
     font-weight: bold;
     flex-grow:1
 }
+
 .card-footer{
     text-align: center;
     margin-top: auto;
@@ -247,7 +329,7 @@ body {
 }
 
 .puzzle-categories {
-    background-color: #d2f0f0;
+    background-color: #f0ffff;
 }
 
 .category-card img {
@@ -256,22 +338,22 @@ body {
 .cat-txt{
     font-size:48px;
     font-weight: bold;
-    color:#1B9B95 ; 
+    color:#04625f ; 
 }
 .category-txt{
     font-size:40px;
     font-weight: bold;
-    color:#1B9B95 ;
+    color:#04625f;
 }
 .browse{
-    background-color:#42ADA8;
-    color: #D6F9F9;
-    border-bottom-left-radius: 15px;
-    border-bottom-right-radius: 15px;
+    background-color:#04625f;
+    color: #f0ffff;
+    border-radius: 10px;
+    font-weight: 600;
 }
 footer {
-    background-color: #77C8C4;
-    color: white;
+    background-color: #04625f;
+    color: #f0ffff;
     margin-top: 4rem;
 }
 
@@ -294,7 +376,7 @@ footer p {
 .dropdown-content{
     display:none;
     position: absolute;
-    background-color: #77C8C4;
+    background-color: #04625f;
     min-width: 160px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1000;
@@ -304,7 +386,7 @@ footer p {
     display:block;
 }
 .dropdown-content a{
-    color: #1B9B95;
+    color: #04625f;
     padding: 12px 16px;
     text-decoration: none;
     display: block;
@@ -337,9 +419,8 @@ footer p {
     margin-left: 2rem;
 }
 .productGalleryColumn{
-    border:2px solid #42ada8;
-    border-bottom-left-radius: 15px;
-    border-bottom-right-radius: 15px;
+    border:2px solid #04625f;
+    border-radius: 5px;
     margin-left: 1rem;
 }
 .productGalleryColumn img{
@@ -347,8 +428,7 @@ footer p {
     cursor: pointer;
     width: 5.75rem;
     height: 6.15rem;
-    border-bottom-left-radius: 15px;
-    border-bottom-right-radius: 15px;
+    border-radius: 5px;
 }
 
 .productGalleryColumn img:hover{
@@ -365,9 +445,8 @@ footer p {
 
 
 .carousel-item img{
-    border: 1px solid #42ada8;
-    border-bottom-left-radius: 25px;
-    border-bottom-right-radius: 25px;
+    border: 1px solid #04625f;
+    border-radius: 5px;
     height: 500px;
     margin-left:3rem;
     width: 90% !important;
@@ -375,13 +454,16 @@ footer p {
 
 .product-details{
     margin-top: 3rem;
+    background:#f0ffff;
+    color:#04625f
 }
 .breadcrumbs{
     margin-left: 1rem;
     margin-top: 1rem;
+    background-color: #fff;
 }
 .breadcrumbs-txt{
-    color: #42ada8;
+    color: #04625f;
     font-size: 1.5rem;
     font-weight: bold;
 }
@@ -392,52 +474,60 @@ footer p {
   position: relative;
   display: inline-block;
 }
-
 .img-zoom-lens {
-  position: absolute;
-  border: 1px solid #d4d4d4;
-  /*set the size of the lens:*/
-  width: 150px;
-  height: 150px;
-  visibility: hidden !important;
-  cursor: zoom-in;
-}
-
-.img-zoom-result {
-  margin-top: 1rem;
-  border: 1px solid #d4d4d4;
-  /*set the size of the result div:*/
-  width: 300px;
-  height: 300px;
-  display: none;
-  background: no-repeat;
-  background-size: 800px 800px;
-  border-radius: 5px;
-  top: 0;
-  left: 110%;
-  margin-left: 3rem;
+    position: absolute;
+    border: 1px solid #d4d4d4;
+    /*set the size of the lens:*/
+    width: 150px;
+    height: 150px;
+    visibility: hidden !important;
+    cursor: zoom-in;
+  }
   
+  .img-zoom-result {
+    position:absolute;
+    border: 1px solid #d4d4d4;
+    /*set the size of the result div:*/
+    width: 95%;
+    height: 57%;
+    display: none;
+    background: no-repeat;
+    background-size:cover;
+    transition: opacity .5s, transform .5s;
+    border-radius: 5px;
+    background-color: white;
+    box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
+    z-index: 9999;
+    margin-top: -52rem;
+    /* top: 0;
+    left: 110%;
+    margin-left: 3rem; */
+    
+  }
+.product-details{
+    position: relative;
+    z-index: 1;
 }
 .productName{
-    color: #42ada8;
+    color: #04625f;
     font-family: monospace;
     font-size: 2.5rem;
 }
 .productDescription{
-    color:#42ada8;
+    color:#04625f;
+    font-size: 1.5rem;
     font-family:monospace;
 }
 .productBrand{
-    color: #42ada8;
+    color: #04625f;
     font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    color: #42ada8;
-    font-size: 1rem;
+    font-size: 1.5rem;
 }
 .stars{
    font-size: 2rem;
 }
 .ratings p{
-    color: #42ada8;
+    color: #04625f;
     font-size: 1.25rem;
     font-family: monospace;
 }
@@ -446,35 +536,58 @@ footer p {
    font-size: 1.5rem;
 }
 
-.price span{
+.price .discount{
   font-family: monospace;
   font-size: 1.5rem;
+  color:white;
 }
+
 .stock p{
   font-family: monospace;
   font-size: 1.5rem;
+  color:#025f02;
 }
 .description h2{
   font-family: monospace;
+  color: #04625f;
 }
 .description p{
   font-family: monospace;
+  font-size: 1.5rem;
 }
 .reviews h2{
   font-family: monospace;
+  color: #04625f;
 }
 .reviews p{
   font-family: monospace;
+  font-size: 1.5rem;
 }
 .highlights h2{
   font-family: monospace;
+  color: #04625f;
 }
 .highlights p{
   font-family: monospace;
+  font-size: 1.5rem;
 }
+.highlights ul li{
+    font-family: monospace;
+    font-size: 1.5rem;
+}
+.related-products
 .related-products h2{
  font-family: monospace;
- margin-left: 3rem;
+ margin-left: 0;
+ margin-top:1rem;
+ color: #f0ffff;
+ font-size:1.1rem;
+ font-weight: 600;
+ text-transform: uppercase;
+ margin-bottom:0.8rem;
+}
+.related-products:hover .h2{
+    color:#141414;
 }
 .user-profile-card{
     margin-top: 3rem !important;
@@ -487,34 +600,75 @@ footer p {
 
 .star {
     font-size: 30px;
-    color: #ddd;
+    color: #d6f9f9;
     cursor: pointer;
     transition: color 0.3s ease;
 }
 
 .star:hover,
 .star.selected {
-    color: gold;
+    color: #ffd700;
 }
 
-.wishlist-icon {
-    position: absolute;
-    
-    z-index: 10; /* Ensure it stays on top of the image */
-    background: rgba(255, 255, 255, 0.8); /* Optional background for better visibility */
-    border-radius: 50%;
-    padding: 5px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    transition: transform 0.3s ease-in-out;
-}
 
 .wishlist-icon img {
-    width: 20px;
-    height: 20px;
-    
+    width: 30px;
+    margin-left: 18rem;
+    margin-top: -31rem;
 }
+.product-wishlist-icon img{
+    width: 25px;
+    margin-left: 12.5rem;
+    margin-top: -27rem;
+}
+.rubik-cube {
+    position: relative;
+    margin-left: 1rem;
+    margin-top: 0.5rem;
+    width: 30px;
+    height: 30px;
+    transform-style: preserve-3d;
+    animation: rotate3D 6s infinite linear;
+  }
 
+  .face {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    flex-wrap: wrap;
+    transform-origin: center;
+    transform-style: preserve-3d;
+  }
+
+  .face div {
+    width: 10px; /* 50px divided by 3 */
+    height: 10px;
+    border-radius: 5px;
+    box-sizing: border-box;
+    border: 1px solid white;
+  }
+
+  /* Rubik's Cube Faces */
+  .front { transform: rotateY(0deg) translateZ(15px); }
+  .back { transform: rotateY(180deg) translateZ(15px); }
+  .right { transform: rotateY(90deg) translateZ(15px); }
+  .left { transform: rotateY(-90deg) translateZ(15px); }
+  .top { transform: rotateX(90deg) translateZ(15px); }
+  .bottom { transform: rotateX(-90deg) translateZ(15px); }
+
+  /* Colors for the Rubik's Cube */
+  .front div { background-color: #00fc8b; }  /* Orange */
+  .back div { background-color: #f1e61d; }   /* Blue */
+  .right div { background-color: #d807f8; }  /* Green */
+  .left div { background-color: #e63010; }   /* Yellow */
+  .top div { background-color: #157bee; }    /* White */
+  .bottom div { background-color: #0bf42e; } /* Red */
+
+  @keyframes rotate3D {
+    0% { transform: rotateX(0deg) rotateY(0deg); }
+    100% { transform: rotateX(360deg) rotateY(360deg); }
+  }
+  a:hover{
+    text-decoration:none;
+  }

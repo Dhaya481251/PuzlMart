@@ -1,0 +1,22 @@
+<%- include("../../views/partials/admin/header") %>
+<div class="order-card px-3 py-3 mx-3 my-3" style="border:1px solid #04625f;box-shadow: inset 0px 0px 9px 0px #04625f;border-radius: 8px;">
+    <p>Shipping Details</p>
+    <hr>
+    <% if (orders.addressDetails) { %>
+                        
+    <address>
+    <div class=" text-white w-25 text-center" style="border-radius: 10px;background:#04625f"><h5 class="py-2"><%= orders.addressDetails.addressType%></h5></div>
+        <%= orders.addressDetails.name %> <br>
+        <%= orders.addressDetails.city %>, <%= orders.addressDetails.state %> <br>
+        <%= orders.addressDetails.pincode %> <br>
+        Phone: <%= orders.addressDetails.phone %> <br>
+        Alt Phone: <%= orders.addressDetails.altPhone %>
+        </address>
+                        
+    <% } else { %>
+        <p>No shipping address available.</p>
+    <% } %>
+                      
+    <a href="/admin/orders" class="btn px-2 py-2 text-white" style="background-color: #04625f;border-radius: 5px;">Go back</a>
+</div>
+<%- include("../../views/partials/admin/footer") %>

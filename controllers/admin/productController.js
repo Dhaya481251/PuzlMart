@@ -34,6 +34,7 @@ const getProducts = async(req,res) => {
 
         const category = await Category.find({isListed:true});
         const brand = await Brand.find({isBlocked:false});
+        const offer = await Offer.find({offerType:'Product'});
 
         if(category&& brand){
             res.render('product',{
@@ -42,7 +43,8 @@ const getProducts = async(req,res) => {
                 totalPages:page,
                 totalPages:Math.ceil(count/limit),
                 cat:category,
-                brand:brand
+                brand:brand,
+                offer:offer
             })
         }else{
             res.status(404).send('Page not found');
@@ -88,7 +90,9 @@ const addProducts = async(req,res) => {
             if(!category){
                 return res.status(400).json('Invalid category name');
             }
-            
+            if(images.length>4){
+                return res.status(400).json('No. of product should be less than or equal to 4')
+            }
             const newProduct = new Product({
                 productName:products.productName,
                 description:products.description,
@@ -207,57 +211,79 @@ const getEditProduct = async(req,res) => {
     }
 }
 
-const editProduct = async(req,res) => {
-    try{
-        const id = req.params.id;
-        const data = req.body;
-        const relatedProducts = Array.isArray(data.relatedProducts)?data.relatedProducts:[];
-        const product = await Product.findOne({_id:id});
-        const category = await Category.findOne({name:data.category});
-
-        
-        const existingProduct = await Product.findOne({
-            productName:data.productName,
-            _id:{$ne:id}
-        })
-        if(!category){
-            return res.status(400).json({error:'Invalid category name'});
-        }
-        if(existingProduct){
-            return res.status(400).json({error:'Product with this name already exists. Please try with another name'});
-        }
-        const existingRelatedProducts = product.relatedProducts || [];
-        const newRelatedProducts = [...new Set([...existingRelatedProducts,...relatedProducts])]
-
-        const images = [];
-        if(req.files && req.files.length>0){
-            for(let i=0 ; i<req.files.length ; i++){
-                images.push(req.files[i].filename);
-            }
-        }
-        
-        const updateFields = {
-            productName:data.productName,
-            description:data.description,
-            brand:data.brand,
-            category:category._id,
-            regularPrice:data.regularPrice,
-            salePrice:data.salePrice,
-            quantity:data.quantity,
-            relatedProducts:newRelatedProducts || []
-        }
-        if(req.files && req.files.length>0){
-            const images = req.files.map(file => file.filename);
-            updateFields.$push = {relatedProducts:{$each:images}};
-        }
-
-        await Product.findByIdAndUpdate(id,updateFields,{new:true});
-        res.redirect('/admin/products');
-    }catch(error){
-        console.error(error);
-        res.status(500).send('Internal Server Error');
+const editProduct = async (req, res) => {
+    try {
+      const id = req.params.id;
+      const data = req.body;
+  
+      // Ensure relatedProducts are treated as an array
+      const relatedProducts = Array.isArray(data.relatedProducts)
+        ? data.relatedProducts
+        : data.relatedProducts
+        ? [data.relatedProducts]
+        : [];
+  
+      const product = await Product.findOne({ _id: id });
+      if (!product) {
+        return res.status(404).json({ error: "Product not found" });
+      }
+  
+      const category = await Category.findOne({ name: data.category });
+      if (!category) {
+        return res.status(400).json({ error: "Invalid category name" });
+      }
+  
+      const existingProduct = await Product.findOne({
+        productName: data.productName,
+        _id: { $ne: id },
+      });
+      if (existingProduct) {
+        return res
+          .status(400)
+          .json({ error: "Product with this name already exists. Please try with another name." });
+      }
+  
+      // Filter relatedProducts to include only valid ObjectId strings
+      const validRelatedProducts = relatedProducts.filter((item) =>
+        /^[0-9a-fA-F]{24}$/.test(item)
+      );
+  
+      // Combine existing and new relatedProducts
+      const existingRelatedProducts = product.relatedProducts || [];
+      const updatedRelatedProducts = [...new Set([...existingRelatedProducts, ...validRelatedProducts])];
+  
+      const images = [];
+      if (req.files && req.files.length > 0) {
+        req.files.forEach((file) => {
+          images.push(file.filename);
+        });
+      }
+  
+      // Define fields to update
+      const updateFields = {
+        productName: data.productName,
+        description: data.description,
+        brand: data.brand,
+        category: category._id,
+        regularPrice: data.regularPrice,
+        salePrice: data.salePrice,
+        quantity: data.quantity,
+        relatedProducts: updatedRelatedProducts,
+      };
+  
+      // Handle images if uploaded
+      if (images.length > 0) {
+        updateFields.images = images;
+      }
+  
+      await Product.findByIdAndUpdate(id, updateFields, { new: true });
+      res.redirect("/admin/products");
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Internal Server Error");
     }
-}
+  };
+  
 
 const deleteImage = async(req,res) => {
     try {

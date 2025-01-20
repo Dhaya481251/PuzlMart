@@ -32,6 +32,238 @@
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+let wishlist = document.querySelector('.wishlist');
+function openWishlist(){
+    wishlist.classList.add('active');
+    wishlist.style.display = 'block'
+}
+function closeWishlist(){
+    wishlist.style.display = 'none'
+    wishlist.classList.remove('active');
+}
 
+let cart = document.querySelector('.cart'); 
+function openCart() {
+  cart.style.display = 'block';
+  cart.classList.add('active');
+}
+
+function closeCart() {
+  cart.style.display = 'none';
+  cart.classList.remove('active');
+}
+
+document.querySelectorAll('.cart-remove').forEach(button => {
+        button.addEventListener('click', async (event) => {
+            event.preventDefault();
+            
+            const confirmation = await Swal.fire({
+                title: 'Are you sure?',
+                text: "Do you want to remove this item from your cart?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, remove it!',
+                cancelButtonText: 'Cancel',
+                reverseButtons: true
+            });
+
+            if (confirmation.isConfirmed) {
+                const productId = event.target.closest('a').getAttribute('href').split('/').pop();
+
+                try {
+                    const response = await fetch(`/removeFromCart/${productId}`, {
+                        method: 'GET', 
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        Swal.fire('Removed!', 'The item has been removed from your cart.', 'success').then(() => location.reload());
+                    } else {
+                        Swal.fire('Error!', 'There was an issue removing the item. Please try again.', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error removing item:', error);
+                    Swal.fire('Error!', 'An error occurred while removing the item. Please try again.', 'error');
+                }
+            } else {
+                Swal.fire('Cancelled', 'The item is still in your cart.', 'info');
+            }
+        });
+    });
+    document.querySelectorAll('.wishlist-remove').forEach(button => {
+        button.addEventListener('click', async (event) => {
+            event.preventDefault();
+            
+            const confirmation = await Swal.fire({
+                title: 'Are you sure?',
+                text: "Do you want to remove this item from your wishlist?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, remove it!',
+                cancelButtonText: 'Cancel',
+                reverseButtons: true
+            });
+
+            if (confirmation.isConfirmed) {
+                const productsId = event.target.closest('a').getAttribute('href').split('/').pop();
+
+                try {
+                    const response = await fetch(`/removeFromWishlist/${productsId}`, {
+                        method: 'GET', 
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        Swal.fire('Removed!', 'The item has been removed from your wishlist.', 'success').then(() => location.reload());
+                    } else {
+                        Swal.fire('Error!', 'There was an issue removing the item. Please try again.', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error removing item:', error);
+                    Swal.fire('Error!', 'An error occurred while removing the item. Please try again.', 'error');
+                }
+            } else {
+                Swal.fire('Cancelled', 'The item is still in your wishlist.', 'info');
+            }
+        });
+    });
+   
+document.querySelectorAll('.wishlist-btn').forEach(button => {
+  button.addEventListener('click',(e) => {
+    e.preventDefault();
+    
+    const productId = button.getAttribute('data-id');
+    
+    fetch(`/addToWishlist/${productId}`, {
+   method: 'GET',
+   headers: { 'Content-Type': 'application/json' }
+})
+.then(response => {
+    return response.json().then(data => {
+        if (!response.ok) {
+            throw new Error(data.message || 'Something went wrong');
+        }
+    return data;
+    });
+})
+.then(data => {
+    if (data.success) {
+        Swal.fire({
+            title: 'Added to wishlist',
+            text: data.message,
+            icon: 'success',
+            confirmButtonText: 'OK'
+        }).then(() => location.reload());
+    } 
+})
+.catch(error => {
+    console.log(error);
+    Swal.fire({
+        title: 'Error',
+        text: error.message,
+        icon: 'error',
+        confirmButtonText: 'OK'
+    });
+});
+
+  })
+})
+
+document.querySelectorAll('.cart-btn').forEach(button => {
+  button.addEventListener('click',(e) => {
+    e.preventDefault();
+    
+    const productId = button.getAttribute('data-id');
+    
+    fetch(`/addToCart/${productId}`, {
+   method: 'GET',
+   headers: { 'Content-Type': 'application/json' }
+})
+.then(response => {
+    if (!response.ok) {
+        return response.json().then(errData => {
+            throw new Error(errData.error || 'Something went wrong');
+        });
+    }
+    return response.json();
+})
+.then(data => {
+    if (data.success) {
+        Swal.fire({
+            title: 'Added to cart',
+            text: data.message,
+            icon: 'success',
+            confirmButtonText: 'OK'
+        }).then(() => location.reload());
+    } else {
+        Swal.fire({
+            title: 'Error',
+            text: data.error || 'An unknown error occurred',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+    }
+})
+.catch(error => {
+    console.log(error);
+    Swal.fire({
+        title: 'Error',
+        text: error.message,
+        icon: 'error',
+        confirmButtonText: 'OK'
+    });
+});
+
+  })
+})
+const sendRequest = async (url,method) => {
+    try {
+      const response = await fetch(url,{method});
+      const data = await response.json();
+
+      if(!response.ok){
+        Swal.fire({
+          icon:'error',
+          title:'Oops',
+          text:data.error || 'Something went wrong!'
+        });
+      }else{
+        location.reload();
+      }
+    } catch (error) {
+      Swal.fire({
+        icon:'error',
+        title:'Error',
+        text:error.message || 'An unexpected error occured!'
+      });
+    }
+  };
+
+  document.querySelectorAll('.increase-btn').forEach(button => {
+    button.addEventListener('click',(e) => {
+      e.preventDefault();
+      const productId = button.dataset.id;
+      sendRequest(`/increaseQuantity/${productId}`,'POST');
+    });
+  });
+
+  document.querySelectorAll('.decrease-btn').forEach(button => {
+    button.addEventListener('click',(e) => {
+      e.preventDefault();
+      const productId = button.dataset.id;
+      sendRequest(`/decreaseQuantity/${productId}`,'POST')
+    });
+  });
+</script>
 </body>
 </html>

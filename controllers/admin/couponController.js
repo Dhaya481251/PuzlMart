@@ -36,17 +36,21 @@ const loadAddCouponPage = async (req,res) => {
 
 const addCoupon = async (req,res) => {
     try {
-        const {name,expireOn,offerPrice,minimumPrice} = req.body;
+        const {name,code,expireOn,minimumPrice,discountType,discount,usageLimit} = req.body;
 
-        const existingCoupon = await Coupon.findOne({name});
+        const existingCoupon = await Coupon.findOne({code});
         if(existingCoupon){
             res.status(400).json({message:'Coupon already exists',type:'error'});
         }
         const newCoupon = new Coupon({
             name,
+            code,
             expireOn,
-            offerPrice,
-            minimumPrice
+            minimumPrice,
+            discountType,
+            discount,
+            usageLimit,
+            usedCount:0
         });
         await newCoupon.save();
         return res.status(200).json({message:'Coupon added successfully',type:'success'})
@@ -75,7 +79,7 @@ const removeCoupon = async (req,res) => {
 const activeCoupon = async (req,res) => {
     try {
         let id = req.query.id;
-        await Coupon.updateOne({_id:id},{$set:{isList:false}});
+        await Coupon.updateOne({_id:id},{$set:{isActive:true}});
         res.redirect('/admin/coupons');
     } catch (error) {
         res.status(500).send('Internal Server Error');
@@ -85,7 +89,7 @@ const activeCoupon = async (req,res) => {
 const inactiveCoupon = async (req,res) => {
     try {
         let id = req.query.id;
-        await Coupon.updateOne({_id:id},{$set:{isList:true}});
+        await Coupon.updateOne({_id:id},{$set:{isActive:false}});
         res.redirect('/admin/coupons');
     } catch (error) {
         res.status(500).send('Internal Server Error');

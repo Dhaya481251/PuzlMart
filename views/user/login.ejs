@@ -44,13 +44,13 @@
        const closeEye = document.getElementById('close-eye');
 
        openEye.addEventListener('click',function(){
-        passwordInput.type = 'text';
+        passwordInput.type = 'password';
         openEye.style.display = 'none';
         closeEye.style.display = 'block';
        });
 
        closeEye.addEventListener('click',function(){
-        passwordInput.type = 'password';
+        passwordInput.type = 'text';
         openEye.style.display = 'block';
         closeEye.style.display = 'none';
        })

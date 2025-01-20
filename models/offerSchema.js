@@ -5,12 +5,12 @@ const offerSchema = new Schema({
     
     offerType:{
         type:String,
-        enum:['Product','Category','Refferal'],
+        enum:['Product','Category'],
         required:true
     },
     discountType:{
         type:String,
-        enum:['Percentage','Number'],
+        enum:['Percentage','FLAT'],
         required:true
     },
     value:{

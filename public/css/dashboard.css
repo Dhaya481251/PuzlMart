@@ -1,52 +1,49 @@
 /* Styling for the main page */
 body {
     font-family: 'Anonymous Pro', monospace;
-    background-color: #f8f9fa;
+    background-color:white;
   }
 
   /* Sidebar styling */
   .sidebar {
-    background-color: #42ADA8;
-    
     padding-top: 1rem;
     width: 220px;
     height: 100vh;
     position: fixed;
     overflow-y:auto;
-    border-bottom-left-radius: 25px;
-    border-bottom-right-radius: 25px;
+    border-radius: 10px;
   }
   
   ::-webkit-scrollbar{
     width: 8px;
   }
   ::-webkit-scrollbar-track {
-    background: #d6f9f9; /* Light color for the track */
+    background: #f0ffff; /* Light color for the track */
     border-radius: 10px;
   }
   
   ::-webkit-scrollbar-thumb {
-    background-color: #42ADA8; /* Thumb color */
+    background-color: #04625f; /* Thumb color */
     border-radius: 10px;
-    border: 2px solid #d6f9f9; /* Adds space around the thumb */
+    border: 2px solid #f0ffff; /* Adds space around the thumb */
   }
   
   /* Optional: Hover effect on scrollbar thumb */
   ::-webkit-scrollbar-thumb:hover {
-    background-color: #6ecdc6;
+    background-color: #04625f;
   }
   
   /* Firefox scrollbar customization */
   * {
     scrollbar-width: thin;
-    scrollbar-color: #42ADA8 #d6f9f9;
+    scrollbar-color: #04625f #f0ffff;
   }
 
   .sidebar a {
     display: block;
     padding: 10px 20px;
-    color: #42ADA8;
-    background-color: #D6F9F9;
+    color: #04625f;
+    background-color: #f0ffff;
     font-weight: bold;
     text-decoration: none;
   }
@@ -58,8 +55,8 @@ body {
   }
 
   .sidebar a:hover {
-    background-color: #D6F9F9;
-    color: #42ADA8;
+    background-color: #f0ffff;
+    color: #04625f;
   }
 
   /* Main content styling */
@@ -70,14 +67,12 @@ body {
 
   /* Top Navbar styling */
   .navbar {
-    background-color: #42ADA8;
     padding: 1rem;
-    border-bottom-left-radius: 25px;
-    border-bottom-right-radius: 25px;
+    border-radius: 10px;
   }
 
   .navbar-brand {
-    color: #D6F9F9;
+    color: #f0ffff;
     font-weight: bold;
     
   }
@@ -86,18 +81,18 @@ body {
     max-width: 500px;
     width: 100%;
     margin-right: 0.25rem;
-    background-color: #d6f9f9;
+    background-color: #f0ffff;
   }
 
   .search-btn{
-    background-color:#d6f9f9 ;
+    background-color:#f0ffff ;
     border-bottom-right-radius: 15px;
     
   }
 
   .btn-logout {
-    background-color: #D6F9F9;
-    color: #42ADA8;
+    background-color: #f0ffff;
+    color: #04625f;
     border-radius: 5px;
     border-bottom-left-radius: 15px;
   }
@@ -132,10 +127,9 @@ body {
   .submit-btn{
     margin-top: 1rem;
     border-style: none;
-    background: #42ada8;
-    color: #d6f9f9;
-    border-bottom-right-radius: 15px;
-    border-bottom-left-radius: 15px;
+    background: #04625f;
+    color: #f0ffff;
+    border-radius: 10px;
     width: 100%;
     height: 3rem;
   }
@@ -150,7 +144,7 @@ body {
     margin-bottom: 1rem;
   }
   .image-upload button {
-    background-color: #6ecdc6;
+    background-color: #04625f;
     color: #fff;
     border: none;
     padding: 0.5rem 1rem;
@@ -162,6 +156,54 @@ body {
 }
 .action-icons {
     font-size: 1.2rem;
-    color: #4bc6b9;
+    color: #04625f;
     cursor: pointer;
+}
+.rubik-cube {
+  position: relative;
+  margin-left: 1rem;
+  margin-top: 0.5rem;
+  width: 30px;
+  height: 30px;
+  transform-style: preserve-3d;
+  animation: rotate3D 6s infinite linear;
+}
+
+.face {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  flex-wrap: wrap;
+  transform-origin: center;
+  transform-style: preserve-3d;
+}
+
+.face div {
+  width: 10px; /* 50px divided by 3 */
+  height: 10px;
+  border-radius: 5px;
+  box-sizing: border-box;
+  border: 1px solid white;
+}
+
+/* Rubik's Cube Faces */
+.front { transform: rotateY(0deg) translateZ(15px); }
+.back { transform: rotateY(180deg) translateZ(15px); }
+.right { transform: rotateY(90deg) translateZ(15px); }
+.left { transform: rotateY(-90deg) translateZ(15px); }
+.top { transform: rotateX(90deg) translateZ(15px); }
+.bottom { transform: rotateX(-90deg) translateZ(15px); }
+
+/* Colors for the Rubik's Cube */
+.front div { background-color: #00fc8b; }  /* Orange */
+.back div { background-color: #f1e61d; }   /* Blue */
+.right div { background-color: #d807f8; }  /* Green */
+.left div { background-color: #e63010; }   /* Yellow */
+.top div { background-color: #157bee; }    /* White */
+.bottom div { background-color: #0bf42e; } /* Red */
+
+@keyframes rotate3D {
+  0% { transform: rotateX(0deg) rotateY(0deg); }
+  100% { transform: rotateX(360deg) rotateY(360deg); }
 }
