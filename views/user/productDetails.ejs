@@ -54,10 +54,14 @@
                 <div class="offers">
                     <p>Available Offers</p>
                     <div class="card" style="width: 18rem;">
+                        <% if(product.productOffer){%>
                         <div class="card-body">
-                          <h5 class="card-title">Offer 1: <%=product.offer%></h5>
+                          <h5 class="card-title"><%=product.productOffer.value %> Off</h5>
                           <p class="card-text"></p> 
                         </div>
+                        <% }else{%>
+                            <p>No offers</p>
+                        <% } %>
                     </div>
                 </div>
                 <div class="stock">

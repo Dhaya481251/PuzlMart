@@ -32,6 +32,10 @@
                     <input type="password" class="form-control" placeholder="Confirm Password" name="cPassword" id="confirm-password" >
                     <div id="error5" class="error-message"></div>
                 </div>
+                <div>
+                    <p>If you have a referral code : </p>
+                    <input type="text" class="form-control" placeholder="Enter the referral code" name="referralCode">
+                </div>
                 <%if(locals.message && message.length > 0){%>
                     <div class="alert alert-danger text-center">
                         <%=message%>

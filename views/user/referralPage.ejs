@@ -1,0 +1,47 @@
+<%- include("../../views/partials/user/header") %>
+<nav class="breadcrumbs mt-3 mb-3 container">
+    <a href="/" class="breadcrumbs-txt" style="text-decoration: none;">Home</a>/
+    <a href="/userProfile" class="breadcrumbs-txt" style="text-decoration: none;">My Account</a>/
+    <a href="/Wallet" class="breadcrumbs-txt" style="text-decoration: none;">My Wallet</a>
+</nav>
+<div class="container my-5">
+    <div class="row">
+      <div class="col-md-8 offset-md-2">
+        <h2 class="text-center mb-4">Invite a friend, get rewards</h2>
+
+        <div class="wallet-card text-center mb-4" style="background-color: #f8f9fa;border-radius: 8px;padding:20px;box-shadow:0px 4px 4px 6px rgba(0,0,0,0.1)">
+          <p class="mb-1">You get Rs 100 as reward for inviting a friend. Invite a friend and get rewards. </p>
+          <div class="copyCode">
+                <div style="display: flex;flex-direction: row;">
+                    <div class="referralCode px-3 py-1" style="display: flex;align-items: center;background-color: white;color:black;font-size: 1rem; border-top-left-radius: 5px;border-bottom-left-radius: 5px;"><%=user.referralCode%></div>
+                    <div class="btn btn-info copy-btn px-3 py-1" style="display: flex;align-items: center;border-top-right-radius: 5px;border-bottom-right-radius: 5px;" data-code="<%=user.referralCode%>">COPY</div>
+                </div>
+                <p id="copyMessage" style='color:green'></p>
+           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<script>
+    document.addEventListener('DOMContentLoaded',() => {
+        const copyButtons = document.querySelectorAll('.copy-btn');
+        const copyMessage = document.getElementById('copyMessage');
+
+        copyButtons.forEach(button => {
+            button.addEventListener('click', (event) => {
+                const referralCode = event.target.getAttribute('data-code');
+                if (referralCode) {
+                
+                    navigator.clipboard.writeText(referralCode).then(() => {
+                        copyMessage.textContent=`Coupon code copied`;
+                    }).catch(err => {
+                        console.error('Failed to copy: ', err);
+                        copyMessage.textContent='Failed to copy coupon code. Please try again.';
+                        copyMessage.style.color='red';
+                    });
+                }
+            });
+        });
+    })
+</script>
+<%- include("../../views/partials/user/footer") %>

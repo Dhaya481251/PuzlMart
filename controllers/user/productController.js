@@ -85,6 +85,7 @@ const loadProductDetailspage = async(req,res) => {
         .populate('brand')
         .populate('relatedProducts')
         .populate('reviews')
+        .populate('productOffer')
         .exec();
         if(!product){
             console.error(`Product with ID ${id} not found`)

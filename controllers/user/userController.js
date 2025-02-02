@@ -7,6 +7,7 @@ const Wishlist = require('../../models/wishlistSchema');
 const env = require('dotenv').config();
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
 
 const loadHomepage = async(req,res) => {
     try {
@@ -100,7 +101,7 @@ const signup = async(req,res) => {
     
     try {
         
-        const {name,phone,email,password,cPassword}  = req.body;
+        const {name,phone,email,password,cPassword,referralCode}  = req.body;
         if(password!==cPassword){
             return res.render('signup',{message:'Password do not match'});
         }
@@ -120,7 +121,7 @@ const signup = async(req,res) => {
         }
         
         req.session.userOtp = otp;
-        req.session.userData = {name,phone,email,password,googleId:null};
+        req.session.userData = {name,phone,email,password,googleId:null,referralCode};
         
         console.log('Redirecting to OTP page');
         res.render('verify-otp');
@@ -152,13 +153,41 @@ const verifyOtp = async (req,res) => {
 
         if(otp===req.session.userOtp){
             const user = req.session.userData;
+            const userReferralCode = crypto.randomBytes(3).toString('hex').toUpperCase();
+            const referralCode = user.referralCode;
             const passwordHash = await securePassword(user.password);
             const UserData = new User({
                 name:user.name,
                 email:user.email,
                 phone:user.phone,
                 password:passwordHash,
-            })
+                referralCode:userReferralCode,
+                referredBy:referralCode || null
+            });
+
+            if(referralCode){
+              const referrer = await User.findOne({referralCode});
+              if(referrer){
+                referrer.wallet.balance += 100;
+                UserData.wallet.balance += 100;
+                const newTransaction = {
+                    transactionsType:'credit',
+                    amount:100,
+                    reason:'Referred a friend',
+                    date:new Date()
+                }
+                const anotherTransaction = {
+                    transactionsType:'credit',
+                    amount:100,
+                    reason:'Referred by a friend',
+                    date:new Date()
+                }
+                referrer.wallet.transactions.push(newTransaction);
+                UserData.wallet.transactions.push(anotherTransaction);
+                await referrer.save(); 
+              }
+            }
+
             await UserData.save();
 
             console.log('Session user : ',req.session.user);

@@ -8,9 +8,15 @@
 		},
 		{
 			"path": "../../../My Projects"
+		},
+		{
+			"path": "../../../Fashi Master"
+		},
+		{
+			"path": "../../../NiceAdmin"
 		}
 	],
 	"settings": {
-		"liveServer.settings.multiRootWorkspaceName": "Testing"
+		"liveServer.settings.multiRootWorkspaceName": "NiceAdmin"
 	}
 }

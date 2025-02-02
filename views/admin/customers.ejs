@@ -1,6 +1,176 @@
 <%- include("../../views/partials/admin/header") %>
+<main id="main" class="main">
 
-<main class="col-md-10 ml-sm-auto px-4">
+    <div class="pagetitle">
+      <h1>Users</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/admin">Home</a></li>
+          <li class="breadcrumb-item">Dashboard</li>
+          <li class="breadcrumb-item active"><a href="/admin/users">Users</a></li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section">
+      <div class="row">
+        <div class="col-lg-12">
+
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Users</h5>
+              <% if(data.length > 0){ %>
+              <table class="table datatable">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone Number</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                <% for(let i=0 ; i<data.length ; i++){ %>
+                  <tr>
+                    <td><%= data[i].name %></td>
+                    <td><%=data[i].email%></td>
+                    <td><%= data[i].phone %></td>
+                    <td>
+                        <% if(data[i].isBlocked === false ){ %>
+                            <button class="btn btn-danger" style="width: 80px;">
+                                <a  class="text-white" style="text-decoration: none;" onclick = "return confirmBlockUser('<%=data[i]._id%>')">Block</a>
+                            </button>
+                        <% }else{ %>
+                            <button class="btn btn-success" style="width: 80px;">
+                                <a  class="text-white" style="text-decoration: none;" onclick = "return confirmunBlockUser('<%=data[i]._id%>')">Unblock</a>
+                            </button>
+                        <% } %>
+                    </td>
+                <% } %>
+                </tbody>
+              </table>
+              <% }else{ %>
+                <h3>No brand is added</h3>
+              <% } %>
+            </div>
+            <div class="container mt-3">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center mb-20" style="margin-right: 200px;">
+                        <% for(let i=1 ; i<=totalPages ; i++){ %>
+                            <li class="page-item <%=(i===currentPage)? 'active' : ''%>">
+                                <a class="page-link" href="?page=<%=i%>"><%= i %></a>
+                            </li>
+                        <% } %>
+                    </ul>
+                </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+const toggleButton = document.querySelector(".toggle-sidebar-btn");
+const body = document.body;
+
+if (toggleButton) {
+  toggleButton.addEventListener("click", function () {
+    body.classList.toggle("toggle-sidebar");
+  });
+}
+
+const toggleLinks = document.querySelectorAll(".nav-link[data-bs-toggle='collapse']");
+
+toggleLinks.forEach((link) => {
+  link.addEventListener("click", function () {
+    const chevronIcon = this.querySelector(".bx");
+
+
+      if (this.classList.contains("show")) {
+        setTimeout(() => {
+        chevronIcon.classList.remove("bx-chevron-up");
+        chevronIcon.classList.add("bx-chevron-down");
+      }, 100); 
+      } else {
+        setTimeout(() => {
+        chevronIcon.classList.remove("bx-chevron-down");
+        chevronIcon.classList.add("bx-chevron-up");
+      }, 100); 
+      }
+     
+  });
+});
+});
+function confirmBlockUser(userId){
+                const confirmation = Swal.fire({
+                    title:'Are you sure?',
+                    text:'Do you want to block the user?',
+                    icon:'warning',
+                    showCancelButton:true,
+                    confirmButtonText:'Yes, Block the user!',
+                    cancelButtonText:'Cancel',
+                    reverseButtons:true
+                });
+
+                if(confirmation.isConfirmed){
+                    fetch(`/admin/blockCustomer/${userId}`,{
+                        method:'POST',
+                        headers:{
+                            'Content-Type':'application/json'
+                        },
+                        body:JSON.stringify({isBlocked:true})
+                    })
+                    .then(response => {
+                        if(response.ok){
+                            Swal.fire('Blocked','The user has been blocked successfully','success')
+                            .then(() => location.reload());
+                        }else{
+                            Swal.fire('Error!','Failed to block the user. Please try again.', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error blocking user : ',error);
+                        Swal.fire('Error!', 'An error occurred while trying to block the user. Please try again.', 'error');
+                    });
+                }
+            }
+
+            function confirmunBlockUser(userId){
+                if(confirm('Are you sure? Do you want to unblock the user?')){
+                    fetch(`/admin/unblockCustomer/${userId}`,{
+                        method:'POST',
+                        headers:{
+                            'Content-Type':'application/json'
+                        },
+                        body:JSON.stringify({isBlocked:false})
+                    })
+                    .then(response => {
+                        if(response.ok){
+                            alert('User unblocked successfully')
+                            window.location.reload();
+                        }else{
+                            alert('Failed to unblock the user');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error unblocking user : ',error);
+                        alert('An error occurred while trying to unblock the user')
+                    });
+                }
+            }
+</script>
+</body>
+</html>
+
+<!-- <main class="col-md-10 ml-sm-auto px-4">
     <h3 class="my-4">Product List</h3>
             <div class="container mt-5">
                 <table class="table table-hover table-bordered table-responsive" style="box-shadow: 1px 1px 8px black;">
@@ -106,4 +276,4 @@
                 }
             }
         </script>
-<%- include("../../views/partials/admin/footer") %>
+<%- include("../../views/partials/admin/footer") %> -->

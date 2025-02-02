@@ -298,6 +298,17 @@ const deleteAddress = async(req,res) => {
     }
 }
 
+const loadReferralPage = async(req,res) => {
+    try {
+        const userId = req.session.user;
+        const userData = await User.findById(userId);
+        const cart = await Cart.findOne({userId}).populate('items.productId');
+        const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');
+        res.render('referralPage',{isAuthenticated:req.isAuthenticated(),user:userData,cart,wishlist});
+    } catch (error) {
+        res.status(500).send('Internal Server Error');
+    }
+}
 
 module.exports = {
     loadUserProfilePage,
@@ -311,5 +322,6 @@ module.exports = {
     addAddress,
     loadEditAddress,
     editAddress,
-    deleteAddress
+    deleteAddress,
+    loadReferralPage
 }

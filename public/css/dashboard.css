@@ -207,3 +207,43 @@ body {
   0% { transform: rotateX(0deg) rotateY(0deg); }
   100% { transform: rotateX(360deg) rotateY(360deg); }
 }
+.swal2-container.my-custom-class {
+  position: absolute !important;
+    top: 600px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1055;
+    background: #04625f;
+    padding: 3rem;
+    border-radius: 10px;
+    color: white;
+}
+.swal2-popup{
+  display:flex;
+  flex-direction: column;
+}
+.swal2-content{
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
+.swal2-confirm{
+  display: inline-block;
+    background: #f0ffff;
+    color: #04625f;
+    width: 21rem;
+    margin-top: 2rem;
+    border: none;
+    border-radius: 5px;
+}
+.swal2-container{
+  position: absolute !important;
+    top: 300px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1055;
+    background: #04625f;
+    padding: 3rem;
+    border-radius: 10px;
+    color: white;
+}

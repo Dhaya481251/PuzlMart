@@ -48,6 +48,7 @@ const deactivateOffer = async(req,res) => {
     }
 }
 
+
 module.exports = {
     loadOffer,
     activateOffer,

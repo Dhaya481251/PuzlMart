@@ -67,8 +67,7 @@ router.post('/addAddress',userAuth,profileController.addAddress);
 router.get('/editAddress',userAuth,profileController.loadEditAddress);
 router.post('/editAddress',userAuth,profileController.editAddress);
 router.get('/deleteAddress',userAuth,profileController.deleteAddress);
-// router.get('/coupons',userAuth,profileController.loadCoupon);
-// router.post('/addCoupon',userAuth,profileController.addCoupon);
+router.get('/referral',userAuth,profileController.loadReferralPage);
 
 //Cart management
 

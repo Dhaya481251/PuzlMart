@@ -20,6 +20,7 @@ const getProducts = async(req,res) => {
                 {brand:{$regex:new RegExp(".*"+search+".*","i")}}
             ]
         })
+        .populate('productOffer')
         .limit(limit*1)
         .skip((page-1)*limit)
         .populate('category')
@@ -68,7 +69,9 @@ const getProductAddPage = async(req,res) => {
 const addProducts = async(req,res) => {
     try {
         const products = req.body;
-
+        console.log('product data : ',products);
+        console.log('brand : ',products.brand);
+        console.log('category : ',products.category);
         
         const productExists = await Product.findOne({
             productName: products.productName
@@ -118,6 +121,7 @@ const addProducts = async(req,res) => {
     }
 }
 
+
 const addProductOffer = async (req, res) => {
     try {
         const { productId, percentage } = req.body;
@@ -130,11 +134,10 @@ const addProductOffer = async (req, res) => {
         if (!findProduct) {
             return res.status(404).json({ status: false, message: 'Product not found' });
         }
-        const offer = await Offer.findById(productId);
         const newOffer = new Offer({
             offerType: 'Product',
             discountType: 'Percentage',
-            
+            value:percentage,
             startDate: new Date(),
             endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), 
             isActive: true
@@ -142,10 +145,10 @@ const addProductOffer = async (req, res) => {
 
         
 
-        newOffer.value = (percentage / 100);
+        
         await newOffer.save();
         const discount = Math.floor(findProduct.regularPrice * (percentage / 100));;
-        findProduct.salePrice = findProduct.regularPrice - discount;
+        findProduct.salePrice = findProduct.regularPrice-((findProduct.regularPrice-findProduct.salePrice) + discount);
         findProduct.productOffer = newOffer._id;
 
         await findProduct.save();
@@ -158,19 +161,39 @@ const addProductOffer = async (req, res) => {
 };
 
 
-const removeProductOffer = async(req,res) => {
+const removeProductOffer = async (req, res) => {
     try {
-        const {productId} = req.body;
-        const findProduct = await Product.findOne({_id:productId});
-        const percentage = findProduct.productOffer;
-        findProduct.salePrice = findProduct.salePrice+Math.floor(findProduct.regularPrice*(percentage/100));
-        findProduct.productOffer.value = 0;
+        const { productId } = req.body;
+
+        if (!productId) {
+            return res.status(400).json({ message: 'Product ID is required.' });
+        }
+
+        const findProduct = await Product.findById(productId);
+        const removedOffer = await Offer.findByIdAndDelete(findProduct.productOffer);
+        if (!findProduct) {
+            return res.status(404).json({ message: 'Product not found.' });
+        }
+
+        if (findProduct.productOffer && findProduct.productOffer.value) {
+            
+            findProduct.salePrice += Math.floor(
+                findProduct.regularPrice * (findProduct.productOffer.value / 100)
+            );
+            findProduct.productOffer.value= 0;
+            findProduct.productOffer = null; 
+            await findProduct.save();
+        } 
+
         await findProduct.save();
-        res.json({status:true});
+
+        res.status(200).json({ status: true, message: 'Offer removed successfully.',removedOffer });
     } catch (error) {
+        console.error('Product offer removing error:', error);
         res.status(500).send('Internal Server Error');
     }
-}
+};
+
 
 const blockProduct = async(req,res) => {
     try {

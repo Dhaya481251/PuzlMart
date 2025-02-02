@@ -77,9 +77,6 @@ const userSchema = new Schema({
         type:Date,
         default:Date.now
     },
-    referralCode:{
-        type:String
-    },
     redeemed :{
         type:Boolean,
     },
@@ -106,11 +103,11 @@ const userSchema = new Schema({
     }],
     referralCode:{
         type:String,
-        default:null
+        unique:true
     },
-    referralReward:{
-        type:Number,
-        default:0
+    referredBy:{
+        type:String,
+        default:null
     }
 })
 

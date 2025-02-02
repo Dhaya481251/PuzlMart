@@ -70,14 +70,7 @@
                                            <div id="regularPrice-error" class="error-message"></div>
                                    </div>
                                </div>
-                               <div class="col-lg-4">
-                                   <div class="mb-4">
-                                       <label class="form-label">Sale price</label>
-                                       <input name="salePrice" type="text" value="<%=product.salePrice%>"
-                                           class="form-control border">
-                                   </div>
-                                   <div id="salePrice-error" class="error-message"></div>
-                               </div>
+                               
                                <div class="col-lg-4">
                                    <div class="mb-4">
                                        <label class="form-label">Quantity</label>
@@ -225,7 +218,7 @@
     const brand = document.getElementsByName('brand')[0]?.value || '';
     const price = document.getElementsByName('regularPrice')[0]?.value || '';
     const quantity = document.getElementsByName('quantity')[0]?.value || '';
-    const saleprice = document.getElementsByName('salePrice')[0]?.value || '';
+
     const category = document.getElementsByName('category')[0]?.value || '';
     const images = document.getElementById('input1');
     
@@ -247,15 +240,11 @@
       isValid = false;
    }
 
-    if (!/^\d+(\.\d{1,2})?$/.test(price) || parseFloat(price) < 0 || parseFloat(price)<=parseFloat(saleprice)) {
-        displayErrorMessage('regularPrice-error', 'Please enter a valid non-negative price or enter a regular price greater than sale price');
+    if (!/^\d+(\.\d{1,2})?$/.test(price) || parseFloat(price) < 0 ) {
+        displayErrorMessage('regularPrice-error', 'Please enter a valid non-negative price');
         isValid = false;
     }
 
-    if (!/^\d+(\.\d{1,2})?$/.test(saleprice) || parseFloat(saleprice) < 0) {
-        displayErrorMessage('salePrice-error', 'Please enter a valid non-negative price.');
-        isValid = false;
-    }
     if(!/^\d+(\.\d{1,2})?$/.test(quantity) || parseFloat(quantity)<0){
         displayErrorMessage('quantity-error','please enter a valid non-negative quantity');
         isValid = false;

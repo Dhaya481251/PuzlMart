@@ -11,7 +11,7 @@ const productController = require('../controllers/admin/productController');
 const orderController = require('../controllers/admin/orderController');
 const couponController = require('../controllers/admin/couponController');
 const offerController = require('../controllers/admin/offerController');
-const referralController = require('../controllers/admin/referralController');
+
 
 const {userAuth,adminAuth} = require('../middlewares/auth');
 
@@ -89,10 +89,5 @@ router.get('/offer',adminAuth,offerController.loadOffer);
 router.get('/activateOffer',adminAuth,offerController.activateOffer);
 router.get('/deactivateOffer',adminAuth,offerController.deactivateOffer);
 
-//referral management
-router.get('/referrals',adminAuth,referralController.loadReferral);
-router.get('/addReferral',adminAuth,referralController.loadAddReferral);
-router.post('/addReferral',adminAuth,referralController.addReferral);
-router.delete('/removeReferral/:id',adminAuth,referralController.removeReferral);
 
 module.exports = router;
