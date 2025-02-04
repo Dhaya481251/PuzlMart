@@ -27,7 +27,14 @@ const orderSchema = new Schema({
             type:Number,
             required:true
         },
-        
+        regularPrice:{
+            type:Number,
+            required:true
+        },
+        salePrice:{
+            type:Number,
+            required:true
+        },
         rating :{
             type:Number,
             min:1,

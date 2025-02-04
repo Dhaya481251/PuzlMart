@@ -5,10 +5,151 @@
     <a href="/products" class="breadcrumbs-txt" style="text-decoration: none;">Products</a>
    </nav>
    
-       <section class="featured-puzzles py-5" style="display: flex; flex-direction: row;">
+<!-- Shop Start -->
+<div class="container-fluid pt-5">
+    <div class="row px-xl-5">
+        <!-- Shop Sidebar Start -->
+        <div class="col-lg-3 col-md-12 px-2 py-2 my-2" style="background-color: #e7ab3c; color:white;border-radius: 5px;">
+            <!-- Price Start -->
+            <div class="border-bottom mb-4 pb-4">
+                <form id="filterForm" action="/filterProductByCategory" method="GET"></form>
+                <h5 class="font-weight-semi-bold mb-4">Category</h5>
+                
+                    <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                        <ul class="px-2">
+                            <% category.forEach(cat => { %>
+                                <li style="list-style: none;">
+                                    <input type="checkbox" name="category" value="<%= cat.name %>" <%= appliedFilters.category && appliedFilters.category.includes(cat.name) ? 'checked' : '' %>> <%= cat.name %>
+                                </li>
+                            <% }) %>
+                        </ul>
+                    </div>
+                    <h5 class="font-weight-semi-bold mb-4">Brand</h5>
+                
+                    <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                        <ul class="px-2">
+                            <% brand.forEach(br => { %>
+                                <li style="list-style: none;">
+                                    <input type="checkbox" name="brand" value="<%= br.brandName %>" <%= appliedFilters.brand && appliedFilters.brand.includes(br.brandName) ? 'checked' : '' %>> <%= br.brandName %>
+                                </li>
+                            <% }) %>
+                        </ul>
+                    </div>
+                    <h5 class="font-weight-semi-bold mb-4">Price</h5>
+                
+                    <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                        <div class="px-2" style="display: flex; flex-direction: row; gap: 1rem;">
+                            <div>
+                           <input style="width:75px" type="number" name="minPrice" placeholder="Min Price" value="<%= appliedFilters.minPrice || '' %>">
+                            </div>
+                            to
+                            <div>
+                           <input style="width: 75px;" type="number" name="maxPrice" placeholder="Max Price" value="<%= appliedFilters.maxPrice || '' %>">
+                            </div>
+                           </div>
+                    </div>
+                    <button class="mx-4 my-4 px-1 py-1" style="background:#f0ffff; color:#e7ab3c;border-radius: 5px;font-size: larger;font-weight: 500;border: none;" type="submit">Apply filters</button>
+                    <button id="clearFiltersBtn" class="mx-4 my-4 px-1 py-1" style="background:#f0ffff; color:#e7ab3c;border-radius: 5px;font-size: larger;font-weight: 500;border: none;" type="submit">Clear All filters</button>
+                </form>
+            </div>
+        </div>
+        <!-- Shop Sidebar End -->
+
+
+        <!-- Shop Product Start -->
+        <div class="col-lg-9 col-md-12">
+            <div class="row pb-3">
+                <div class="col-12 pb-1 px-2 py-2" >
+                    <div class="d-flex align-items-center justify-content-between mb-4">
+                        <form action="/search" method="POST" class="form-inline search">
+                            <input name="query" type="search" placeholder="What do you need?">
+                            <button type="submit" style="background-color: #e7ab3c; color: white;"><i class="ti-search"></i></button>
+                        </form>
+                        
+                        <div class="dropdown ml-4">
+                            <form id="sortForm" action="/filterProductByCategory" method="GET">
+            
+                                <div class="filter-section" style="display: flex; justify-content: flex-end; padding: 10px;"> 
+                                  <% if (appliedFilters.category) { %>
+                                    <% (Array.isArray(appliedFilters.category) ? appliedFilters.category : [appliedFilters.category]).forEach(cat => { %>
+                                        <input type="hidden" name="category" value="<%= cat %>">
+                                    <% }) %>
+                                <% } %>
+                                <% if (appliedFilters.brand) { %>
+                                    <% (Array.isArray(appliedFilters.brand) ? appliedFilters.brand : [appliedFilters.brand]).forEach(br => { %>
+                                        <input type="hidden" name="brand" value="<%= br %>">
+                                    <% }) %>
+                                <% } %>
+                                <% if (appliedFilters.sort) { %>
+                                    <% (Array.isArray(appliedFilters.sort) ? appliedFilters.sort : [appliedFilters.sort]).forEach(srt => { %>
+                                        <input type="hidden" name="brand" value="<%= srt %>">
+                                    <% }) %>
+                                <% } %>
+                                <input type="hidden" name="minPrice" value="<%= appliedFilters.minPrice || '' %>">
+                                <input type="hidden" name="maxPrice" value="<%= appliedFilters.maxPrice || '' %>">
+                                  <select class="px-1 py-1" name="sort" style="width: 90px; border: none;border-radius: 10px;background-color: #e7ab3c;color:white;"> 
+                                    <option value="">Sort by</option> 
+                                    <option value="popularity" <%= appliedFilters.sort === 'popularity' ? 'selected' : '' %>>Popularity</option> 
+                                    <option value="priceLowToHigh" <%= appliedFilters.sort === 'priceLowToHigh' ? 'selected' : '' %>>Price: Low to High</option> 
+                                    <option value="priceHighToLow" <%= appliedFilters.sort === 'priceHighToLow' ? 'selected' : '' %>>Price: High to Low</option> 
+                                    <option value="rating" <%= appliedFilters.sort === 'rating' ? 'selected' : '' %>>Average Ratings</option> 
+                                    <option value="featured" <%= appliedFilters.sort === 'featured' ? 'selected' : '' %>>Featured</option> 
+                                    <option value="newArrivals"<%= appliedFilters.sort === 'newArrivals' ? 'selected' : '' %>>New Arrivals</option> 
+                                    <option value="aToZ" <%= appliedFilters.sort === 'aToZ' ? 'selected' : '' %>>Name: A to Z</option> 
+                                    <option value="zToA" <%= appliedFilters.sort === 'zToA' ? 'selected' : '' %>>Name: Z to A</option> 
+                                  </select> 
+                                  <button class="mx-1 my-1 px-1 py-1" style="background-color:white; color:#e7ab3c;border-radius: 5px;font-size: larger;font-weight: 500;border:1px solid #076a66;" type="submit">Sort</button>
+                                </div>
+                                </form>
+                        </div>
+                    </div>
+                </div>
+                <div style="display: flex;gap:2rem">
+                <% if(products.length===0){ %>
+                    <p>No Product Availabe</p>
+                  <% }else{ %>
+                    <% for(let i=0 ; i<products.length ; i++){ %>
+                <div class="product-item " style="border:1px ridge #e7ab3c;height:420px;width:250px;margin-top:2rem;border-radius:10px">
+                    <div class="pi-pic" style="border-radius: 5px;">
+                        <img src="/uploads/re-image/<%=products[i].productImage[0]%>" alt="">
+                        <div class="sale"><%=products[i].status%></div>
+                        <div class="icon">
+                            <a href="/addToWishlist/<%= products[i]._id %>" data-id="<%=products[i]._id%>" class="btn wishlist-btn">
+                            <i class="icon_heart_alt"></i>
+                            </a>
+                        </div>
+                        <ul>
+                            <li class="w-icon active">
+                                <a href="/addToCart/<%=products[i]._id%>" data-id="<%=products[i]._id%>" class="btn cart-btn">
+                                <i class="icon_bag_alt"></i>
+                                </a>
+                            </li>
+                            <li class="quick-view"><a href="/productDetails/<%=products[i]._id%>">Quick View</a></li>
+                        </ul>
+                    </div>
+                    <div class="pi-text">
+                        <div class="catagory-name"><%=products[i].brand%></div>
+                       
+                            <h5><%=products[i].productName%></h5>
+                        
+                        <div class="product-price">
+                            Rs <%=products[i].salePrice%>
+                            <span>Rs <%=products[i].regularPrice%></span>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+               <% } %>
+               </div>
+            </div>
+        </div>
+        <!-- Shop Product End -->
+    </div>
+</div>
+       <!-- <section class="featured-puzzles py-5" style="display: flex; flex-direction: row;">
            <div class="product-list-container py-2" style="display: flex; flex-direction: row;">
                <div class="sidebar px-4 py-3" style="background-color: #04625f; color: #f0ffff; border-radius: 10px; display: flex; flex-direction: column;">
-                   <h3>Filters</h3>
+                   <h3>Filters</h3>-->
                    <!--<div class="filter-section" style="display: flex; justify-content: flex-end; padding: 10px;"> 
                     <% if (appliedFilters.category) { %>
                       <% (Array.isArray(appliedFilters.category) ? appliedFilters.category : [appliedFilters.category]).forEach(cat => { %>
@@ -29,7 +170,7 @@
                       <% }) %>
                   <% } %>
                    </div>-->
-                   <form id="filterForm" action="/filterProductByCategory" method="GET">
+                   <!--<form id="filterForm" action="/filterProductByCategory" method="GET">
                        <div class="filter-section px-3">
                            <h4>Category</h4>
                            <ul class="px-2">
@@ -130,26 +271,25 @@
                            </div>
                        <% }) %>
                    <% } %>
-               </div>
+               </div> -->
                <div class="pagination" style="display: flex; justify-content: center;">
                    <% if (currentPage > 1) { %>
-                       <a class="btn mx-1 my-1" style="background: #04625f; color:#f0ffff; text-decoration: none;" href="/products?page=<%= currentPage - 1 %>">Prev</a>
+                       <a class="btn mx-1 my-1" style="background: #e7ab3c; color:white; text-decoration: none;" href="/products?page=<%= currentPage - 1 %>">Prev</a>
                    <% } %>
                    <% for (let i = 1; i <= totalPages; i++) { %>
-                       <a class="btn mx-1 my-1 <%= currentPage === i ? 'active' : '' %>" style="background: #04625f; color: #f0ffff; text-decoration: none;" href="/products?page=<%= i %>"><%= i %></a>
+                       <a class="btn mx-1 my-1 <%= currentPage === i ? 'active' : '' %>" style="background: #e7ab3c; color: white; text-decoration: none;" href="/products?page=<%= i %>"><%= i %></a>
                    <% } %>
                    <% if (currentPage < totalPages) { %>
-                       <a class="btn mx-1 my-1" style="background: #04625f; color: #f0ffff; text-decoration: none;" href="/products?page=<%= currentPage + 1 %>">Next</a>
+                       <a class="btn mx-1 my-1" style="background: #e7ab3c; color: white; text-decoration: none;" href="/products?page=<%= currentPage + 1 %>">Next</a>
                    <% } %>
                </div>
            </section>
        </section>
-   </body>
-   </html>
+   
    
 
   <!-- Popular Brands Section -->
-  <div class="container text-center my-4" style="color: #04625f;background-color: #f0ffff;">
+  <div class="container text-center my-4" style="color: #e7ab3c;background-color: #f0ffff;">
     <h3 class="product-title">Popular Brands</h3>
     <div class="row popular-brands">
       <div class="col-md-2"><img src="brand1-logo.jpg" alt="Brand 1"></div>

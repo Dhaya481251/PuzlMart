@@ -105,7 +105,7 @@
                 <% cart.items.forEach(item => { %>
                 <div class="card-body mx-3 my-3" style=" display: flex;flex-direction: row; border: 1px solid #076a66;">
                     <div >
-                        <img class="img-fluid"  src="/uploads/re-image/<%=item.productId.productImage[0]%>" alt="">
+                        <img class="img-fluid" style="max-width: 125px;"  src="/uploads/re-image/<%=item.productId.productImage[0]%>" alt="">
                     </div>
                     <div class="px-3">
                         <h2><%=item.productId.productName%></h2>

@@ -17,7 +17,8 @@ const categorySchema = new Schema({
     },
     categoryOffer:{
         type:Schema.Types.ObjectId,
-        ref:'Offer'
+        ref:'Offer',
+        default:null
     },
     categoryImage:{
         type:String,

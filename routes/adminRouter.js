@@ -25,6 +25,7 @@ router.get('/login',adminController.loadLogin);
 router.post('/login',adminController.login);
 router.get('/',adminAuth,adminController.loadDashboard);
 router.get('/logout',adminController.logout);
+router.get('/search',adminAuth,adminController.search);
 
 //user management
 router.get('/users',adminAuth,customerController.customerInfo);

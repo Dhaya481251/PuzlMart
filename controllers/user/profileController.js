@@ -1,6 +1,7 @@
 const User = require('../../models/userSchema');
 const Address = require('../../models/addressSchema');
 const Cart = require('../../models/cartSchema');
+const Category = require('../../models/categorySchema');
 const Wishlist = require('../../models/wishlistSchema');
 const nodemailer = require('nodemailer');
 const env = require('dotenv').config();
@@ -16,7 +17,8 @@ const loadUserProfilePage = async(req,res) => {
         const userData =await User.findById(userId);
         const cart = await Cart.findOne({userId}).populate('items.productId');
         const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');
-        res.render('userProfile',{isAuthenticated: req.isAuthenticated(),user:userData,cart,wishlist});
+        const category = await Category.find({isListed:true});
+        res.render('userProfile',{isAuthenticated: req.isAuthenticated(),user:userData,cart,wishlist,category:category});
     } catch (error) {
         res.status(500).send('Internal Server Error');
     }
@@ -26,10 +28,11 @@ const loadUserDetailsPage = async(req,res) => {
         const userId = req.session.user;
         const cart = await Cart.findOne({userId}).populate('items.productId');
         const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');
+        const category = await Category.find({isListed:true});
         console.log(userId)
         const userData =await User.findById(userId);
         console.log(userData);
-        res.render('userDetails',{isAuthenticated: req.isAuthenticated(),user:userData,cart,wishlist});
+        res.render('userDetails',{isAuthenticated: req.isAuthenticated(),user:userData,cart,wishlist,category:category});
     } catch (error) {
         res.status(500).send('Internal Server Error');
     }
@@ -41,10 +44,11 @@ const editName = async(req,res) => {
         const userId = req.session.user;
         const user = await User.findById(userId);
         const cart = await Cart.findOne({userId}).populate('items.productId');
+        const category = await Category.find({isListed:true});
         const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');        
         user.name = newName;
         await user.save();
-        res.redirect('/userDetails',{cart,wishlist});
+        res.redirect('/userDetails',{cart,wishlist,category:category});
 
     } catch (error) {
         res.status(500).send('Internal server error');
@@ -165,8 +169,9 @@ const loadUserAddressPage = async (req, res) => {
         const userData = await User.findById(userId);
         const cart = await Cart.findOne({userId}).populate('items.productId');
         const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');
+        const category = await Category.find({isListed:true});
         const addressData = await Address.findOne({userId:userData._id});
-        res.render('userAddressPage',{user:userData,userAddress:addressData,cart,wishlist});
+        res.render('userAddressPage',{user:userData,userAddress:addressData,cart,wishlist,category:category});
     } catch (error) {
         console.error(error);
         res.status(500).send('Internal Server Error');
@@ -178,7 +183,8 @@ const loadAddAddress = async (req, res) => {
         const user = req.session.user;
         const cart = await Cart.findOne({user}).populate('items.productId');
         const wishlist = await Wishlist.findOne({user}).populate('products.productsId');
-        res.render('addAddressPage',{user:user,cart,wishlist});
+        const category = await Category.find({isListed:true});
+        res.render('addAddressPage',{user:user,cart,wishlist,category:category});
        
     } catch (error) {
         console.error(error);
@@ -193,6 +199,7 @@ const addAddress = async(req,res) => {
         const {addressType,name,city,landMark,state,pincode,phone,altPhone} = req.body;
         const cart = await Cart.findOne({userId}).populate('items.productId');
         const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');
+        const category = await Category.find({isListed:true});
         const userAddress = await Address.findOne({userId:userData._id});
         if(!userAddress){
             const newAddress = new Address({
@@ -218,6 +225,7 @@ const loadEditAddress = async(req,res) => {
         const cart = await Cart.findOne({user}).populate('items.productId');
         const currentAddress = await Address.findOne({'address._id':addressId});
         const wishlist = await Wishlist.findOne({user}).populate('products.productsId');
+        const category = await Category.find({isListed:true});
         if(!currentAddress){
             return res.status(404).send('Address not found');
         }
@@ -230,7 +238,7 @@ const loadEditAddress = async(req,res) => {
             return res.status(404).send('Address not found');
         }
 
-        res.render('editAddressPage',{address:addressData,user:user,cart,wishlist});
+        res.render('editAddressPage',{address:addressData,user:user,cart,wishlist,category:category});
     } catch (error) {
         console.error('editpage error',error);
         res.status(500).send('Internal server error');
@@ -245,6 +253,7 @@ const editAddress = async(req,res) => {
         const cart = await Cart.findOne({user}).populate('items.productId');
         const wishlist = await Wishlist.findOne({user}).populate('products.productsId');
         const findAddress = await Address.findOne({'address._id':addressId});
+        const category = await Category.find({isListed:true});
         
         if(!findAddress){
             res.status(404).send('Address not found');
@@ -279,6 +288,7 @@ const deleteAddress = async(req,res) => {
         const userId = req.session.user;
         const cart = await Cart.findOne({userId}).populate('items.productId');
         const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');
+        const category = await Category.find({isListed:true});
         const addressId = req.query.id;
         const findAddress = await Address.findOne({'address._id':addressId});
         if(!findAddress){
@@ -304,7 +314,8 @@ const loadReferralPage = async(req,res) => {
         const userData = await User.findById(userId);
         const cart = await Cart.findOne({userId}).populate('items.productId');
         const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');
-        res.render('referralPage',{isAuthenticated:req.isAuthenticated(),user:userData,cart,wishlist});
+        const category = await Category.find({isListed:true});
+        res.render('referralPage',{isAuthenticated:req.isAuthenticated(),user:userData,cart,wishlist,category:category});
     } catch (error) {
         res.status(500).send('Internal Server Error');
     }

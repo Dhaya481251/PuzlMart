@@ -17,7 +17,7 @@
                                 <img src="/uploads/re-image/<%= item.productId.productImage[0]%>" alt="<%= item.productId.productName %>" style="width: 50px; height: 50px;border-radius: 5px;">
                                 <span style="font-size:1.25rem"><%= item.productId.productName %></span>
                                 <span style="font-size: 1.25rem;">(Qty: <%= item.quantity %>)</span>
-                                
+                                <span style="font-size: 1.25rem;"><%=order.deliveryDate.toLocaleDateString()%></span>
                             </li>
                             <% } else { %> <li> 
                                 <span>Product not found</span> 

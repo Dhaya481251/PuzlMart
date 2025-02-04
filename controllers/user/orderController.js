@@ -21,6 +21,7 @@ const loadCheckOutPage = async (req, res) => {
         const userData = await User.findById(userId);
         const cart = await Cart.findOne({ userId }).populate('items.productId');
         const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');
+        const category = await Category.find({isListed:true})
         if (cart && cart.items) {
             cart.items = cart.items.filter(item => item.productId); // Remove items with null productId
         }
@@ -59,7 +60,8 @@ const loadCheckOutPage = async (req, res) => {
             coupons,
             finalAmount,
             discount,
-            wishlist
+            wishlist,
+            category:category
         });
     } catch (error) {
         console.error('Checkout page error:', error);
@@ -74,7 +76,7 @@ const orderPlaced = async (req, res) => {
         const userData = await User.findById(userId);
         const { selectedAddress, selectedPayment } = req.body;
         const coupon = await Coupon.findOne({ code: req.session.couponCode });
-
+       
         if (!selectedAddress || !selectedPayment) {
             return res.status(400).send('Address and payment method are required');
         }
@@ -179,7 +181,9 @@ const orderConfirmation = async(req,res) => {
         const order = await Order.findById(id);
         const cart = await Cart.findOne({userId}).populate('items.productId');
         const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');
-        res.render(`orderConfirmation`,{order,cart,wishlist});
+        const category = await Category.find({isListed:true});
+        res.render(`orderConfirmation`,{order,cart,wishlist,category:category});
+        
     } catch (error) {
         
     }
@@ -195,7 +199,7 @@ const loadMyOrdersPage = async (req, res) => {
         const cart = await Cart.findOne({userId}).populate('items.productId');
         const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');
         console.log('User ID from session:', userId);
-
+        const category = await Category.find({isListed:true});
         const orders = await Order.find({userId})
         .populate('items.productId')
         .populate('userId')
@@ -204,7 +208,7 @@ const loadMyOrdersPage = async (req, res) => {
         console.log('Fetched Orders:', orders);
         console.log('Address : ',orders.address);
         
-        res.render('myOrders', { orders ,user,cart,wishlist});
+        res.render('myOrders', { orders ,user,cart,wishlist,category:category});
     } catch (error) {
         console.error('Error while loading my orders:', error);
         res.status(500).send('Internal server error');
@@ -228,9 +232,9 @@ const orderDetails = async(req,res) => {
         const cart = await Cart.findOne({userId}).populate('items.productId');
         const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');
         console.log('Order : ',order);
-       
+        const category = await Category.find({isListed:true});
         
-        res.render('orderDetails',{orders:order,cart,wishlist});
+        res.render('orderDetails',{orders:order,cart,wishlist,category:category});
     }catch(error){
         console.error('error while loading order details',error);
         res.status(500).send('Internal server error');
@@ -243,7 +247,8 @@ const rateProduct = async(req,res) => {
         const {rating,review} = req.body;
         const userId = req.session.user;
         const cart = await Cart.findOne({userId}).populate('items.productId');
-        const wishlist = await Wishlist.findOne({userId}).populate('products.productsId')
+        const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');
+        const category = await Category.find({isListed:true});
         console.log('Rating and review',req.body)
         if(isNaN(rating) || rating<1 || rating>5){
             return res.status(400).json({message:'Invalid rating. Rating should be a number between 1 and 5.',type:'error'});
@@ -303,7 +308,8 @@ const loadAddAddress = async (req, res) => {
         const user = req.session.user;
         const cart = await Cart.findOne({user}).populate('items.productId');
         const wishlist = await Wishlist.findOne({user}).populate('products.productsId');
-        res.render('orderAddAddress',{user:user,cart,wishlist});
+        const category = await Category.find({isListed:true});
+        res.render('orderAddAddress',{user:user,cart,wishlist,category:category});
        
     } catch (error) {
         console.error(error);
@@ -316,6 +322,7 @@ const addAddress = async(req,res) => {
         const userId = req.session.user;
         const cart = await Cart.findOne({userId}).populate('items.productId');
         const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');
+        const category = await Category.find({isListed:true});
         const userData = await User.findOne({_id:userId});
         const {addressType,name,city,landMark,state,pincode,phone,altPhone} = req.body;
 
@@ -332,7 +339,7 @@ const addAddress = async(req,res) => {
         }
         req.session.cart = cart;
         req.session.wishlist = wishlist;
-        res.redirect('/buyNow');
+        res.redirect('/buyNow',{category:category});
     } catch (error) {
         console.error('Error adding address',error);
         res.status(500).send('Internal server error');
@@ -345,6 +352,7 @@ const loadEditAddress = async(req,res) => {
         const user = req.session.user;
         const cart = await Cart.findOne({user}).populate('items.productId');
         const wishlist = await Wishlist.findOne({user}).populate('products.productsId');
+        const category = await Category.find({isListed:true});
         const currentAddress = await Address.findOne({'address._id':addressId});
         if(!currentAddress){
             return res.status(404).send('Address not found');
@@ -358,7 +366,7 @@ const loadEditAddress = async(req,res) => {
             return res.status(404).send('Address not found');
         }
 
-        res.render('orderEditAddress',{address:addressData,user:user,cart,wishlist});
+        res.render('orderEditAddress',{address:addressData,user:user,cart,wishlist,category:category});
     } catch (error) {
         console.error('editpage error',error);
         res.status(500).send('Internal server error');
@@ -372,6 +380,7 @@ const editAddress = async(req,res) => {
         const user = req.session.user;
         const cart = await Cart.findOne({user}).populate('items.productId');
         const wishlist = await Wishlist.findOne({user}).populate('products.productsId');
+        const category = await Category.find({isListed:true});
         const findAddress = await Address.findOne({'address._id':addressId});
         
         if(!findAddress){
@@ -395,7 +404,7 @@ const editAddress = async(req,res) => {
             }}
         )
 
-        res.redirect('/buyNow',{cart,wishlist});
+        res.redirect('/buyNow',{cart,wishlist,category:category});
     } catch (error) {
         console.error('editing error',error);
         res.status(500).send('Internal server error');
@@ -409,6 +418,7 @@ const cancelOrder = async(req,res) => {
         const user = await User.findById(userId);
         const cart = await Cart.findOne({userId}).populate('items.productId');
         const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');
+        const category = await Category.find({isListed:true});
         const {cancellationReason} = req.body;
         const order = await Order.findOneAndUpdate(
             {_id:id},
@@ -465,6 +475,7 @@ const returnOrder = async(req,res) => {
         const userId = req.session.user;
         const cart = await Cart.findOne({userId}).populate('items.productId');
         const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');
+        const category = await Category.find({isListed:true});
         const {returnReason} = req.body;
         const order = await Order.findOneAndUpdate(
             {_id:id},
@@ -521,6 +532,7 @@ const applyCoupon = async(req,res) => {
         const cartTotal = cart.items.reduce((total,item) => total + item.productId.salePrice*item.quantity,0);
         
         const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');
+        const category = await Category.find({isListed:true});
         if(coupon.minimumPrice && cartTotal < coupon.minimumPrice){
             return res.status(400).json({message : `Coupon requires a minimum price of ${coupon.minimumPrice}`})
         }
@@ -574,6 +586,7 @@ const removeCoupon = async(req,res) => {
           }
 
         const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');
+        const category = await Category.find({isListed:true});
         const cartTotal = cart.items.reduce((total, item) => 
             total + item.productId.salePrice * item.quantity, 0
         );

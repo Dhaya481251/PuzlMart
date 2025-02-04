@@ -1,97 +1,146 @@
 
 <%- include("../../views/partials/user/header") %>
     <!--head image-->
-    <section class="hero text-center">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-lg-12">
-                    <img src="images/img1.jpg" alt="Puzzles" class="img-fluid img1">
-                    <div class="section1-text mt-5">
-                        <h2>Puzzle fun for all ages...</h2>
-                        <p>Create lasting memories with our puzzles, perfect for family game nights!</p>
-                        <a href="#" class="btn btn-primary">Explore Puzzles</a>
+    <section class="hero-section">
+        <div class="hero-items owl-carousel">
+            <div class="single-hero-items set-bg" data-setbg="images/img1.jpg">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-5">
+                            <span>Puzzles</span>
+                            <h1 class="text-white">Puzzle fun for all ages</h1>
+                            <p class="text-white">Create lasting memories with our puzzles, perfect for family game nights!</p>
+                            <a href="#" class="primary-btn">Explore Puzzles</a>
+                        </div>
+                    </div>
+                    <div class="off-card">
+                        <h2>Grand <span>Sale</span></h2>
+                    </div>
+                </div>
+            </div>
+            <div class="single-hero-items set-bg" data-setbg="images/background1.jpg">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-5">
+                            <span>Puzzles</span>
+                            <h1 class="text-white">Puzzle fun for all ages</h1>
+                            <p class="text-white">Create lasting memories with our puzzles, perfect for family game nights!</p>
+                            <a href="#" class="primary-btn">Explore Puzzles</a>
+                        </div>
+                    </div>
+                    <div class="off-card">
+                        <h2>Grand <span>Sale</span></h2>
+                    </div>
+                </div>
+            </div>
+            <div class="single-hero-items set-bg" data-setbg="images/background2.jpg">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-5">
+                            <span>Puzzles</span>
+                            <h1 class="text-white">Puzzle fun for all ages</h1>
+                            <p class="text-white">Create lasting memories with our puzzles, perfect for family game nights!</p>
+                            <a href="#" class="primary-btn">Explore Puzzles</a>
+                        </div>
+                    </div>
+                    <div class="off-card">
+                        <h2>Grand <span>Sale</span></h2>
+                    </div>
+                </div>
+            </div>
+            <div class="single-hero-items set-bg" data-setbg="images/background3.jpg">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-5">
+                            <span>Puzzles</span>
+                            <h1 class="text-white">Puzzle fun for all ages</h1>
+                            <p class="text-white">Create lasting memories with our puzzles, perfect for family game nights!</p>
+                            <a href="#" class="primary-btn">Explore Puzzles</a>
+                        </div>
+                    </div>
+                    <div class="off-card">
+                        <h2>Grand <span>Sale</span></h2>
+                    </div>
+                </div>
+            </div>
+            <div class="single-hero-items set-bg" data-setbg="images/background4.jpg">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-5">
+                            <span>Puzzles</span>
+                            <h1 class="text-white">Puzzle fun for all ages</h1>
+                            <p class="text-white">Create lasting memories with our puzzles, perfect for family game nights!</p>
+                            <a href="#" class="primary-btn">Explore Puzzles</a>
+                        </div>
+                    </div>
+                    <div class="off-card">
+                        <h2>Grand <span>Sale</span></h2>
                     </div>
                 </div>
             </div>
         </div>
     </section>
     
-
+    
     <!-- Featured Puzzles Section -->
-    <section class="featured-puzzles py-5">
-        <div class="container">
-            <h3 class="text-start featured-txt">Featured Puzzles</h3>
-            <div class="shop-content">
-                <% if(products.length===0){ %>
-                  <p>No Product Availabe</p>
-                <% }else{ %>
-                  <% for(let i=0 ; i<products.length ; i++){ %>
-                  <div class="product-box col-lg-3 col-sm-2 col-md-6">
-                    <a href="/productDetails/<%=products[i]._id%>">
-                      <img src="/uploads/re-image/<%=products[i].productImage[0]%>" class="product-img" alt="<%=products[i].productName%>">
-                    </a>
-                      <h2 class="product-title"><%=products[i].productName%></h2>
-                      <p class="card-text"><%=products[i].brand%></p>
-                      
-                    <div class="ratings">
-                      <div class="stars" style="display: flex;justify-content: start;">
-                        <% for(let star=0 ; star<5 ; star++ ){ %>
-                          <span class="star <%= star <= products[i].averageRating ? 'selected': '' %>">&#9733;</span>
-                        <% } %>
-                      </div>
+    <section class="women-banner spad mx-4 my-5">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="product-large set-bg" data-setbg="images/img1.jpg">
+                        <h2>Featured Puzzles’s</h2>
+                        <a href="/products" style="text-decoration:none">Discover More</a>
                     </div>
-                    <span class="price">Rs <%=products[i].salePrice%></span>
-                    
-                      <a href="/addToCart/<%=products[i]._id%>" data-id="<%=products[i]._id%>" class="btn cart-btn"><i class="bx bx-shopping-bag add-cart"></i></a>
-                      <a href="/addToWishlist/<%= products[i]._id %>" data-id="<%=products[i]._id%>" class="btn wishlist-btn">
-                        <i class='bx bxs-heart add-wishlist' ></i>
-                      </a>
-                  </div>
-                 <% } %>
-                <% } %>
-              </div>
-            <div class="text-center">
-                <a href="/products" class="btn btn-sm px-3 py-3" style="margin-top:1rem;background:#04625f; color: #f0ffff; font-weight: 600; border: 2px solid currentColor;border-radius: 10px;">View More</a>
+                </div>
+                <div class="col-lg-8 offset-lg-1" style="border:1px ridge #e7ab3c;border-radius:10px">
+                    <div class="product-slider owl-carousel" >
+                        <% if(products.length===0){ %>
+                            <p>No Product Availabe</p>
+                          <% }else{ %>
+                            <% for(let i=0 ; i<products.length ; i++){ %>
+                        <div class="product-item " style="border:1px ridge #e7ab3c;height:500px;margin-top:2rem;border-radius:10px">
+                            <div class="pi-pic">
+                                <img src="/uploads/re-image/<%=products[i].productImage[0]%>" alt="">
+                                <div class="sale"><%=products[i].status%></div>
+                                <div class="icon">
+                                    <a href="/addToWishlist/<%= products[i]._id %>" data-id="<%=products[i]._id%>" class="btn wishlist-btn">
+                                    <i class="icon_heart_alt"></i>
+                                    </a>
+                                </div>
+                                <ul>
+                                    <li class="w-icon active">
+                                        <a href="/addToCart/<%=products[i]._id%>" data-id="<%=products[i]._id%>" class="btn cart-btn">
+                                        <i class="icon_bag_alt"></i>
+                                        </a>
+                                    </li>
+                                    <li class="quick-view"><a href="/productDetails/<%=products[i]._id%>">Quick View</a></li>
+                                </ul>
+                            </div>
+                            <div class="pi-text">
+                                <div class="catagory-name"><%=products[i].brand%></div>
+                               
+                                    <h5><%=products[i].productName%></h5>
+                                
+                                <div class="product-price">
+                                    Rs <%=products[i].salePrice%>
+                                    <span>Rs <%=products[i].regularPrice%></span>
+                                </div>
+                            </div>
+                        </div>
+                        <% } %>
+                       <% } %>
+                        
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
     <!-- Categories Section -->
-    <section class="puzzle-categories py-5 mt-5">
-        <div class="container">
-            <h3 class="text-center cat-txt">Browse Puzzles by Category</h3>
-            <div class="row text-center mt-5" >
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="category-card">
-                        <img src="/images/cube-puzzle.jpg" alt="3D Puzzle" class="img-fluid">
-                        <p class="category-txt">3D Puzzle</p>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="category-card">
-                        <img src="/images/spider-man.jpg" alt="Jigsaw Puzzle" class="img-fluid">
-                        <p class="category-txt">Jigsaw Puzzle</p>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="category-card">
-                        <img src="/images/crossword.jpg" alt="Jigsaw Puzzle" class="img-fluid">
-                        <p class="category-txt">Jigsaw Puzzle</p>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="category-card">
-                        <img src="/images/brainTeaser.jpg" alt="Jigsaw Puzzle" class="img-fluid">
-                        <p class="category-txt">Jigsaw Puzzle</p>
-                    </div>
-                </div>
+     
+                
                 <!-- Add more categories as needed -->
-            </div>
-            <div class="text-center">
-                <a href="#" class="btn browse btn-sm px-3 py-3">Browse Categories</a>
-            </div>
-        </div>
-    </section>
+
     <section class="puzzle-categories py-5 mt-5">
         <div class="container">
             <h3 class="text-center cat-txt">Popular Brands of Puzzles</h3>

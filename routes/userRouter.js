@@ -70,7 +70,7 @@ router.get('/deleteAddress',userAuth,profileController.deleteAddress);
 router.get('/referral',userAuth,profileController.loadReferralPage);
 
 //Cart management
-
+router.get('/cart',userAuth,cartController.loadCart);
 router.get('/addToCart/:id',userAuth,cartController.addToCart);
 router.get('/removeFromCart/:id',userAuth,cartController.removeFromCart);
 router.post('/increaseQuantity/:id',userAuth,cartController.increaseQuantity);

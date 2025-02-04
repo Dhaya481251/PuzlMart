@@ -1,6 +1,230 @@
 <%- include("../../views/partials/admin/header") %>
 
-  <div class="header">
+<main id="main" class="main">
+
+  <div class="pagetitle">
+    <h1>Edit Category</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/admin">Home</a></li>
+        <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
+        <li class="breadcrumb-item active">Edit Category</li>
+      </ol>
+    </nav>
+  </div><!-- End Page Title -->
+
+  <section class="section">
+    <div class="row">
+      <div class="col-lg-12">
+
+<div class="card">
+  <div class="card-body">
+    <h5 class="card-title">Edit Category</h5>
+
+    <form class="row g-3" onsubmit="return handleFormSubmit(event)" enctype="multipart/form-data">
+      <div class="col-md-12">
+        <div class="form-floating">
+            <input type="hidden" name="existingCategoryImage" value="<%= category.categoryImage %>" />
+            <img src="<%= category.categoryImage %>" alt="Category Image" id="previewImage" style="max-width: 200px;border-radius: 15px;margin: 1rem;box-shadow: 0px 2px 10px 0px #00000096;"/>
+          <div class="col-sm-10">
+            <label for="">Change Category Image</label>
+          </div>
+          <div class="col-sm-10">
+            <input class="form-control" type="file" name="CategoryImage" id="categoryImage" placeholder="CategoryImage">
+          </div>
+          <div id="image-error" class="error-message"></div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-floating">
+          <input type="text" class="form-control" placeholder="Category Name" name="name" value="<%= category.name %>">
+          <label for="floatingName">Category Name</label>
+          <div id="name-error" class="error-message"></div>
+        </div>
+      </div>
+      
+      <div class="col-12">
+        <div class="form-floating">
+          <textarea class="form-control" name="description" placeholder="Category Description" id="descriptionId" style="height: 100px;"><%= category.description %></textarea>
+          <label for="floatingTextarea">Category Description</label>
+          <div id="description-error" class="error-message"></div>
+        </div>
+      </div>
+      <div class="text-center">
+        <button type="submit" class="btn btn-primary">Update Category</button>
+      </div>
+    </form>
+    <div><button class="btn btn-primary"><a href="/admin/category" class="text-white">Go to Categories</a></button></div>
+  </div>
+</div>
+</div>
+</div>
+</section>
+
+</main>
+<footer id="footer" class="footer">
+<div class="copyright">
+&copy; Copyright <strong><span>Puzl Mart</span></strong>. All Rights Reserved
+</div>
+</footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const toggleButton = document.querySelector(".toggle-sidebar-btn");
+    const body = document.body;
+  
+    if (toggleButton) {
+      toggleButton.addEventListener("click", function () {
+        body.classList.toggle("toggle-sidebar");
+      });
+    }
+
+    const toggleLinks = document.querySelectorAll(".nav-link[data-bs-toggle='collapse']");
+
+    toggleLinks.forEach((link) => {
+      link.addEventListener("click", function () {
+        const chevronIcon = this.querySelector(".bx");
+
+
+          if (this.classList.contains("show")) {
+            setTimeout(() => {
+            chevronIcon.classList.remove("bx-chevron-up");
+            chevronIcon.classList.add("bx-chevron-down");
+          }, 100); 
+          } else {
+            setTimeout(() => {
+            chevronIcon.classList.remove("bx-chevron-down");
+            chevronIcon.classList.add("bx-chevron-up");
+          }, 100); 
+          }
+         
+      });
+    });
+});
+
+document.getElementById('categoryImage').addEventListener('change', function(event) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const previewImage = document.getElementById('previewImage');
+      previewImage.src = e.target.result;
+      previewImage.style.maxWidth = '200px';
+      previewImage.style.borderRadius = '15px';
+      previewImage.style.margin = '1rem';
+      previewImage.style.boxShadow = '0px 2px 10px 0px #00000096';
+      };
+      reader.readAsDataURL(event.target.files[0]);
+    });
+
+    
+  function handleFormSubmit(event) {
+  event.preventDefault();
+  if (!validateForm()) {
+    return;
+  }
+
+  const form = event.target;
+
+  // const name = document.getElementsByName('name')[0].value.trim();
+  // const description = document.getElementById('descriptionId').value.trim();
+  // const image = document.getElementById('categoryImage').files[0];
+
+  const formData = new FormData(form);
+  // formData.append('name', name);
+  // formData.append('description', description);
+  // if (image) {
+  //   formData.append('CategoryImage', image); 
+  // }
+
+  fetch('/admin/editCategory/<%= category._id %>', {
+    method: 'POST',
+    body: formData,
+  })
+  .then((response) => {
+    if (!response.ok) {
+      throw new Error('HTTP error: ' + response.status || 'Failed to update category');
+    }
+    return response.json();
+  })
+  .then(data => {
+    Swal.fire({
+      icon: data.type,
+      title: data.message,
+      showConfirmButton:true,
+      timer:1500
+    }).then(() => {
+        if(data.type==='success'){
+          window.location.href = '/admin/category';
+        }
+    });
+    
+  })
+  .catch(error => {
+    console.error("Error during form submission:", error);
+    Swal.fire({
+        icon: 'error',
+        title: 'Something went wrong!',
+        showConfirmButton:true,
+        timer:1500
+    });
+  });
+  }
+
+  function validateForm() {
+    clearErrorMessages();
+
+      const name = document.getElementsByName('name')[0].value.trim();
+      const description = document.getElementById('descriptionId').value.trim();
+      const image = document.getElementById('categoryImage').files[0];
+
+      let isValid = true;
+
+      if (name === '') {
+        displayErrorMessage('name-error', 'Please enter a category name');
+        isValid = false;
+      } else if (!/^[a-zA-Z0-9\s]+$/.test(name)) {
+        displayErrorMessage('name-error', 'Category name should contain only alphanumeric characters');
+        isValid = false;
+      }
+
+      if (description === '') {
+        displayErrorMessage('description-error', 'Please enter a description');
+        isValid = false;
+      }
+
+      
+      if (!image && document.getElementById('categoryImage').value) {
+        displayErrorMessage('image-error', 'Please add an image');
+        isValid = false;
+      }
+      
+      return isValid;
+    }
+
+    
+    function displayErrorMessage(elementId, message) {
+      var errorElement = document.getElementById(elementId);
+      errorElement.innerText = message;
+      errorElement.style.display = 'block';
+    }
+
+    
+    function clearErrorMessages() {
+      const errorElements = document.getElementsByClassName('error-message');
+      Array.from(errorElements).forEach((element) => {
+        element.innerText = '';
+        element.style.display = 'none';
+      });
+    }
+</script>
+</body>
+</html>
+
+  <!-- <div class="header">
     <h2 class="text-center">Edit Category</h2>
 
     
@@ -155,5 +379,5 @@
     }
 </script>
 </body>
-</html>
+</html> -->
 
