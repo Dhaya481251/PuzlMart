@@ -26,11 +26,12 @@ router.post('/login',adminController.login);
 router.get('/',adminAuth,adminController.loadDashboard);
 router.get('/logout',adminController.logout);
 
+
 //user management
 router.get('/users',adminAuth,customerController.customerInfo);
 router.post('/blockCustomer/:id',adminAuth,customerController.customerBlocked);
 router.post('/unblockCustomer/:id',adminAuth,customerController.customerunBlocked);
-
+router.post('/searchUser',adminAuth,customerController.searchUser);
 //category management
 router.get('/category',adminAuth,categoryController.categoryInfo);
 router.get('/addCategory',categoryController.loadAddCategory);
@@ -42,34 +43,36 @@ router.get('/unlistCategory',adminAuth,categoryController.getUnlistCategory);
 router.get('/editCategory',adminAuth,categoryController.getEditCategory);
 router.post('/editCategory/:id',adminAuth,uploads.single('CategoryImage'),categoryController.editCategory);
 router.delete('/removeCategory/:id',adminAuth,categoryController.removeCategory);
-
+router.post('/searchCategory',adminAuth,categoryController.searchCategory);
 //brand management
 router.get('/brands',adminAuth,brandController.getBrandPage);
 router.post('/addBrand',adminAuth,uploads.single('image'),brandController.addBrand);
 router.get('/blockBrand',adminAuth,brandController.blockBrand);
-router.get('/unBlockBrand',adminAuth,brandController.unBlockBrand);
+router.get('/unblockBrand',adminAuth,brandController.unblockBrand);
 router.delete('/deleteBrand',adminAuth,brandController.deleteBrand);
-
+router.post('/searchBrand',adminAuth,brandController.searchBrand);
 //product management
 router.get('/products',adminAuth,productController.getProducts);
 router.get('/addProducts',adminAuth,productController.getProductAddPage);
-router.post('/addProducts',adminAuth,uploads.array('images',4),productController.addProducts);
-router.post('/addProductOffer',adminAuth,productController.addProductOffer);
+router.post('/addProducts', uploads.array('images', 4), productController.addProducts);
+router.get('/addProductOffer',adminAuth,productController.loadAddProductOffer);
+router.post('/addProductOffer/:id',adminAuth,productController.addProductOffer);
 router.post('/removeProductOffer',adminAuth,productController.removeProductOffer);
 router.get('/blockProduct',adminAuth,productController.blockProduct);
 router.get('/unblockProduct',adminAuth,productController.unblockProduct);
 router.get('/editProduct',adminAuth,productController.getEditProduct);
 router.post('/editProduct/:id',adminAuth,uploads.array('images',4),productController.editProduct);
 router.post('/deleteImage',adminAuth,productController.deleteImage);
-router.delete('/removeProduct/:id',adminAuth,productController.removeProduct);
+router.delete('/removeProduct',adminAuth,productController.removeProduct);
 router.get('/featured',adminAuth,productController.featuredProduct);
 router.get('/unFeatured',adminAuth,productController.unFeaturedProduct);
-
+router.post('/searchProduct',adminAuth,productController.searchProduct);
 //Order management
 router.get('/orders', adminAuth, orderController.listOrders);
 router.post('/orders/:id/status', adminAuth, orderController.changeOrderStatus);
 router.post('/orders/:id/cancel', adminAuth, orderController.cancelOrder);
 router.get('/moreDetails/:id',adminAuth,orderController.moreDetails);
+router.post('/searchOrder',adminAuth,orderController.searchOrder);
 //coupon management
 router.get('/coupons',adminAuth,couponController.getCoupons);
 router.get('/addCoupon',adminAuth,couponController.loadAddCouponPage);
@@ -77,7 +80,7 @@ router.post('/addCoupon',adminAuth,couponController.addCoupon);
 router.delete('/removeCoupon/:id',adminAuth,couponController.removeCoupon);
 router.get('/activeCoupon',adminAuth,couponController.activeCoupon);
 router.get('/inactiveCoupon',adminAuth,couponController.inactiveCoupon);
-
+router.post('/searchCoupon',adminAuth,couponController.searchCoupon);
 //sales management
 router.get('/salesReport',adminAuth,adminController.salesReport);
 router.post('/filterSalesReport',adminAuth,adminController.filterSalesReport);
@@ -88,6 +91,6 @@ router.get('/downloadEXCEL',adminAuth,adminController.downloadEXCEL);
 router.get('/offer',adminAuth,offerController.loadOffer);
 router.get('/activateOffer',adminAuth,offerController.activateOffer);
 router.get('/deactivateOffer',adminAuth,offerController.deactivateOffer);
-
+router.post('/searchOffer',adminAuth,offerController.searchOffer);
 
 module.exports = router;

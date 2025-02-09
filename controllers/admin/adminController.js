@@ -304,6 +304,8 @@ const downloadEXCEL = async(req,res) => {
     }
 }
 
+
+
 module.exports = {
     loadLogin,
     login,
@@ -312,5 +314,6 @@ module.exports = {
     salesReport,
     filterSalesReport,
     downloadPDF,
-    downloadEXCEL
+    downloadEXCEL,
+    
 }

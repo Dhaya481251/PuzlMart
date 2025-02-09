@@ -80,8 +80,49 @@ const customerunBlocked = async(req,res) => {
     }
 }
 
+const searchUser = async (req, res) => {
+  try {
+    const searchString = req.body.query;
+    let page =1;
+    if(req.query.page){
+      page = req.query.page;
+    }
+    const limit = 3;
+
+    const users = await User.find({
+      isAdmin:false,
+      $or: [
+        { email: { $regex: searchString, $options: "i" } },
+        { name: { $regex: searchString, $options: "i" } },
+      ],
+    })
+    .limit(limit*1)
+    .skip((page-1)*limit)
+    .exec();
+
+    const count = await User.find({
+      isAdmin:false,
+      $or: [
+        { email: { $regex: searchString, $options: "i" } },
+        { name: { $regex: searchString, $options: "i" } },
+      ],
+    }).countDocuments();
+    
+    res.render("customers", {
+        data:users,
+        totalPages: Math.ceil(count / limit),
+        currentPage: page,
+      });
+    console.log(users);
+  } catch (error) {
+    console.log('Error while searching user : ', error);
+    res.status(500).send('Internal Server Error');
+  }
+};
+
 module.exports = {
     customerInfo,
     customerBlocked,
-    customerunBlocked
+    customerunBlocked,
+    searchUser
 }

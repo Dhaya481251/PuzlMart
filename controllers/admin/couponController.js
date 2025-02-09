@@ -28,9 +28,10 @@ const getCoupons = async (req,res) => {
 
 const loadAddCouponPage = async (req,res) => {
     try {
-        res.render('addCoupon')
+        res.render('addCoupon');
     } catch (error) {
-        
+        console.error('Error while loading add coupon page : ',error);
+        res.status(500).send('Internal Server Error')
     }
 }
 
@@ -96,11 +97,46 @@ const inactiveCoupon = async (req,res) => {
     }
 }
 
+const searchCoupon = async (req, res) => {
+  try {
+    const searchString = req.body.query;
+    let page =1;
+    if(req.query.page){
+      page = req.query.page;
+    }
+    const limit = 3;
+
+    const coupons = await Coupon.find({
+      name:{$regex:searchString,$options:"i"}
+    })
+    .limit(limit*1)
+    .skip((page-1)*limit)
+    .exec();
+
+    const count = await Coupon.find({
+      name:{$regex:searchString,$options:"i"}
+    }).countDocuments();
+    
+    res.render("coupons", {
+        coupons:coupons,
+        totalPages: Math.ceil(count / limit),
+        currentPage: page,
+      });
+    console.log(coupons);
+  } catch (error) {
+    console.log('Error while searching user : ', error);
+    res.status(500).send('Internal Server Error');
+  }
+};
+
+
+
 module.exports = {
     getCoupons,
     loadAddCouponPage,
     addCoupon,
     removeCoupon,
     activeCoupon,
-    inactiveCoupon
+    inactiveCoupon,
+    searchCoupon
 }

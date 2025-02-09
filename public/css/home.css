@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+/* @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 body {
     font-family: "Poppins", serif;
     background-color: white;
@@ -7,14 +7,14 @@ body {
     margin-right: 0;
 }
 
-/* Main navbar styling */
+Main navbar styling
 .navbar {
     background-color: #04625f;
     padding: 1rem;
     z-index:100;
 }
 
-/* Adjusting the navbar links */
+Adjusting the navbar links
 .nav-link {
     color: #f0ffff;
     font-family: monospace;
@@ -31,28 +31,28 @@ body {
     font-weight: bold;
 }
 
-/* Styling for individual nav items */
+Styling for individual nav items
 .nav-item {
 
-    border-radius: 15px; /* Simplified radius to work better on smaller screens */
+    border-radius: 15px; Simplified radius to work better on smaller screens
 }
 .nav-item:hover{
     cursor:pointer
 }
-/* Adding gap between navbar items */
+Adding gap between navbar items
 .navbar-nav {
-    gap: 1.5rem; /* Reduced gap for better spacing on smaller screens */
+    gap: 1.5rem; Reduced gap for better spacing on smaller screens
 }
 
-/*.login-btn{
+.login-btn{
     min-width: 4rem;
     height: 2.5rem;
     margin-top: 0.25rem;
     text-align: center;
     padding-top: 0.25rem;
-}*/
+}
 
-/* Search form styling */
+Search form styling
 .form-inline.search{
     flex-grow: 0;
     display: flex;
@@ -71,7 +71,7 @@ body {
     padding: 0.375rem 1.5rem;
     width: auto;
 }
-/* Responsive design for smaller screens */
+Responsive design for smaller screens
 @media (max-width:2560px) {
     .searchDiv{
         position: absolute;
@@ -137,15 +137,15 @@ body {
         display: flex;
     }
     .nav-link {
-        font-size: 18px; /* Slightly smaller font size */
+        font-size: 18px; Slightly smaller font size
     }
 
     .navbar-nav {
-        gap: 1rem; /* Less gap between items */
+        gap: 1rem; Less gap between items
     }
 
     .navbar-brand img {
-        max-width: 150px; /* Adjust logo size */
+        max-width: 150px; Adjust logo size
     }
      
     body{
@@ -165,19 +165,19 @@ body {
     }
 }
 
-/* Additional responsive tweaks for mobile devices */
+Additional responsive tweaks for mobile devices
 @media (max-width: 576px) {
     .nav-link {
         font-size: 16px;
     }
 
     .navbar-nav {
-        flex-direction: column; /* Stack the nav items vertically on mobile */
-        text-align: center; /* Center the nav links */
+        flex-direction: column; Stack the nav items vertically on mobile
+        text-align: center; Center the nav links
     }
 
     .nav-item {
-        margin-bottom: 0.5rem; /* Spacing between stacked nav items */
+        margin-bottom: 0.5rem; Spacing between stacked nav items
     }
     .search-btn{
         width: 4rem;
@@ -200,35 +200,35 @@ body {
 .hero {
     background-color: #f0ffff;
     width: 100%;
-    margin-left: 0; /* Removed margin-left for better responsiveness */
+    margin-left: 0; Removed margin-left for better responsiveness
     border-bottom-left-radius: 25px;
     border-bottom-right-radius: 25px;
-    height: auto; /* Removed fixed height to allow the content to define the height */
-    padding-bottom: 2rem; /* Added padding to give space at the bottom */
+    height: auto; Removed fixed height to allow the content to define the height
+    padding-bottom: 2rem; Added padding to give space at the bottom
 }
 
 .img1 {
-    max-width: 100%; /* Ensures the image scales properly on all devices */
-    height: auto; /* Maintains aspect ratio */
+    max-width: 100%; Ensures the image scales properly on all devices
+    height: auto; Maintains aspect ratio
     display: block;
-    margin: 0 auto; /* Centers the image */
+    margin: 0 auto; Centers the image
     border-bottom-left-radius: 25px;
     border-bottom-right-radius: 25px;
 }
 
 .section1-text {
     position: relative;
-    top: -50px; /* Adjust this as needed */
+    top: -50px; Adjust this as needed
     color: #04625f;
 }
 
 .section1-text h2 {
-    font-size: 2.5rem; /* Adjust font-size for different screens */
+    font-size: 2.5rem; Adjust font-size for different screens
     color: #04625f;
 }
 
 .section1-text p {
-    font-size: 1.25rem; /* Adjust font-size */
+    font-size: 1.25rem; Adjust font-size
     color: #04625f;
 }
 
@@ -239,7 +239,7 @@ body {
     font-size: 1.2rem;
 }
 
-/* Media Queries for smaller screens */
+Media Queries for smaller screens
 @media (max-width: 768px) {
     .hero {
         padding: 1rem;
@@ -409,8 +409,8 @@ footer p {
     display: flex;
     flex-flow: nowrap;
 }
-
-.productGalleryRow{
+ */
+ /* .productGalleryRow{
     display:flex;
     flex-direction: row;
     flex-wrap: nowrap;
@@ -418,12 +418,12 @@ footer p {
     margin-top: 1rem;
     margin-left: 2rem;
 }
-.productGalleryColumn{
+ .productGalleryColumn{
     border:2px solid #04625f;
     border-radius: 5px;
     margin-left: 1rem;
-}
-.productGalleryColumn img{
+} 
+ .productGalleryColumn img{
     opacity: 0.8;
     cursor: pointer;
     width: 5.75rem;
@@ -433,13 +433,13 @@ footer p {
 
 .productGalleryColumn img:hover{
     opacity: 1;
-}
+} 
 
-.productGalleryRow:after{
+ .productGalleryRow:after{
     content:"";
     display: table;
     clear:both;
-}
+} 
 
 
 
@@ -448,15 +448,16 @@ footer p {
     border: 1px solid #04625f;
     border-radius: 5px;
     height: 500px;
-    margin-left:3rem;
-    width: 90% !important;
+    margin-left:0rem;
+    width: 100% !important;
 }
 
 .product-details{
     margin-top: 3rem;
     background:#f0ffff;
     color:#04625f
-}
+} */
+/*
 .breadcrumbs{
     margin-left: 1rem;
     margin-top: 1rem;
@@ -468,16 +469,16 @@ footer p {
     font-weight: bold;
 }
 
-* {box-sizing: border-box;}
+* {box-sizing: border-box;} */
 
-.img-zoom-container {
+/* .img-zoom-container {
   position: relative;
-  display: inline-block;
+  display: block;
 }
 .img-zoom-lens {
     position: absolute;
     border: 1px solid #d4d4d4;
-    /*set the size of the lens:*/
+    set the size of the lens:
     width: 150px;
     height: 150px;
     visibility: hidden !important;
@@ -487,7 +488,7 @@ footer p {
   .img-zoom-result {
     position:absolute;
     border: 1px solid #d4d4d4;
-    /*set the size of the result div:*/
+    set the size of the result div:
     width: 80%;
     height: 40%;
     display: none;
@@ -498,16 +499,17 @@ footer p {
     background-color: white;
     box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
     z-index: 9999;
-    margin-top: -78rem;
-    /* top: 0;
+    margin-top: -48rem;
+    top: 0;
     left: 110%;
-    margin-left: 3rem; */
+    margin-left: 3rem;
     
   }
 .product-details{
     position: relative;
     z-index: 1;
-}
+} */
+/*
 .productName{
     color: #04625f;
     font-family: monospace;
@@ -591,27 +593,51 @@ footer p {
 }
 .user-profile-card{
     margin-top: 3rem !important;
-}
-
-.star-rating {
-    display: flex;
-    direction: row;
-}
-
-.star {
-    font-size: 30px;
-    color: #d6f9f9;
-    cursor: pointer;
-    transition: color 0.3s ease;
-}
-
-.star:hover,
-.star.selected {
-    color: #ffd700;
-}
-
-
-.wishlist-icon img {
+} */
+/* Container for the image */
+.img-zoom-container {
+    position: relative;
+    
+    display: block;
+  }
+  
+  .img-zoom-lens {
+    position: absolute;
+    border: 1px solid #000;
+    background: rgba(255, 255, 255, 0.4);
+    width: 150px; /* Size of the zoom lens */
+    height: 150px;
+    visibility: hidden !important;
+    cursor: zoom-in;
+  }
+  
+  .img-zoom-result {
+    position: absolute;
+    top: 0;
+    left: 100%;
+    width: 80%; /* Width of the zoom result */
+    height: 80%; /* Height of the zoom result */
+    border: 1px solid #000;
+    background: no-repeat;
+    background-size: cover;
+    transition: opacity .5s, transform .5s;
+    display: none; /* Hidden by default */
+    
+    margin-left: -818px;
+    z-index: 9999;
+    
+  }
+  
+  /* Style for the thumbnail gallery */
+  
+  
+ 
+  
+  
+  
+  /* For the product quantity input */
+  
+/* .wishlist-icon img {
     width: 30px;
     margin-left: 18rem;
     margin-top: -31rem;
@@ -642,14 +668,14 @@ footer p {
   }
 
   .face div {
-    width: 10px; /* 50px divided by 3 */
+    width: 10px; 50px divided by 3
     height: 10px;
     border-radius: 5px;
     box-sizing: border-box;
     border: 1px solid white;
   }
 
-  /* Rubik's Cube Faces */
+  Rubik's Cube Faces
   .front { transform: rotateY(0deg) translateZ(15px); }
   .back { transform: rotateY(180deg) translateZ(15px); }
   .right { transform: rotateY(90deg) translateZ(15px); }
@@ -657,13 +683,13 @@ footer p {
   .top { transform: rotateX(90deg) translateZ(15px); }
   .bottom { transform: rotateX(-90deg) translateZ(15px); }
 
-  /* Colors for the Rubik's Cube */
-  .front div { background-color: #00fc8b; }  /* Orange */
-  .back div { background-color: #f1e61d; }   /* Blue */
-  .right div { background-color: #d807f8; }  /* Green */
-  .left div { background-color: #e63010; }   /* Yellow */
-  .top div { background-color: #157bee; }    /* White */
-  .bottom div { background-color: #0bf42e; } /* Red */
+  Colors for the Rubik's Cube
+  .front div { background-color: #00fc8b; }  Orange
+  .back div { background-color: #f1e61d; }   Blue
+  .right div { background-color: #d807f8; }  Green
+  .left div { background-color: #e63010; }   Yellow
+  .top div { background-color: #157bee; }    White
+  .bottom div { background-color: #0bf42e; } Red
 
   @keyframes rotate3D {
     0% { transform: rotateX(0deg) rotateY(0deg); }
@@ -671,4 +697,4 @@ footer p {
   }
   a:hover{
     text-decoration:none;
-  }
+  } */

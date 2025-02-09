@@ -45,9 +45,9 @@ const addCategory = async (req, res) => {
         console.log('Uploaded File:', req.file);
         const { name, description } = req.body;
 
-        if (!name || !description || !req.file) {
-            return res.status(400).json({ message: 'All fields are required, including the image.', type: 'error' });
-        }
+        // if (!name || !description || !req.file) {
+        //     return res.status(400).json({ message: 'All fields are required, including the image.', type: 'error' });
+        // }
 
         const existingCategory = await Category.findOne({ name:name });
         if (existingCategory) {
@@ -74,50 +74,54 @@ const addCategory = async (req, res) => {
 };
 
 
-const addCategoryOffer = async(req,res) => {
+const addCategoryOffer = async (req, res) => {
     try {
-        const {categoryId,percentage} = req.body;
+        const { categoryId, percentage } = req.body;
 
+        // Validation: Check percentage range
         if (percentage < 1 || percentage > 100) {
             return res.json({ status: false, message: 'Percentage must be between 1 and 100' });
         }
 
         const category = await Category.findById(categoryId).populate('categoryOffer');
-
-        if(!category){
-            return res.status(404).json({status:false,message:'Category not found'});
+        if (!category) {
+            return res.status(404).json({ status: false, message: 'Category not found' });
         }
-        const products = await Product.find({category:categoryId});
-        const hasProductOffer = products.some((product) => product.productOffer > percentage);
 
-        if(hasProductOffer){
-            return res.json({status:false,message:'Products within this category already have product offers'});
+        const products = await Product.find({ category: categoryId });
+        const hasProductOffer = products.some(product => product.productOffer > 0);
+
+        if (hasProductOffer) {
+            return res.json({ status: false, message: 'Products within this category already have product offers' });
         }
-        
+
         const newOffer = new Offer({
-            offerType:'Category',
-            discountType:'Percentage',
-            value:percentage,
-            startDate:new Date(),
-            endDate:new Date(Date.now() + 7*24*60*60*100),
-            isActive:true
-        })
-        
+            offerType: 'Category',
+            discountType: 'Percentage',
+            value: percentage,
+            startDate: new Date(),
+            endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Offer valid for a week
+            isActive: true
+        });
+
         await newOffer.save();
-        const discount = Math.floor(products.regularPrice*(percentage/100));
-        products.salePrice = products.regularPrice - ((products.regularPrice - products.salePrice)+discount);
         category.categoryOffer = newOffer._id;
-        for(const product of products){
-            product.productOffer = 0;
-            products.salePrice = product.regularPrice;
+        await category.save();
+
+        
+        products.forEach(async (product) => {
+            product.productOffer = 0; 
+            product.salePrice = product.regularPrice - Math.floor(product.regularPrice * (percentage / 100)); 
             await product.save();
-        }
+        });
+
         res.json({ status: true, message: 'Offer added successfully' });
     } catch (error) {
-        console.error('Error in addCategoryOffer : ',error);
-        res.status(500).json({status:false,message:'Internal Server Error'});
+        console.error('Error in addCategoryOffer: ', error);
+        res.status(500).json({ status: false, message: 'Internal Server Error' });
     }
-}
+};
+
 
 const removeCategoryOffer = async(req,res) => {
     try {
@@ -238,6 +242,38 @@ const removeCategory = async(req,res) => {
     }
 }
 
+const searchCategory = async (req, res) => {
+  try {
+    const searchString = req.body.query;
+    let page =1;
+    if(req.query.page){
+      page = req.query.page;
+    }
+    const limit = 3;
+
+    const categories = await Category.find({
+      name:{$regex:searchString,$options:"i"}
+    })
+    .limit(limit*1)
+    .skip((page-1)*limit)
+    .exec();
+
+    const count = await Category.find({
+      name:{$regex:searchString,$options:"i"}
+    }).countDocuments();
+    
+    res.render("category", {
+        cat:categories,
+        totalPages: Math.ceil(count / limit),
+        currentPage: page,
+      });
+    console.log(categories);
+  } catch (error) {
+    console.log('Error while searching user : ', error);
+    res.status(500).send('Internal Server Error');
+  }
+};
+
 module.exports = {
     categoryInfo,
     loadAddCategory,
@@ -248,5 +284,6 @@ module.exports = {
     getUnlistCategory,
     getEditCategory,
     editCategory,
-    removeCategory
+    removeCategory,
+    searchCategory
 }

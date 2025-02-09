@@ -48,9 +48,48 @@ const deactivateOffer = async(req,res) => {
     }
 }
 
+const searchOffer = async (req, res) => {
+  try {
+    const searchString = req.body.query;
+    let page =1;
+    if(req.query.page){
+      page = req.query.page;
+    }
+    const limit = 3;
+
+    const offers = await Offer.find({
+      $or:[
+        {offerType:{$regex:searchString,$options:"i"}},
+        {discountType:{$regex:searchString,$options:"i"}}
+      ]
+    })
+    .lean()
+    .limit(limit*1)
+    .skip((page-1)*limit)
+    .exec();
+
+    const count = await Offer.find({
+      $or:[
+        {offerType:{$regex:searchString,$options:"i"}},
+        {discountType:{$regex:searchString,$options:"i"}}
+      ]
+    }).countDocuments();
+    
+    res.render("offer", {
+        offers:offers,
+        totalPages: Math.ceil(count / limit),
+        currentPage: page,
+      });
+    console.log(offers);
+  } catch (error) {
+    console.log('Error while searching user : ', error);
+    res.status(500).send('Internal Server Error');
+  }
+};
 
 module.exports = {
     loadOffer,
     activateOffer,
-    deactivateOffer
+    deactivateOffer,
+    searchOffer
 }

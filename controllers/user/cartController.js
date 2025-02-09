@@ -1,7 +1,7 @@
 const User = require('../../models/userSchema');
 const Cart = require('../../models/cartSchema');
 const Product = require('../../models/productSchema');
-
+const Category = require('../../models/categorySchema')
 
 const incrementProductPurchase = async(productId) => {
     await Product.findByIdAndUpdate(productId,{$in:{purchases:1}})
@@ -9,6 +9,18 @@ const incrementProductPurchase = async(productId) => {
 const updatePopularityScore = async(productId) => {
     const product = await Product.findById(productId);
     await Product.findByIdAndUpdate(productId,{$inc:{popularity:1}});
+}
+
+const loadCart = async(req,res) => {
+    try {
+        const userId = req.session.user;
+        const user = await User.findById(userId);
+        const cart = await Cart.findOne({userId}).populate('items.productId');
+        const category = await Category.find({isListed:true});
+        res.render('cart',{user,cart,category:category});
+    } catch (error) {
+        res.status(500).send('Internal Server Error');
+    }
 }
 const addToCart = async (req, res) => {
     try {
@@ -175,6 +187,7 @@ const decreaseQuantity = async(req,res) => {
 }
 
 module.exports = {
+    loadCart,
     addToCart,
     removeFromCart,
     increaseQuantity,

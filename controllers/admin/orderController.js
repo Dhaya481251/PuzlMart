@@ -81,9 +81,53 @@ const moreDetails = async(req,res) => {
         res.status(500).send('Internal server error');
     }
 }
+
+const searchOrder = async (req, res) => {
+  try {
+    const searchString = req.body.query;
+    let page =1;
+    if(req.query.page){
+      page = req.query.page;
+    }
+    const limit = 3;
+
+    const orders = await Order.find({
+      $or:[
+        {deliveryDate:{$regex:searchString,$options:"i"}},
+        {paymentMethod:{$regex:searchString,$options:"i"}},
+        {paymentStatus:{$regex:searchString,$options:"i"}},
+        {status:{$regex:searchString,$options:"i"}}
+      ]
+    })
+    .limit(limit*1)
+    .skip((page-1)*limit)
+    .exec();
+
+    const count = await Order.find({
+      $or:[
+        {deliveryDate:{$regex:searchString,$options:"i"}},
+        {paymentMethod:{$regex:searchString,$options:"i"}},
+        {paymentStatus:{$regex:searchString,$options:"i"}},
+        {status:{$regex:searchString,$options:"i"}}
+      ]
+    }).countDocuments();
+    
+    res.render("orders", {
+        data:brands,
+        totalPages: Math.ceil(count / limit),
+        currentPage: page,
+      });
+    console.log(orders);
+  } catch (error) {
+    console.log('Error while searching user : ', error);
+    res.status(500).send('Internal Server Error');
+  }
+};
+
 module.exports = {
     listOrders,
     changeOrderStatus,
     cancelOrder,
-    moreDetails
+    moreDetails,
+    searchOrder
 };

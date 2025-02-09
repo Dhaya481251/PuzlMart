@@ -27,7 +27,7 @@ const loadHomepage = async(req,res) => {
         .sort({createdOn:-1})
         .limit(4);
         if(userId){
-        res.render('home',{user:userData,products:productData,cart,wishlist});
+        res.render('home',{user:userData,products:productData,cart,wishlist,category:categories});
         }
         console.log('Home Page loaded');
     } catch (error) {
