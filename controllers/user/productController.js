@@ -4,6 +4,7 @@ const Brand = require('../../models/brandSchema');
 const User = require('../../models/userSchema');
 const Cart = require('../../models/cartSchema');
 const Wishlist = require('../../models/wishlistSchema');
+const Offer = require('../../models/offerSchema')
 
 
 const fs = require('fs');
@@ -20,7 +21,7 @@ const loadProductpage = async(req,res) => {
             cart.items = cart.items.filter(item => item.productId); // Remove items with null productId
           }
 
-        const category = await Category.find({isListed:true});
+        const category = await Category.find({isListed:true}).populate('categoryOffer');
         const categoryIds = category.map((category) => category._id.toString());
         const page = parseInt(req.query.page) || 1;
         const limit = 4;
@@ -73,34 +74,57 @@ const updatePopularityScore = async(productId) => {
     await Product.findByIdAndUpdate(productId,{$inc:{popularity:1}});
 }
 
-const loadProductDetailspage = async(req,res) => {
+const loadProductDetailspage = async (req, res) => {
     try {
         const userId = req.session.user;
         const userData = await User.findById(userId);
         const id = req.params.id;
         await incrementProductView(id);
         await updatePopularityScore(id);
-        const product = await Product.findOne({_id:id})
-        .populate('category')
-        .populate('brand')
-        .populate('relatedProducts')
-        .populate('reviews')
-        .populate('productOffer')
-        .exec();
-        if(!product){
-            console.error(`Product with ID ${id} not found`)
+        const category = await Category.find({ isListed: true });
+        const categoryIds = category.map((category) => category._id.toString());
+        const product = await Product.findOne({ _id: id, category: { $in: categoryIds } })
+            .populate('category')
+            .populate('brand')
+            .populate('relatedProducts')
+            .populate('reviews')
+            .populate('productOffer')
+            .populate({
+                path: 'category',
+                populate: {
+                    path: 'categoryOffer',
+                    model: 'Offer'
+                }
+            })
+            .exec();
+
+        if (!product) {
+            console.error(`Product with ID ${id} not found`);
             return res.status(404).send('Product not found');
         }
-        const category = await Category.find({isListed:true});
+
         const brand = await Brand.find({});
         const cart = await Cart.findOne({ userId }).populate('items.productId');
-        const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');
-        const discount = Math.ceil(((product.regularPrice-product.salePrice)/product.regularPrice)*100);
-        res.render('productDetails',{isAuthenticated: req.isAuthenticated(),user:userData,product:product,category:category,brand:brand,relatedProducts:product.relatedProducts || [],cart,discount,wishlist});
+        const wishlist = await Wishlist.findOne({ userId }).populate('products.productsId');
+        const discount = Math.ceil(((product.regularPrice - product.salePrice) / product.regularPrice) * 100);
+
+        res.render('productDetails', {
+            isAuthenticated: req.isAuthenticated(),
+            user: userData,
+            product: product,
+            category: category,
+            brand: brand,
+            relatedProducts: product.relatedProducts || [],
+            cart,
+            discount,
+            wishlist,
+        });
     } catch (error) {
+        console.error('Error loading product details:', error);
         res.status(500).send('Internal Server Error');
     }
-}
+};
+
 
 const filterProductByCategory = async (req, res) => {
     try {

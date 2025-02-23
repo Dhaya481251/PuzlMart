@@ -36,7 +36,8 @@ router.post('/searchUser',adminAuth,customerController.searchUser);
 router.get('/category',adminAuth,categoryController.categoryInfo);
 router.get('/addCategory',categoryController.loadAddCategory);
 router.post('/addCategory',adminAuth,uploads.single('CategoryImage'),categoryController.addCategory);
-router.post('/addCategoryOffer',adminAuth,categoryController.addCategoryOffer);
+router.get('/addCategoryOffer',adminAuth,categoryController.loadAddCategoryOffer);
+router.post('/addCategoryOffer/:id',adminAuth,categoryController.addCategoryOffer);
 router.post('/removeCategoryOffer',adminAuth,categoryController.removeCategoryOffer);
 router.get('/listCategory',adminAuth,categoryController.getListCategory);
 router.get('/unlistCategory',adminAuth,categoryController.getUnlistCategory);
@@ -86,7 +87,7 @@ router.get('/salesReport',adminAuth,adminController.salesReport);
 router.post('/filterSalesReport',adminAuth,adminController.filterSalesReport);
 router.get('/downloadPDF',adminAuth,adminController.downloadPDF);
 router.get('/downloadEXCEL',adminAuth,adminController.downloadEXCEL);
-
+router.get('/getChartData',adminAuth,adminController.getChartData)
 //Offer management
 router.get('/offer',adminAuth,offerController.loadOffer);
 router.get('/activateOffer',adminAuth,offerController.activateOffer);

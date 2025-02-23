@@ -13,7 +13,12 @@
        .input-upload {
    position: relative;
 }
-
+.remove-icon {
+    color: red;
+    font-weight: bold;
+    cursor: pointer;
+    margin-left: 5px;
+}
 
 .error-message {
            color: red;
@@ -70,7 +75,7 @@
               
               <div class="col-md-12">
                 <div class="form-floating">
-                  <textarea class="form-control" name="description" placeholder="Product Description" id="descriptionId" style="height: 100px;" value="<%=product.description%>"></textarea>
+                  <textarea class="form-control" name="description" placeholder="Product Description" id="descriptionId" style="height: 100px;"><%=product.description%></textarea>
                   <label for="floatingTextarea">Product Description</label>
                   <div id="description-error" class="error-message"></div>
                 </div>
@@ -116,7 +121,8 @@
               <!-- Image inputs with error element -->
               <div class="col-md-12" style="margin: 0rem;padding: 2rem;">
                 <div class="border row">
-                  <div id="addedImagesContainer" class="thumbnails-container">
+                    <div id="addedImagesContainer"></div>
+                  <div class="thumbnails-container">
                     <% for(let i=0 ; i<product.productImage.length ; i++){ %>
                         <div class="col-md-1">
                             <div class="mb-4">
@@ -126,7 +132,7 @@
                                         <img class="rounded" style="width: 50px; height: 60px;"
                                             src="/uploads/re-image/<%=product.productImage[i]%>"
                                             alt="" id="row-image[i]">
-                                        <i onclick="deleteSingleImage('<%=product.productImage[i]%>','<%=product._id%>')" style="position: absolute; cursor: pointer;" class="fa-solid fa-xmark">&times;</i>
+                                        <i onclick="deleteSingleImage('<%=product.productImage[i]%>','<%=product._id%>')" style="position: absolute;margin-left: .5rem; cursor: pointer;" class="fa-solid fa-xmark"></i>
                                     </td>
                                 </div>
                                
@@ -542,14 +548,19 @@
                    img.style.height = "auto";
                    const removeIcon = document.createElement("span");
                    removeIcon.classList.add("remove-icon");
+                   removeIcon.style.cursor = 'pointer';
                    removeIcon.innerHTML = "&times;";
                    removeIcon.addEventListener("click", function () {
-                       
+                       const index = selectedImages.indexOf(file);
+                       if(index!== -1){
+                          selectedImages.splice(index,1);
+                       }
                        thumbnail.remove();
                    });
                    thumbnail.appendChild(img);
                    thumbnail.appendChild(removeIcon);
                    addedImagesContainer.appendChild(thumbnail);
+                   viewImage(file, i + 1);
                }
            };
 

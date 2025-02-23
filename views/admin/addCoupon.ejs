@@ -7,6 +7,7 @@
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="/admin">Home</a></li>
           <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
+          <li class="breadcrumb-item"><a href="/admin/coupons">Coupons</a></li>
           <li class="breadcrumb-item active"><a href="/admin/addCoupon">Add Coupon</a></li>
         </ol>
       </nav>
@@ -20,7 +21,7 @@
     <div class="card-body">
       <h5 class="card-title">Add New Coupon</h5>
   
-      <form class="row g-3" action="/admin/addCoupon" method="POST" onsubmit="validateAndSubmit(event)">
+      <form class="row g-3"  onsubmit="validateAndSubmit(event)">
         <div class="col-md-6">
           <div class="form-floating">
               <input type="text" class="form-control" name="name" />
@@ -131,48 +132,58 @@
   });
   
   function validateAndSubmit(event) {
-      event.preventDefault();
-  
-      if (!validateForm()) return;
-  
-      const form = event.target;
-      const formData = Object.fromEntries(new FormData(form));
-  
-      fetch(form.action, {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(formData),
-      })
-          .then(response => {
-              if (!response.ok) {
-                  throw new Error('HTTP error: ' + response.status);
-              }
-              return response.json();
-          })
-          .then(data => {
-              Swal.fire({
-                  icon: data.type,
-                  title: data.message,
-                  showConfirmButton: true,
-                  timer: 1500,
-              }).then(() => {
-                  if (data.type === 'success') {
-                      window.location.href = '/admin/coupons';
-                  }
-              });
-          })
-          .catch(error => {
-              console.error('Error:', error);
-              Swal.fire({
-                  icon: 'error',
-                  title: 'Something went wrong!',
-                  showConfirmButton: true,
-                  timer: 1500,
-              });
-          });
-  }
+    event.preventDefault();
+
+    if (!validateForm()) return;
+
+    const form = event.target;
+    const formData = Object.fromEntries(new FormData(form));
+
+    fetch('/admin/addCoupon', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+    })
+        .then(response => {
+            return response.json().then(data => {
+                if (!response.ok) {
+                    throw new Error(data.message || 'HTTP error: ' + response.status);
+                }
+                return data;
+            });
+        })
+        .then(data => {
+            Swal.fire({
+                icon: data.type,
+                title: data.message,
+                showConfirmButton: true,
+                timer: 1500,
+            }).then(() => {
+                if (data.type === 'success') {
+                    window.location.href = '/admin/coupons';
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: data.message,
+                        showConfirmButton: true,
+                        timer: 1500
+                    });
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: error.message,
+                showConfirmButton: true,
+                timer: 1500,
+            });
+        });
+}
+
   
   
       function validateForm(){

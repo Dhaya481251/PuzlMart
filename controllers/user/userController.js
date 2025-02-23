@@ -296,6 +296,7 @@ const forgotEmailValid = async(req,res) => {
         const findUser = await User.findOne({email:email});
         if(findUser){
             const otp = generateOtp();
+            console.log(otp)
             const emailSent = await sendVerificationEmail(email,otp);
             if(emailSent){
                 req.session.otp = otp;
@@ -339,6 +340,7 @@ const loadResetPassword = async(req,res) => {
 const resendForgotOtp = async(req,res) => {
     try {
         const otp = generateOtp();
+        console.log(otp);
         req.session.userOtp = otp;
         const email = req.session.email;
         console.log('Resending otp to email',email);

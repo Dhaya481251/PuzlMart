@@ -12,18 +12,293 @@
     </nav>
   </div><!-- End Page Title -->
 
-  <div class="container-fluid mt-3" style="width:100% ; height:1000px;">
-    <h1>Welcome to the Admin Dashboard</h1>
-    <p>Select an option from the sidebar to get started.</p>
-  </div>
+    <section class="section dashboard">
+      <div class="row">
 
+        <!-- Left side columns -->
+        <div class="col-lg-8">
+          <div class="row">
+
+            <!-- Sales Card -->
+            <div class="col-xxl-4 col-md-6">
+              <div class="card info-card sales-card">
+
+                <div class="card-body">
+                  <h5 class="card-title">Total Customers</h5>
+
+                  <div class="d-flex align-items-center">
+                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                      <i class="bi bi-people"></i>
+                    </div>
+                    <div class="ps-3">
+                      <h6><%=users.length%></h6>
+                      
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div><!-- End Sales Card -->
+
+            <!-- Revenue Card -->
+            <div class="col-xxl-4 col-md-6">
+              <div class="card info-card revenue-card">
+
+                <div class="card-body">
+                  <h5 class="card-title">Total Orders</h5>
+
+                  <div class="d-flex align-items-center">
+                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                      <i class="bi bi-cart"></i>
+                    </div>
+                    <div class="ps-3">
+                      <h6><%=orders.length%></h6>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div><!-- End Revenue Card -->
+
+            <!-- Customers Card -->
+            <div class="col-xxl-4 col-xl-12">
+
+              <div class="card info-card customers-card">
+
+                <div class="card-body">
+                  <h5 class="card-title">Total Products</h5>
+
+                  <div class="d-flex align-items-center">
+                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                      <i class="bi bi-puzzle"></i>
+                    </div>
+                    <div class="ps-3">
+                      <h6><%=products.length%></h6>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+            </div><!-- End Customers Card -->
+
+            <!-- Reports -->
+            <div class="col-12">
+              <div class="card">
+
+                
+
+                <div class="card-body">
+                  <h5 class="card-title">Reportss</h5>
+                  <div class="container-fluid mt-4">
+                    
+                    <div class="text-center mb-3">
+                        <button class="btn btn-primary me-2" onclick="fetchChartData('daily')">Daily</button>
+                        <button class="btn btn-primary me-2" onclick="fetchChartData('weekly')">Weekly</button>
+                        <button class="btn btn-primary me-2" onclick="fetchChartData('monthly')">Monthly</button>
+                        <button class="btn btn-primary" onclick="fetchChartData('yearly')">Yearly</button>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <canvas id="barChart"></canvas>
+                        </div>
+                        <div class="col-md-6">
+                          <canvas id="doughnutChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+              </div>
+            </div><!-- End Reports -->
+
+                        <!-- Top Selling -->
+            <div class="col-12">
+              <div class="card top-selling overflow-auto">
+
+                <div class="card-body pb-0">
+                  <h5 class="card-title">Top 10 Selling Products </h5>
+
+                  <table class="table table-borderless">
+                    <thead>
+                      <tr>
+                        <th scope="col">Image</th>
+                        <th scope="col">Product Name</th>
+                        <th scope="col">Price</th>
+                        <th scope="col">Total Quantity Sold</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% topSellingProducts.forEach(product => { %>
+                      <tr>
+                        <th scope="row"><a href="#"><img src="/uploads/re-image/<%= product.productDetails.productImage[0] %>"></a></th>
+                        <td><a href="#" class="text-primary fw-bold"><%= product.productDetails.productName %></a></td>
+                        <td><%= product.productDetails.salePrice %></td>
+                        <td class="fw-bold"><%= product.totalQuantitySold %> units</td>
+                      </tr>
+                      <% }) %>
+                    </tbody>
+                  </table>
+
+                </div>
+
+              </div>
+            </div><!-- End Top Selling -->
+            <div class="col-12">
+              <div class="card top-selling overflow-auto">
+
+                <div class="card-body pb-0">
+                  <h5 class="card-title">Top 10 Selling Categories </h5>
+
+                  <table class="table table-borderless">
+                    <thead>
+                      <tr>
+                        <th scope="col">Image</th>
+                        <th scope="col">Category Name</th>
+                        <th scope="col">Category Id</th>
+                        <th scope="col">Total Quantity Sold</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% topSellingCategories.forEach(category => { %>
+                      <tr>
+                        <th scope="row"><a href="#"><img src="<%=category._id.categoryImage%>" alt="Category Image"></a></th>
+                        <td><a href="#" class="text-primary fw-bold"><%=category._id.name %></a></td>
+                        <td><%= category._id._id %></td>
+                        <td class="fw-bold"><%= category.totalQuantitySold %> units</td>
+                      </tr>
+                      <% }) %>
+                    </tbody>
+                  </table>
+
+                </div>
+
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="card top-selling overflow-auto">
+
+                <div class="card-body pb-0">
+                  <h5 class="card-title">Top 10 Selling Brands </h5>
+
+                  <table class="table table-borderless">
+                    <thead>
+                      <tr>
+                        <th scope="col">Logo</th>
+                        <th scope="col">Brand Name</th>
+                        <th scope="col">Total Quantity Sold</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% topSellingBrands.forEach(brand => { %>
+                      <tr>
+                        <th scope="row"><a href="#"><img src="/uploads/re-image/<%=brand.brandImage%>" alt="Brand Logo"></a></th>
+                        <td><a href="#" class="text-primary fw-bold"><%= brand.brandName%></a></td>
+                        <td class="fw-bold"><%= brand.totalQuantitySold %> units</td>
+                      </tr>
+                      <% }) %>
+                    </tbody>
+                  </table>
+
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div><!-- End Left side columns -->
+
+        <!-- Right side columns -->
+        
 </main>
 
-    <!-- Main Dashboard Content -->
-    <!-- <div class="container-fluid mt-3">
+    <!-- Main Dashboard Content
+    <div class="container-fluid mt-3">
       <h1>Welcome to the Admin Dashboard</h1>
       <p>Select an option from the sidebar to get started.</p>
     </div>
   </div> -->
+<script>
+  let barChartInstance = null;
+let doughnutChartInstance = null;
 
+async function fetchChartData(filter = 'monthly') {
+   try {
+        const response = await fetch(`/admin/getChartData?filter=${filter}`);
+        const data = await response.json();
+
+        // Data for Bar Chart (Users, Orders, Products)
+        const barChartData = data.barChartData;
+
+        // Data for Doughnut Chart (Revenue and Number of Orders by Categories)
+        const doughnutChartData = data.doughnutChartData;
+
+        // Destroy previous bar chart if it exists
+        if (barChartInstance) {
+            barChartInstance.destroy();
+        }
+
+        // Destroy previous doughnut chart if it exists
+        if (doughnutChartInstance) {
+            doughnutChartInstance.destroy();
+        }
+
+        // Create the Bar Chart
+        const barCtx = document.getElementById("barChart").getContext("2d");
+        barChartInstance = new Chart(barCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Users', 'Orders', 'Products'],
+                datasets: [{
+                    label: 'Count',
+                    data: barChartData,
+                    backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc'],
+                    borderColor: ['#4e73df', '#1cc88a', '#36b9cc'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+        // Doughnut Chart
+        const doughnutCtx = document.getElementById("doughnutChart").getContext("2d");
+doughnutChartInstance = new Chart(doughnutCtx, {
+    type: 'doughnut',
+    data: {
+        labels: data.doughnutChartData.map(item => item._id),
+        datasets: [{
+            label: 'Revenue by Category',
+            data: data.doughnutChartData.map(item => item.totalRevenue),
+            backgroundColor: [
+                '#FF6384', '#36A2EB', '#FFCE56',
+                '#4BC0C0', '#9966FF', '#FF9F40'
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        const category = data.doughnutChartData[context.dataIndex];
+                        return `${category._id}: Rs. ${category.totalRevenue.toFixed(2)}, Orders: ${category.totalOrders}`;
+                    }
+                }
+            }
+        }
+    }
+});
+console.log(data.doughnutChartData);
+    } catch (error) {
+        console.error('Error fetching chart data:', error);
+    }
+}
+
+// Initial chart load
+document.addEventListener('DOMContentLoaded', () => {
+    fetchChartData('monthly');
+});
+</script>
 <%- include('../../views/partials/admin/footer') %>

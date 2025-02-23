@@ -42,7 +42,7 @@
         <div class="card-body">
           <h5 class="card-title">Add New Product</h5>
 
-          <form class="row g-3" method="POST" action="/admin/addProducts" onsubmit="validateAndSubmit(event)" enctype="multipart/form-data">
+          <form class="row g-3" onsubmit="validateAndSubmit(event)" enctype="multipart/form-data">
             <div class="col-md-12">
               <div class="form-floating">
                 <input type="text" class="form-control" id="productName" placeholder="Product Name" name="productName">
@@ -72,8 +72,9 @@
             </div>
             
             <div class="col-md-12">
-              <input type="text" class="form-control" id="regularPrice" placeholder="Rs" name="regularPrice">
+              
               <div class="form-floating">
+                <input type="text" class="form-control" id="regularPrice" placeholder="Regular Price" name="regularPrice">
                 <label for="floatingPrice">Regular Price</label>
                 <div id="regularPrice-error" class="error-message"></div>
               </div>
@@ -147,6 +148,7 @@
 </div>
 </footer>
    <script src="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.js"></script>
    <script>
 document.addEventListener("DOMContentLoaded", function () {
     const toggleButton = document.querySelector(".toggle-sidebar-btn");
@@ -184,12 +186,58 @@ document.addEventListener("DOMContentLoaded", function () {
 function validateAndSubmit(event) {
     event.preventDefault();
     console.log('Form validation started');
-    if (validateForm()) {
-        console.log('Form validation passed');
-        event.target.submit();
-    } else {
-        console.log('Form validation failed');
+    if(!validateForm()){
+      return;
     }
+    const form = event.target;
+    const formData = new FormData(form);
+
+    fetch('/admin/addProducts',{
+      method:'POST',
+      body:formData
+    })
+    .then(response => {
+      if(!response.ok){
+        return response.json().then(data => {
+          throw new Error(data.message || `HTTP error : ${response.status}`);
+        });
+      }
+      return response.json();
+    })
+    .then(data => {
+      Swal.fire({
+        icon:data.type,
+        title:data.message,
+        showConfirmButton:true,
+        timer:1500
+      }).then(() => {
+        if(data.type === 'success'){
+          window.location.href = '/admin/products';
+        }else{
+          Swal.fire({
+            icon:'error',
+            title:data.message,
+            showConfirmButton:true,
+            timer:1500
+          });
+        }
+      });
+    })
+    .catch(error => {
+      console.error('Error : ',error);
+      Swal.fire({
+        icon:'error',
+        title:error.message,
+        showConfirmButton:true,
+        timer:1500
+      })
+    })
+    // if (validateForm()) {
+    //     console.log('Form validation passed');
+    //     event.target.submit();
+    // } else {
+    //     console.log('Form validation failed');
+    // }
 }
   
     

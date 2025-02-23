@@ -10,33 +10,33 @@ const Wishlist = require('../../models/wishlistSchema');
 const mongoose = require('mongoose');
 const env = require('dotenv').config();
 const payment = require('../../config/paymentRoute');
-
-
-
-
+const startPayPal = require('../../config/startPayPal');
+const PDFDocument = require('pdfkit');
 
 const loadCheckOutPage = async (req, res) => {
     try {
+        
         const userId = req.session.user;
         const userData = await User.findById(userId);
         const cart = await Cart.findOne({ userId }).populate('items.productId');
         const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');
         const category = await Category.find({isListed:true})
         if (cart && cart.items) {
-            cart.items = cart.items.filter(item => item.productId); // Remove items with null productId
+            cart.items = cart.items.filter(item => !item.productId.isBlocked); // Remove items with null productId
         }
         if(cart.items.length<0){
             res.redirect('/');
         }
         const addressData = await Address.findOne({ userId: userData._id }) || { address: [] };
         const coupons = await Coupon.find({ isActive: true });
-
+        
+        let deliveryCharge = 20;
         let finalAmount = cart.items.reduce((total, item) => {
             return total + (item.productId?.salePrice || 0) * item.quantity;
-        }, 0);
-        let discount = cart.items.reduce((acc, item) => {
+        }, 0)+deliveryCharge;
+        let discount =(cart.items.reduce((acc, item) => {
             return acc + ((item.productId?.regularPrice || 0) - (item.productId?.salePrice || 0)) * item.quantity;
-        }, 0);
+        }, 0)).toFixed(2);
         
         // Apply coupon if active
         if (coupons && new Date() <= coupons.expireOn) {
@@ -51,7 +51,21 @@ const loadCheckOutPage = async (req, res) => {
             userData.coupons.isActive = true;
             await userData.save();
         }
-
+        const coupon = await Coupon.findOne({ code: req.session.couponCode });
+        if (coupon && new Date() <= coupon.expireOn) {
+            if (coupon.discountType === 'Percentage') {
+                couponDiscount = finalAmount * (coupon.discount / 100);
+                finalAmount -= couponDiscount;
+                discount += couponDiscount;
+            } else {
+                couponDiscount = coupon.discount;
+                finalAmount = Math.max(0, finalAmount - coupon.discount);
+                discount += coupon.discount;
+            }
+            userData.coupons.isActive = true;
+            await userData.save();
+        }
+        if(cart.items.length > 0 ){
         res.render('orderPaymentPage', {
             isAuthenticated: req.isAuthenticated(),
             user: userData,
@@ -60,9 +74,14 @@ const loadCheckOutPage = async (req, res) => {
             coupons,
             finalAmount,
             discount,
+            deliveryCharge,
             wishlist,
-            category:category
+            category:category,
+            coupon
         });
+        }else{
+            res.redirect(302,'/products');
+        }
     } catch (error) {
         console.error('Checkout page error:', error);
         res.status(500).send('Internal Server Error');
@@ -76,20 +95,25 @@ const orderPlaced = async (req, res) => {
         const userData = await User.findById(userId);
         const { selectedAddress, selectedPayment } = req.body;
         const coupon = await Coupon.findOne({ code: req.session.couponCode });
-       
+        const category = await Category.find({ isListed: true });
+
         if (!selectedAddress || !selectedPayment) {
             return res.status(400).send('Address and payment method are required');
         }
 
         const cart = await Cart.findOne({ userId }).populate('items.productId');
         if (cart && cart.items) {
-            cart.items = cart.items.filter(item => item.productId && item.productId.productName && item.productId.salePrice); // Filter out items with missing details
+            cart.items = cart.items.filter(item => item.productId && item.productId.productName && item.productId.salePrice);
         }
-        const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');
-        // Log details of each product in the cart
+
+        const wishlist = await Wishlist.findOne({ userId }).populate('products.productsId');
+
         cart.items.forEach(item => {
             const product = item.productId;
             console.log(`Product ID: ${item._id}, Product Name: ${product?.productName}, Sale Price: ${product?.salePrice}, Description: ${product?.description}`);
+            if (!product?.salePrice || !product?.regularPrice) {
+                console.error('Sale Price or Regular Price missing for:', product);
+            }
         });
 
         const userAddresses = await Address.findOne({ userId });
@@ -104,8 +128,8 @@ const orderPlaced = async (req, res) => {
         if (!orderAddress) {
             return res.status(404).send('Address not found');
         }
-
-        let finalAmount = cart.items.reduce((total, item) => total + (item.productId?.salePrice || 0) * item.quantity, 0);
+        let deliveryCharge = 20
+        let finalAmount = cart.items.reduce((total, item) => total + (item.productId?.salePrice || 0) * item.quantity, 0) + deliveryCharge;
         let discount = cart.items.reduce((acc, item) => acc + ((item.productId?.regularPrice || 0) - (item.productId?.salePrice || 0)) * item.quantity, 0);
         let couponDiscount = 0;
 
@@ -126,9 +150,15 @@ const orderPlaced = async (req, res) => {
         const orderData = new Order({
             userId,
             deliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-            items: cart.items,
+            items: cart.items.map(item => ({
+                productId: item.productId,
+                salePrice: item.productId.salePrice,
+                regularPrice: item.productId.regularPrice,
+                quantity: item.quantity,
+            })),
             finalAmount,
             discount,
+            deliveryCharge,
             addressId: orderAddress,
             paymentMethod: selectedPayment,
             status: 'Pending',
@@ -137,6 +167,8 @@ const orderPlaced = async (req, res) => {
         orderData.addressDetails = orderAddress;
         orderData.couponApplied = coupon && new Date() <= coupon.expireOn;
 
+        console.log(`orderData.items.salePrice : ${cart.items.salePrice}`);
+        console.log(`orderData.items.regularPrice : ${cart.items.regularPrice}`);
         for (const item of cart.items) {
             const product = await Product.findById(item.productId);
             if (product) {
@@ -152,19 +184,27 @@ const orderPlaced = async (req, res) => {
         }
 
         if (selectedPayment === 'PayPal') {
-            const url = await payment.createOrder(userId, couponDiscount);
-            orderData.paymentStatus = 'Paid';
-            await orderData.save();
-            cart.items = [];
-            await cart.save();
-            return res.redirect(url);
+            try {
+                const url = await payment.createOrder(userId, couponDiscount,orderData._id);
+                 orderData.paymentStatus = 'Paid'
+                await orderData.save();
+                cart.items = [];
+                await cart.save();
+
+                return res.redirect(url);
+            } catch (error) {
+                console.error('PayPal order creation failed:', error);
+                orderData.paymentStatus = 'Pending'; // Keep it pending if PayPal creation fails
+                await orderData.save();
+                return res.status(500).send('Failed to create PayPal order, status updated to payment pending');
+            }
         } else if (selectedPayment === 'COD') {
             const order = new Order(orderData);
             order.paymentStatus = 'Not paid';
             await order.save();
             cart.items = [];
             await cart.save();
-            return res.render('orderConfirmation', { cart,wishlist });
+            return res.render('orderConfirmation', { cart, wishlist, category });
         } else {
             return res.status(400).send('Invalid payment method');
         }
@@ -174,20 +214,21 @@ const orderPlaced = async (req, res) => {
     }
 };
 
-const orderConfirmation = async(req,res) => {
+
+const orderConfirmation = async (req, res) => {
     try {
         const userId = req.session.user;
         const id = req.params.id;
         const order = await Order.findById(id);
-        const cart = await Cart.findOne({userId}).populate('items.productId');
-        const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');
-        const category = await Category.find({isListed:true});
-        res.render(`orderConfirmation`,{order,cart,wishlist,category:category});
-        
+        const cart = await Cart.findOne({ userId }).populate('items.productId');
+        const wishlist = await Wishlist.findOne({ userId }).populate('products.productsId');
+        const category = await Category.find({ isListed: true });
+        res.render('orderConfirmation', { order, cart, wishlist, category });
     } catch (error) {
-        
+        console.error('Error while loading orderConfirmation page : ', error);
+        res.status(500).send('Internal Server Error');
     }
-}
+};
 
 const loadMyOrdersPage = async (req, res) => {
     try {
@@ -219,8 +260,6 @@ const loadMyOrdersPage = async (req, res) => {
 const orderDetails = async(req,res) => {
     try{
         const userId = req.session.user;
-        
-        
         const id = req.params.id;
         const order = await Order.findById({_id:id})
         .populate('items.productId')
@@ -233,13 +272,33 @@ const orderDetails = async(req,res) => {
         const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');
         console.log('Order : ',order);
         const category = await Category.find({isListed:true});
-        
         res.render('orderDetails',{orders:order,cart,wishlist,category:category});
     }catch(error){
         console.error('error while loading order details',error);
         res.status(500).send('Internal server error');
     }
 }
+
+const payFromOrderDetails = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const userId = req.session.user;
+        const order = await Order.findById({_id:id});
+        
+        if (!order) {
+            return res.status(404).send('Order not found');
+        }
+
+        const approvalUrl = await startPayPal.createOrder(userId,id);
+        order.paymentStatus = 'Paid';
+        await order.save();
+
+        return res.redirect(approvalUrl);
+    } catch (error) {
+        console.error('Error starting PayPal payment:', error);
+        res.status(500).send('Internal Server Error');
+    }
+};
 
 const rateProduct = async(req,res) => {
     try {
@@ -339,7 +398,7 @@ const addAddress = async(req,res) => {
         }
         req.session.cart = cart;
         req.session.wishlist = wishlist;
-        res.redirect('/buyNow',{category:category});
+        res.redirect(302,'/buyNow');
     } catch (error) {
         console.error('Error adding address',error);
         res.status(500).send('Internal server error');
@@ -403,8 +462,9 @@ const editAddress = async(req,res) => {
                 }
             }}
         )
-
-        res.redirect('/buyNow',{cart,wishlist,category:category});
+        req.session.cart = cart;
+        req.session.wishlist = wishlist;
+        res.redirect(302,'/buyNow');
     } catch (error) {
         console.error('editing error',error);
         res.status(500).send('Internal server error');
@@ -493,9 +553,34 @@ const returnOrder = async(req,res) => {
         }
 
         order.status ="Returned";
+        if(order.paymentMethod==='PayPal'){
+            order.paymentStatus='Paid';
+        }else{
+            order.paymentStatus = 'Not paid';
+        }
+        
         await order.save();
+
+        
+        if(order.paymentStatus === 'Paid'){
+            const userId = req.session.user;
+            const user = await User.findById(userId);
+
+            user.wallet.balance = user.wallet.balance + order.finalAmount || 0;
+            const newTransaction = {
+                transactionsType : 'credit',
+                amount : order.finalAmount,
+                reason : 'Order return refund',
+                date : new Date()
+            };
+            user.wallet.transactions.push(newTransaction);
+            await user.save()
+            console.log('order is returned');
+            res.status(200).json({message:'Order returned and refund credited in wallet successfully',type:'success'});
+        }else{
         console.log('order is returned');
         res.status(200).json({message:'Order returned successfully',type:'success'});
+        }
     }catch(error){
         console.log('order returning error',error);
         res.status(500).json({message:'Internal server error',type:'error'});
@@ -529,6 +614,7 @@ const applyCoupon = async(req,res) => {
         if (cart && cart.items) {
             cart.items = cart.items.filter(item => item.productId); // Remove items with null productId
           }
+        const deliveryCharge = 20
         const cartTotal = cart.items.reduce((total,item) => total + item.productId.salePrice*item.quantity,0);
         
         const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');
@@ -545,7 +631,7 @@ const applyCoupon = async(req,res) => {
             discountAmount = coupon.discount;
         }
 
-        const finalAmount = cartTotal - discountAmount;
+        const finalAmount = cartTotal+deliveryCharge - discountAmount;
         user.coupons.push(coupon._id);
         
         coupon.usedCount += 1 ;
@@ -602,12 +688,162 @@ const removeCoupon = async(req,res) => {
     }
 }
 
+const downloadInvoice = async(req,res) => {
+    try {
+        const id = req.params.id;
+        const order = await Order.findById(id)
+        .populate('items.productId')
+        .populate('userId')
+        .exec();
+
+        if(!order){
+            return res.status(404).send('Order not found');
+        }
+
+        const address = order.addressDetails;
+        if(!address){
+            return res.status(404).send('Address not found');
+        }
+
+        const doc = new PDFDocument({autoFirstPage:false});
+        doc.addPage();
+        // res.setHeader('Content-Type','application/pdf');
+        // res.setHeader('Content-Disposition',`attachment;filename="invoice - ${order.orderId}"`);
+
+       //doc.pipe(res);
+        
+        doc.fontSize(20).text('INVOICE',{align:'center'});
+        doc.moveDown(1.5);
+
+        doc.fontSize(12)
+        .text(`Order ID : ${order.orderId}`,50,130,{align:'left'})
+        .text(`Order Date : ${new Date(order.createdOn).toLocaleDateString()}`,{align:'left'})
+        .moveUp()
+        .text(`Invoice ID : INV-${order._id}`,320,130,{align:'right'})
+        .text(`Invoice Date : ${new Date(order.invoiceDate).toLocaleDateString()}`,{align:'right'});
+        
+        doc.moveDown();
+
+        doc.moveTo(50,doc.y).lineTo(550,doc.y).stroke();
+        doc.moveDown(3);
+
+        doc.fontSize(10).font('Helvetica-Bold');
+        doc.text('Seller Address : ', 50,190);
+        doc.font('Helvetica');
+        doc.text('Puzl Mart, 123 Main Street, Bangalore, India',50,120);
+        doc.text('support@puzlmart.com',50,220);
+        doc.text('+1(123)456-456',50,230);
+
+        doc.font('Helvetica-Bold');
+        doc.text('Shipping Address:',420,190);
+        doc.font('Helvetica');
+        doc.text(`Name : ${order.addressDetails.name || 'N/A'}`,420,210);
+        doc.text(`City : ${order.addressDetails.city || 'N/A'}`,420,220);
+        doc.text(`State : ${order.addressDetails.state || 'N/A'}`,420,230);
+        doc.text(`Pincode : ${order.addressDetails.pincode || 'N/A'}`,420,240);
+        doc.text(`Land Mark : ${order.addressDetails.landMark || 'N/A'}`,420,250);
+
+
+        doc.moveTo(50,300).lineTo(550,300).stroke();
+        doc.moveDown();
+
+        const columnwidths = [150,70,70,70,70];
+        const startX = 50;
+        const rowHeight = 20;
+        let tableY = doc.y + 20;
+
+        const tableHeaders = [
+            'Product Name',
+            'Quantity',
+            'Price',
+            'Discount',
+            'Subtotal'
+        ];
+
+        doc.fontSize(10).font('Helvetica-Bold');
+        let currentX = startX;
+        tableHeaders.forEach((header,index) => {
+            doc.text(header,currentX-40,tableY,{
+                width:columnwidths[index],
+                align:'center',
+            });
+            currentX += columnwidths[index];
+        });
+
+        doc.moveTo(startX,tableY + rowHeight - 5)
+           .lineTo(startX + columnwidths.reduce((a,b) => a+b,0),tableY + rowHeight -5)
+           .stroke();
+
+           tableY += rowHeight;
+           
+        let subtotal = 0;
+        
+        if(order.status === 'Returned' || order.status === 'Return Request'){
+            return;
+        }
+        
+        order.items.forEach(item => {
+            const itemSubTotal = (item.salePrice || 0)*item.quantity;
+            subtotal +=itemSubTotal;
+
+            const row = [
+                item.productId.name || 'Unknown Product',
+                item.quantity || 0,
+                `Rs ${item.salePrice || 0}`,
+                `Rs ${(item.regularPrice || 0) - (item.salePrice || 0)}`,
+                `Rs ${itemSubTotal.toFixed(2)}`,
+            ];
+
+            currentX = startX - 40;
+            row.forEach((value, index) => {
+               doc.fontSize(10).font('Helvetica');
+               doc.text(value, currentX, tableY, {
+               width: columnwidths[index],
+          align: 'center',
+        });
+        currentX += columnwidths[index];
+      });
+
+      tableY += rowHeight;
+    });
+
+    
+    tableY += 10;
+    doc.moveTo(50, tableY).lineTo(550, tableY).stroke();
+    tableY += 20;
+
+    
+    doc.fontSize(10).font('Helvetica-Bold');
+    doc.text('Subtotal:', 350, tableY);
+    doc.text(`Rs ${subtotal.toFixed(2)}`, 450, tableY);
+
+    tableY += 20;
+    doc.text('Shipping:', 350, tableY);
+    // doc.text(`Rs ${order.shippingCost.toFixed(2)}`, 450, tableY);
+
+    tableY += 20;
+    const total = subtotal /*+ order.shippingCost*/;
+    doc.fontSize(12).font('Helvetica-Bold');
+    doc.text('Total:', 350, tableY);
+    doc.text(`Rs ${total.toFixed(2)}`, 450, tableY);
+
+    // Finalize the PDF
+    doc.end();
+    doc.pipe(res);
+        
+    } catch (error) {
+        console.error('Error generating invoice : ',error);
+        res.status(500).send('Internal Server Error');
+    }
+}
+
 module.exports = {
     loadCheckOutPage,
     orderPlaced,
     orderConfirmation,
     loadMyOrdersPage,
     orderDetails,
+    payFromOrderDetails,
     rateProduct,
     loadAddAddress,
     addAddress,
@@ -616,5 +852,6 @@ module.exports = {
     cancelOrder,
     returnOrder,
     applyCoupon,
-    removeCoupon
+    removeCoupon,
+    downloadInvoice
 }

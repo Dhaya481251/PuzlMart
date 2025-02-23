@@ -342,7 +342,7 @@
                     <td><%=data[i].salePrice%></td>
                     <td>
                         <% if (data[i].productOffer?.discountType === 'Percentage') { %>
-                            <%= (data[i].productOffer.value).toFixed(2) %>% 
+                            <%= (data[i].productOffer.value)%>% 
                         <% }else{ %>
                             <%= (data[i].productOffer?.value) %>
                         <% } %>

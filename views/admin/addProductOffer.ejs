@@ -40,6 +40,7 @@
     align-items: center;
     justify-content: center;
     text-align: center;
+    flex-direction: column;
   }
 
   /* Modify the modal's position if you want */
@@ -84,7 +85,7 @@
   <div class="card-body">
     <h5 class="card-title">Add Product Offer</h5>
 
-    <form class="row g-3" method="POST" action="/admin/addProductOffer/<%=product._id%>" onsubmit="validateAndSubmit(event)">
+    <form class="row g-3"  onsubmit="validateAndSubmit(event)">
       
       <div class="col-md-6">
         <div class="form-floating">
@@ -191,7 +192,7 @@ function validateAndSubmit(event) {
       const form = event.target;
       const formData = Object.fromEntries(new FormData(form));
   
-      fetch(form.action, {
+      fetch('/admin/addProductOffer/<%=product._id%>', {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',
@@ -199,10 +200,12 @@ function validateAndSubmit(event) {
           body: JSON.stringify(formData),
       })
           .then(response => {
-              if (!response.ok) {
-                  throw new Error('HTTP error: ' + response.status);
-              }
-              return response.json();
+            return response.json().then(data => {
+                if (!response.ok) {
+                    throw new Error(data.message || 'HTTP error: ' + response.status);
+                }
+                return data;
+            });
           })
           .then(data => {
               Swal.fire({
@@ -213,6 +216,13 @@ function validateAndSubmit(event) {
               }).then(() => {
                   if (data.type === 'success') {
                       window.location.href = '/admin/products';
+                  }else{
+                    Swal.fire({
+                      icon:'error',
+                      title:data.message,
+                      showConfirmButton:true,
+                      timer:1500
+                    });
                   }
               });
           })
@@ -260,7 +270,7 @@ function validateAndSubmit(event) {
           }else{
             const currentDate = new Date();
             const selectedDate = new Date(startDate);
-            if(selectedDate < currentDate){
+            if(selectedDate <= currentDate-1){
                 displayErrorMessage('startDate-error','start date cannot be in the past');
                 isValid = false;
             }

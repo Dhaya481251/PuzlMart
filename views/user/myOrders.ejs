@@ -4,33 +4,61 @@
         <a href="/userProfile" class="breadcrumbs-txt" style="text-decoration: none;">My Account</a>&gt;
         <a href="/myOrders" class="breadcrumbs-txt" style="text-decoration: none;">My Orders</a>
     </nav>
-    <div class="mx-5 px-3 py-3" style="border-radius:10px;border:none;background:#f0ffff;">
     <% if (orders && orders.length > 0) { %>
-        <div class="orders-list ">
-            <% orders.forEach(order => { %>
-                <div class="order-card mx-3 my-3" style="background:#04625f;color:white;border-radius: 10px;display:flex;flex-direction: row;align-items:center;justify-content:space-between">
-                    
-                    <ul class="col-md-10" style="display:flex;flex-direction:row;">
-                        <% order.items.forEach(item => { %>
-                            <% if (item.productId) { %>
-                            <li class="px-3 py-3 mx-3 my-3 col-md-2" style="background:#04625f;color:white;border-radius: 10px;border:1px solid white;display: flex;flex-direction: column;">
-                                <img src="/uploads/re-image/<%= item.productId.productImage[0]%>" alt="<%= item.productId.productName %>" style="width: 50px; height: 50px;border-radius: 5px;">
-                                <span style="font-size:1.25rem"><%= item.productId.productName %></span>
-                                <span style="font-size: 1.25rem;">(Qty: <%= item.quantity %>)</span>
-                                <span style="font-size: 1.25rem;"><%=order.deliveryDate.toLocaleDateString()%></span>
-                            </li>
-                            <% } else { %> <li> 
-                                <span>Product not found</span> 
-                            </li> <% } %>
-                        <% }) %>
-                    </ul>
-                    <a class="col-md-2" href="/orderDetails/<%=order._id%>"><button class="btn-small" style="background:white;color: #04625f;border: none;border-radius: 5px;padding:0.5rem;margin-right:1rem;font-weight: 500;">More Details </button></a>
-                    
-                </div>
-            <% }) %>
+    <div style="display: flex;flex-direction:column;gap: 3rem;border:1px solid #e7ab3c">
+        <% orders.forEach(order => { %>
+        <div style="border: 1px solid #e7ab3c;margin:2rem;padding:2rem;border-radius: 10px;background-color: #e7ab3c80;">
+        
+        <table class="table datatable" style="background-color: #00000070;border-radius: 5px;">
+            <thead style="font-size: 13px;">
+                <tr>
+                    <th style="border-bottom-color: rgb(33 37 41 / 14%);">Delivery Date</th>
+                    <th style="border-bottom-color: rgb(33 37 41 / 14%);">Total</th>
+                    <th style="border-bottom-color: rgb(33 37 41 / 14%);">Ship to</th>
+                    <th style="border-bottom-color: rgb(33 37 41 / 14%);">Order #<%=order.orderId%></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="font-size:13px">
+                    <td><%=order.deliveryDate.toLocaleDateString()%></td>
+                    <td><%=order.finalAmount%></td>
+                    <td><%=order.addressDetails.name%></td>
+                    <td>
+                        <a href="/orderDetails/<%=order._id%>" style="color:#e7ab3c">View order details</a>
+                        <i class="bi bi-grip-vertical"></i>
+                        <form action="/order/invoice/<%=order._id%>" method="GET" style="display: inline;">
+                            <button type="submit" style="background-color: #e7ab3c; color: black;" class="btn">Download Invoice</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <% order.items.forEach(item => { %>
+        <div style="display:flex;flex-direction:column">
+            
+            <% if (item.productId) { %>
+            <div style="display:flex;justify-content: flex-start;align-items: center;gap:6rem">
+            <div>
+                <img src="/uploads/re-image/<%= item.productId.productImage[0]%>" alt="<%= item.productId.productName %>" style="width: 100px; height: 100px;border-radius: 5px;">
+                
+            </div>
+            <div>
+                <p style="color:black"><%= item.productId.productName %></p>
+            </div>
+            </div>
+            <% } else { %> 
+                <p>Product not found</p> 
+            <% } %>
+        
         </div>
+        <% }) %>
+        </div>
+        
+        <%})%>
+    </div>
+    
     <% } else { %>
         <p>No orders found. Start shopping now!</p>
     <% } %>
-    </div>
+    
 <%- include('../../views/partials/user/footer') %>

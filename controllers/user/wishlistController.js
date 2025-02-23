@@ -1,9 +1,21 @@
 const User = require('../../models/userSchema');
 const Product = require('../../models/productSchema');
 const Wishlist = require('../../models/wishlistSchema');
-const Cart = require('../../models/cartSchema')
+const Cart = require('../../models/cartSchema');
+const Category = require('../../models/categorySchema')
 
-
+const loadWishlist = async(req,res) => {
+    try {
+        const userId = req.session.user;
+        const user = await User.findById(userId);
+        const cart = await Cart.findOne({userId}).populate('items.productId');
+        const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');
+        const category = await Category.find({isListed:true});
+        res.render('wishlist',{user,cart,category:category,wishlist});
+    } catch (error) {
+        res.status(500).send('Internal Server Error');
+    }
+}
 const addToWishlist = async (req,res) => {
     try {
         const userId = req.session.user;
@@ -46,24 +58,30 @@ const addToWishlist = async (req,res) => {
 const removeFromWishlist = async (req, res) => {
     try {
         const userId = req.session.user;
-        const cart = await Cart.findOne({userId}).populate('items.productId');
-        const wishlist = await Wishlist.findOne({userId})
-        const productsId = req.params.id;
+        console.log('User ID:', userId); // Debug statement
 
-        if(!wishlist){
+        const wishlist = await Wishlist.findOne({ userId });
+        const productsId = req.params.id;
+        console.log('Wishlist:', wishlist); // Debug statement
+        console.log('Product ID:', productsId); // Debug statement
+
+        if (!wishlist) {
             return res.status(404).send('Wishlist not found');
         }
-        
+
         wishlist.products = wishlist.products.filter(product => product.productsId.toString() !== productsId);
+        console.log('Updated Wishlist Products:', wishlist.products); // Debug statement
 
         await wishlist.save();
-        res.status(200).json({products:cart.products});
+        res.status(200).json({ message: 'Product removed from wishlist successfully' });
     } catch (error) {
-        console.error(error);
+        console.error('Error removing product from wishlist:', error);
         res.status(500).send('Internal Server Error');
     }
 };
+
 module.exports = {
+    loadWishlist,
     addToWishlist,
     removeFromWishlist
 }

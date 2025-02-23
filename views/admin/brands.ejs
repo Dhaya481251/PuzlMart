@@ -71,6 +71,7 @@
       align-items: center;
       justify-content: center;
       text-align: center;
+      flex-direction: column;
     }
   
     /* Modify the modal's position if you want */
@@ -483,9 +484,12 @@
     })
     .then(response => {
       if(!response.ok){
-        throw new Error(`HTTP error : ${response.status}`);
+        return response.json().then(data => {
+          throw new Error(data.message || `HTTP error : ${response.status}`);
+        });
+        
       }
-      return response.json()
+      return response.json();
     })
     .then(data => {
       Swal.fire({
@@ -496,14 +500,21 @@
       }).then(()=>{
          if(data.type === 'success'){
           window.location.href='/admin/brands';
-        }
+        }else {
+        Swal.fire({
+          icon: 'error',
+          title: data.message,
+          showConfirmButton: true,
+          timer: 1500
+        });
+      }
       });
     })
     .catch(error => {
       console.error('Error : ',error);
         Swal.fire({
           icon:'error',
-          title:'Something went wrong!',
+          title:error.message,
           showConfirmButton:true,
           timer:1500
         });

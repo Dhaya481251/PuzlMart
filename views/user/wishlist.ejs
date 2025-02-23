@@ -1,85 +1,67 @@
-<%- include("../../views/partials/user/header") %>
-<main class="main">
-
-
-    <nav class="breadcrumbs mt-3 mb-3 container">
-        <a href="/userProfile" class="breadcrumbs-txt" style="text-decoration: none;">My Account</a> /
-        <a href="/wishlist"class="breadcrumbs-txt" style="text-decoration: none;">My Wishlist</a> 
-    </nav>
-
-
-   <section class="mt-50 mb-50">
-       <div class="container">
-           <div class="row">
-               <div class="col-md-12">
-                   
+<%- include('../../views/partials/user/header') %>
+<section class="shopping-cart spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="cart-table">
+                  <% if(wishlist && wishlist.products && wishlist.products.length>0){ %>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="px-2">Image</th>
+                                <th class="p-name px-2">Product Name</th>
+                                <th>Price</th>
+                                <th>Add to Cart</th>
+                                <th><i class="ti-close"></i></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                          <% wishlist.products.forEach((product) => { %>
+                            <tr>
+                                <td class="cart-pic first-row px-3">
+                                    <a href="/productDetails/<%=product.productsId._id%>" style="text-decoration: none;">
+                                        <img src="/uploads/re-image/<%=product.productsId.productImage[0]%>" alt="">
+                                    </a>
+                                </td>
+                                <td class="cart-title first-row px-2">
+                                    <h5><%=product.productsId.productName%></h5>
+                                </td>
+                                <td class="p-price first-row">Rs <%=product.productsId.salePrice%></td>
+                                <td>
+                                    <a href="/addToCart/<%= product.productsId._id %>" data-id="<%=product.productsId._id%>" class="btn cart-btn" style="background-color: #e7ab3c;color:#f0ffff"><button class="btn  px-3"><i class="fa fa-shopping-cart mr-1"></i> Add To Cart</button></a>
+                                </td>
+                                <td class="close-td first-row">
+                                        <a href="" data-id="<%= product.productsId._id %>" class="btn btn-danger btn-sm wishlist-remove"  style="text-decoration: none;">
+                                            <i class="ti-close"></i>
+                                        </a>
+                                </td>
+                            </tr>
+                            
+                            
+                            <% }) %>
+                          
+                        </tbody>
+                    </table>
+                    <% }else{ %>
+                                  
+                        <h4 colspan="4">No items found in Wishlist</h4>
+                              
+                    <% } %>
+                </div>
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="cart-buttons">
+                            <a href="/" class="primary-btn continue-shop">Continue shopping</a>
+                            
+                        </div>
                        
-                             <% if(wishlist && wishlist.products && wishlist.products.length>0){ %>
-                                <% wishlist.products.forEach((product) => { %>
-                                    <div style="border: 1px solid #42ada8; display: flex;flex-direction: row;" class="item-row">
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
-                                        <div class="px-3 py-3" style="display:flex;flex-direction: column;justify-content: space-between; height: 100%;flex-grow:1">
-                                          <a href="/productDetails/<%=product.productsId._id%>" style="text-decoration: none;">
-                                            <img src="/uploads/re-image/<%=product.productsId.productImage[0]%>" style="width: 40%;" alt="Item" class="img-fluid">
-                                          </a>
-                                        </div>
-
-                                        <div>
-
-                                         <div>
-                                          <h3><%=product.productsId.productName%></h3>
-                                         </div>
-
-                                         <div>
-                                            <h4 class="item-price" style="text-decoration: line-through;"><%=product.productsId.regularPrice%></h4>
-                                         </div>
-
-                                          <div>
-                                          <h4 class="item-price"><%=product.productsId.salePrice%></h4>
-                                          </div>
-
-                                          
-                                        </div>
-
-                                        <div class="px-3 py-3" style="display: flex;flex-direction: column;justify-content: space-around;">
-                                          <a href="#" class="btn btn-danger btn-sm" data-id="<%= product.productsId._id %>">Delete</a>
-                                        </div>
-                                        
-                                      </div>
-                                    <% }) %>
-                                <% }else{ %>
-                                    <div class="text-center">
-                                      <p class="lead mb-4">No items found in Wishlist</p>
-                                    </div>
-                                <% }%>
-                           
-                   </div>
-               </div>
-           </div>
-       </div>
-   </section>
-</main>
-<%- include("../../views/partials/user/footer") %>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-<script>
-   document.querySelectorAll('.btn-danger').forEach(button => {
-  button.addEventListener('click', function (e) {
-    e.preventDefault(); // Prevent the default anchor behavior
-    const productsId = this.getAttribute('data-id'); // Retrieve the product ID from the data-id attribute
-
-    fetch(`/removeFromWishlist/${productsId}`, {
-      method: 'DELETE'
-    })
-      .then(response => response.json())
-      .then(data => {
-        if (data.status) {
-          Swal.fire('Removed', 'The product has been removed from the wishlist.', 'success');
-          this.closest('.item-row').remove(); // Remove the corresponding item row from the DOM
-        }
-      })
-      .catch(error => console.error('Error while removing product from the wishlist:', error));
-  });
-});
-
-</script>
+<%- include('../../views/partials/user/footer') %>

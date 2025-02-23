@@ -231,7 +231,7 @@
   <div class="container-fluid py-5">
     <div class="row px-xl-5">
         <div class="col-lg-5 pb-5">
-            <div id="product-carousel " class="carousel slide" data-ride="carousel">
+            <div id="product-carousel " class="carousel slide" data-ride="">
                 <div class="carousel-inner border">
                     <% for(let i=0 ; i<product.productImage.length ; i++){ %>
                     <div class="carousel-item <%= i === 0 ? 'active' : '' %>" data-bs-interval="false">
@@ -256,29 +256,18 @@
             <h3 class="font-weight-semi-bold"><%=product.productName%></h3>
             <div class="d-flex mb-3 stars">
                 <div class="text-primary mr-2">
-                    <% for(let i=0 ; i<5 ; i++ ){ %>
-                    <small class="fas fa-star star <%= i <= product.averageRating ? 'selected': '' %>"></small>
-                    <% } %>
+                    <span class="star-rating">
+                        <% for (let i = 1; i <= 5; i++) { %>
+                            <span class="star <%= i <= product.averageRating ? 'selected' : '' %>">&#9733;</span>
+                        <% } %>
+                    </span>
                 </div>
-                <small class="pt-1">(50 Reviews)</small>
+                <!-- <small class="pt-1">(50 Reviews)</small> -->
             </div>
             <h3 class="font-weight-semi-bold mb-4">Rs <%=product.salePrice%></h3>
             <p class="mb-4"><%=product.description%></p>
             <div class="d-flex align-items-center mb-4 pt-2">
-                <div class="input-group quantity mr-3" style="width: 130px;">
-                    <div class="input-group-btn">
-                        <button class="btn btn-primary btn-minus" >
-                        <i class="fa fa-minus"></i>
-                        </button>
-                    </div>
-                    <input type="text" class="form-control bg-secondary text-center" value="1">
-                    <div class="input-group-btn">
-                        <button class="btn btn-primary btn-plus">
-                            <i class="fa fa-plus"></i>
-                        </button>
-                    </div>
-                </div>
-                <a href="/addToCart/<%= product._id %>" data-id="<%=product._id%>" class="btn cart-btn" style="background-color: #04625f;color:#f0ffff"><button class="btn btn-primary px-3"><i class="fa fa-shopping-cart mr-1"></i> Add To Cart</button></a>
+                <a href="/addToCart/<%= product._id %>" data-id="<%=product._id%>" class="btn cart-btn" style="background-color: #e7ab3c;color:#f0ffff"><button class="btn  px-3"><i class="fa fa-shopping-cart mr-1"></i> Add To Cart</button></a>
             </div>
             <div id="myresult" class="img-zoom-result"></div>
         </div>
@@ -288,8 +277,8 @@
             <div class="nav nav-tabs justify-content-center border-secondary mb-4">
                 <a class="nav-item nav-link active" data-toggle="tab" href="#tab-pane-1">Description</a>
                 <a class="nav-item nav-link" data-toggle="tab" href="#tab-pane-2">Highlights</a>
-                <a class="nav-item nav-link" data-toggle="tab" href="#tab-pane-4">Available offers</a>
-                <a class="nav-item nav-link" data-toggle="tab" href="#tab-pane-3">Ratings and Reviews</a>
+                <a class="nav-item nav-link" data-toggle="tab" href="#tab-pane-3">Available offers</a>
+                <a class="nav-item nav-link" data-toggle="tab" href="#tab-pane-4">Ratings and Reviews</a>
             </div>
             <div class="tab-content">
                 <div class="tab-pane fade show active" id="tab-pane-1">
@@ -315,38 +304,61 @@
                         </div>
                     </div>
                 </div>
-                <div class="tab-pane fade" id="tab-pane-2">
+                <div class="tab-pane fade" id="tab-pane-3">
                     <h4 class="mb-3">Available Offers</h4>
                     
                     <div class="row">
                         <div class="col-md-12">
                             <ul class="list-group list-group-flush">
-                                <% if(product.productOffer){%>
-                                <li class="list-group-item px-0">
-                                    <%=product.productOffer.value %> Off
-                                </li>
-                                <% }else{%>
+                                <% if (product.productOffer) { %>
+                                    <% if (product.productOffer.discountType === 'Percentage') { %>
+                                        <li class="list-group-item px-0">
+                                            Product Offer for the <%= product.productName %> - <%= product.productOffer.value %> % Off
+                                        </li>
+                                    <% } else { %>
+                                        <li class="list-group-item px-0">
+                                            Product Offer for the <%= product.productName %> - <%= product.productOffer.value %> Off
+                                        </li>
+                                    <% } %>
+                                <% } else if (product.category.categoryOffer) { %> 
+                                    <% if (product.category.categoryOffer.discountType === 'Percentage') { %>
+                                        <li class="list-group-item px-0">
+                                            Category Offer for the <%= product.category.name %> - <%= product.category.categoryOffer.value %> % Off
+                                        </li>
+                                    <% } else { %>
+                                        <li class="list-group-item px-0">
+                                            Category Offer for the <%= product.category.name %> - <%= product.category.categoryOffer.value %> Off
+                                        </li>
+                                    <% } %>
+                                <% } else { %>
                                     <p>No offers</p>
                                 <% } %>
-                              </ul> 
+                            </ul>
+                            <!--  Debugging: Log category and categoryOffer -->
+                            <!-- <pre><%= JSON.stringify(product, null, 2) %></pre>
+                            <pre><%= JSON.stringify(product.categoryOffer, null, 2) %></pre>  -->
                         </div>
                     </div>
+                    
+                    
                 </div>
-                <div class="tab-pane fade" id="tab-pane-3">
+                <div class="tab-pane fade" id="tab-pane-4">
                     <h4 class="mb-3">Ratings and Reviews</h4>
                     <div class="row">
                         <div class="col-md-6">
-                            <h4 class="mb-4">1 review for "Colorful Stylish Shirt"</h4>
+                            <h4 class="mb-4">Reviews for <%=product.productName%></h4>
                             <% if(product.reviews.length>0){ %>
                             <% product.reviews.forEach(review => { %>
                             <div class="media mb-4">
-                                <img src="img/user.jpg" alt="Image" class="img-fluid mr-3 mt-1" style="width: 45px;">
+                                <img src="/uploads/re-image/<%= product.productImage[0] %>" alt="Image" class="img-fluid mr-3 mt-1" style="width: 45px;">
                                 <div class="media-body">
                                     <h6><%= review.userId.name%><small> - <i><%=review.createdAt%></i></small></h6>
                                     <div class="text-primary mb-2">
-                                        <% for(let i = 1 ; i<=5 ; i++){ %>
-                                        <i class="fas fa-star"></i>
-                                        <% } %>
+                                        <span class="star-rating">
+                                            <% for (let i = 1; i <= 5; i++) { %>
+                                                <span class="star <%= i <= review.rating ? 'selected' : '' %>">&#9733;</span>
+                                            <% } %>
+                                        </span>
                                     </div>
                                     <p><%= review.review %></p>
                                 </div>
@@ -358,33 +370,21 @@
                         </div>
                         <div class="col-md-6">
                             <h4 class="mb-4">Leave a review</h4>
-                            <small>Your email address will not be published. Required fields are marked *</small>
-                            <div class="d-flex my-3">
-                                <p class="mb-0 mr-2">Your Rating * :</p>
-                                <div class="text-primary">
-                                    <i class="far fa-star"></i>
-                                    <i class="far fa-star"></i>
-                                    <i class="far fa-star"></i>
-                                    <i class="far fa-star"></i>
-                                    <i class="far fa-star"></i>
+                            <form class="rate-form" action="/rateProduct/<%= product._id %>%>" method="POST">
+                                <label for="rating">Rate the product</label>
+                                <div class="star-rating">
+                                    <span class="star" data-value="1">&#9733;</span>
+                                    <span class="star" data-value="2">&#9733;</span>
+                                    <span class="star" data-value="3">&#9733;</span>
+                                    <span class="star" data-value="4">&#9733;</span>
+                                    <span class="star" data-value="5">&#9733;</span>
                                 </div>
-                            </div>
-                            <form>
-                                <div class="form-group">
-                                    <label for="message">Your Review *</label>
-                                    <textarea id="message" cols="30" rows="5" class="form-control"></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label for="name">Your Name *</label>
-                                    <input type="text" class="form-control" id="name">
-                                </div>
-                                <div class="form-group">
-                                    <label for="email">Your Email *</label>
-                                    <input type="email" class="form-control" id="email">
-                                </div>
-                                <div class="form-group mb-0">
-                                    <input type="submit" value="Leave Your Review" class="btn btn-primary px-3">
-                                </div>
+                                <input type="hidden" name="rating" id="rating" value="0">
+                                
+                                <label for="review">Write a Review</label><br>
+                                <textarea name="review" id="review" rows="3" placeholder="Share your feedback"></textarea>
+                                <button type="submit" class="px-1 py-1 text-white" style="background:#e7ab3c;border:none;border-radius:5px;margin-left:1rem">Submit</button>
+                                <hr>
                             </form>
                         </div>
                     </div>
@@ -960,6 +960,24 @@ const sendRequest = async (url,method) => {
       sendRequest(`/decreaseQuantity/${productId}`,'POST')
     });
   });
+  document.querySelectorAll(".star-rating .star").forEach(star => {
+    star.addEventListener("click", function() {
+        let rating = this.getAttribute("data-value");
+        
+        this.closest("form").querySelector("#rating").value = rating;
+        
+        let stars = this.closest(".star-rating").querySelectorAll(".star");
+        stars.forEach(star => {
+            if (parseInt(star.getAttribute("data-value")) <= rating) {
+                star.classList.add("selected");
+                star.style.color = 'yellow';
+            } else {
+                star.classList.remove("selected");
+                star.style.color = 'black';
+            }
+        });
+    });
+});
 
 </script>
 </body>

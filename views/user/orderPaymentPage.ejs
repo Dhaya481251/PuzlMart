@@ -1,5 +1,171 @@
 <%- include('../../views/partials/user/header') %>
-<div class="container">
+<div class="container-fluid pt-5">
+    <div class="row px-xl-5">
+        <form method = 'POST' action="/buy" id="placeOrderForm" style="display:flex;">
+        <div class="col-lg-7">
+            <div class="btn" type="button" id="couponBtn">Apply Coupon</div>
+                <div id="couponDiv" style="display:none;">
+                    
+                    <div id="couponFormContainer">
+                        <input type="text" id="couponCodeInput" name="couponCode">
+                        <div type="button" id="applyCouponBtn" class="btn btn-sm" style="border-radius:5px ; background-color: #e7ab3c;">Add Coupon</div>
+                        <p id="couponMessage" style='color:red'></p>
+                    </div>
+                </div>
+                <div id="appliedCouponDiv" style="display:none;margin-top:10px;">
+                    <p id="appliedCouponText"></p>
+                    <button type="button" id="removeCouponBtn" class="btn btn-danger">Remove Coupon</button>
+                </div>
+            <div class="mb-4">
+                <h4 class="font-weight-semi-bold mb-4">Billing Address</h4>
+                <% if(userAddress.address.length > 0){ %>
+                <div class="row">
+                    
+                        <% userAddress.address.forEach((address,index) => { %>
+                        <div class="form-check my-3" style="border: 1px solid #076a66;">
+                            <div class="mx-3 px-3 py-3" id="radioContainer" style="display: flex;flex-direction: column;">
+                                <input class="form-check-input" type="radio" name="selectedAddress" value="<%= address._id %>" id="flexRadioDefault2" <%= index === 0 ? 'checked' : '' %> >
+                                <label class="form-check-label" for="flexRadioDefault2">
+                                    <div class="card-header text-center" style="font-family: monospace; font-size: larger; background-color: #e7ab3c;">
+                                        <h5 class=""><%=address.addressType%></h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <address>
+                                            <%=address.name%><br/>
+                                            <%=address.city%><br/>
+                                            <%=address.landMark%><br/>
+                                            <%=address.state%>
+                                        </address>
+                                        <p><%=address.pincode%></p>
+                                        <p><%=address.phone%></p>
+                                        <p><%=address.altPhone%></p>
+                                    </div>
+                                    <a href="/orderEditAddress?id=<%=address._id%>" style="color: #e7ab3c;">Edit Address</a>
+                                </label>
+                            
+
+                            
+                            </div>
+                          
+                        </div>
+                        <% }) %>
+                        
+                </div>
+                <a href="/orderAddAddress" style="color: #e7ab3c;">Add New Address</a>
+                <% }else{ %>
+                <a href="/orderAddAddress" style="color: #e7ab3c;">Add New Address</a>
+                <div id="address-error" class="error-message"></div>
+                <% } %>
+            </div>
+        </div>    
+        <div class="col-lg-5" >
+            <div id="showCouponsDiv"class="btn" onclick="openCoupons()">Show all Coupons</div>
+                <div class="availableCoupons">
+                    <h2 class="availableCoupons-title" style="color: #e7ab3c;">Available Coupons</h2>
+                    <div class="availableCoupons-content">
+                        <div class="availableCoupons-box px-3 py-3" style="display: flex;flex-direction: column;">
+                            <% if (coupons && coupons.length > 0) { %>
+                                <% coupons.forEach(coupon => { %>
+                                    <% if(coupon.isActive && new Date() < coupon.expireOn){ %>
+                                        <div class="px-2 py-2" style="border-radius:5px;background-color: #e7ab3ceb;width:100%">
+                                        <div class="coupon-box">
+                                            <div class="availableCoupon-title"><%=coupon.name%></div>
+                                            <div class="availableCoupon-discount">
+                                                <% if(coupon.discountType === 'Percentage'){ %>
+                                                    <%=coupon.discount%>% coupon discount (minimum price : <%=coupon.minimumPrice%>)
+                                                 <% }else{ %>
+                                                   Rs<%=coupon.discount%> coupon discount (minimum price : <%=coupon.minimumPrice%>)
+                                                 <% } %>
+                                            </div>
+                                        </div>
+                                        <div class="copyCode">
+                                            <div class="availableCoupon-expired" style="display: flex;flex-direction: column;font-size:2rem;color: white;">
+                                                <div><h4 class="availableCoupon-expired-date" style="font-size: 1rem;">valid till <%=coupon.expireOn.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })%></h4></div>
+                                                <div style="display: flex;flex-direction: row;">
+                                                    <div class="couponCode px-3 py-1" style="display: flex;align-items: center;background-color: white;color:black;font-size: 1rem; border-top-left-radius: 5px;border-bottom-left-radius: 5px;"><%=coupon.code%></div>
+                                                    <div class="btn copy-btn px-3 py-1" style="display: flex;align-items: center;border-top-right-radius: 5px;border-bottom-right-radius: 5px;background-color: #00000070;" data-code="<%=coupon.code%>">COPY</div>
+                                                </div>
+                                                <p id="copyMessage" style='color:#069606; text-shadow: -1px 1px 1px black;'></p>
+                                            </div>
+                                        </div>
+                                        </div>
+                                    <% } %>
+                                <% }) %>
+                            <% }else{ %>
+                                <h4 colspan="4">Currently no coupons available</h4>
+                            <% } %>
+                        </div>
+                    </div>
+                    <i class="ti-close" id="close-coupon" style="color: white;margin-top: -1rem;margin-right: -0.85rem;font-size: 1rem;background: red;padding: 0.35rem;" onclick="closeCoupons()"></i>
+                </div>
+            <div class="card border-secondary mb-5" id="orderDiv" style="margin-top: 5.2rem;">
+                <div class="card-header  border-0" style="background-color: #e7ab3c;">
+                    <h4 class="font-weight-semi-bold m-0">Order Total</h4>
+                </div>
+                <div class="card-body">
+                    <h5 class="font-weight-medium mb-3">Products</h5>
+                    <% cart.items.forEach(item => { %>
+                    <div class="d-flex justify-content-between">
+                        <p><%=item.productId.productName%> x <%=item.quantity%></p>
+                        <p><%=item.productId.regularPrice%></p>
+                    </div>
+                    <% }) %>
+                    
+                    <hr class="mt-0">
+                    <% if(cart && cart.items.length > 0){ %>
+                    <div class="d-flex justify-content-between mb-3 pt-1">
+                        <h6 class="font-weight-medium ">Price</h6>
+                        <h6 class="font-weight-medium total-price"><%=cart ? cart.items.reduce((acc,item) => acc + item.productId.regularPrice*item.quantity,0):0%></h6>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <h6 class="font-weight-medium ">Discount</h6>
+                        <h6 class="font-weight-medium discount-price"><%= discount %></h6>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <h6 class="font-weight-medium ">Shipping</h6>
+                        <h6 class="font-weight-medium delivery-price"><%= deliveryCharge %></h6>
+                    </div>
+                    <% } %>
+                </div>
+                <div class="card-footer border-secondary bg-transparent">
+                    <div class="d-flex justify-content-between mt-2">
+                        <h5 class="font-weight-bold">Total</h5>
+                        <h5 class="font-weight-bold final-price"><%= finalAmount %></h5>
+                    </div>
+                </div>
+            </div>
+            <div class="card border-secondary mb-5" id="payDiv">
+                <div class="card-header border-0" style="background-color: #e7ab3c;">
+                    <h4 class="font-weight-semi-bold m-0">Payment</h4>
+                </div>
+                <div class="card-body" >
+                    
+                        <div class="form-check" id="payRadio1">
+                            <input class="form-check-input1" type="radio" name="selectedPayment" value="PayPal" id="flexRadioDefault1">
+                            <label class="form-check-label" for="flexRadioDefault1">
+                              Pay with PayPal
+                            </label>
+                            <a href="" style="text-decoration: none;"><button id="payPalBtn" style="display: none;background-color: #e7ab3c;border-radius: 10px;" class="btn" onclick="startPayPal()" ><h5>Continue</h5></button></a>
+                        </div>
+                    
+                    
+                        <div class="form-check" id="payRadio2">
+                            <input class="form-check-input2" type="radio" name="selectedPayment" value="COD" id="flexRadioDefault2" >
+                            <label class="form-check-label" for="flexRadioDefault2">
+                              CASH ON DELIVERY
+                            </label>
+                            <button type="submit" id="codBtn" class="btn" style="display: none;background-color: #e7ab3c;border-radius: 10px;"><h5>Continue shopping</h5></button>
+                        </div>
+                        <!-- <button id="payPalBtn" class="btn" style="display: none;margin-left: 25rem;background-color: #e7ab3c;border-radius: 10px;" onclick="startPayPal()" ><h5>Pay Now</h5></button> -->
+                        <!-- <button type="submit" id="codBtn" style="display: none;margin-left: 25rem;background-color: #e7ab3c;border-radius: 10px;" class="btn" ><h5>Continue</h5></button> -->
+                        <div class="error-message" id="payment-error"></div>
+                </div>
+            </div>
+        </div>
+        </form>
+    </div>
+</div>
+<!-- <div class="container">
     <div class="row">
         <div class="col-md-12">
             <div class="border-info mx-3 my-3 px-3 py-3">
@@ -161,7 +327,7 @@
         </div>
         
     </div>
-</div>
+</div> -->
 
 
 <script>
@@ -200,6 +366,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const totalPriceElement = document.querySelector('.total-price');
     const discountPriceElement = document.querySelector('.discount-price');
     const finalPriceElement = document.querySelector('.final-price');
+    const deliveryCharge = document.querySelector('.delivery-price');
     
     console.log('discountPriceElement : ', discountPriceElement.textContent);
     console.log('parsed discountPriceElement : ', parseFloat(discountPriceElement.textContent.replace(/[^\d.-]/g, '')) || 0);
@@ -212,6 +379,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 navigator.clipboard.writeText(couponCode).then(() => {
                     copyMessage.textContent=`Coupon code copied`;
+                  
                 }).catch(err => {
                     console.error('Failed to copy: ', err);
                     copyMessage.textContent='Failed to copy coupon code. Please try again.';
@@ -256,7 +424,7 @@ document.addEventListener('DOMContentLoaded', () => {
             couponMessage.textContent = data.message;
             couponMessage.style.color = 'green';
 
-            const { name, discountType, discount, discountAmount, finalAmount } = data.couponDetails;
+            const { name, discountType, discount, discountAmount, finalAmount} = data.couponDetails;
             
             const currentTotal = parseFloat(totalPriceElement.textContent);
             const currentDiscount = parseFloat(discountPriceElement.textContent.replace(/[^\d.-]/g, '')) || 0;
@@ -264,9 +432,9 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('Current discount : ',currentDiscount);
             console.log('Discount amount : ',discountAmount);
             console.log('discount : ',discount);
-            discountPriceElement.textContent = `Total discount: Rs ${currentDiscount + parseFloat(discountAmount)}`;
+            discountPriceElement.textContent = `${currentDiscount + parseFloat(discountAmount)}`;
             console.log("discountPriceElement : ",discountPriceElement.textContent);
-            finalPriceElement.textContent = `Total: Rs ${finalAmount}`;
+            finalPriceElement.textContent = `${finalAmount}`;
             console.log('finalPriceElement : ',finalPriceElement.textContent)
             // Display applied coupon
             appliedCouponText.textContent = `Coupon applied: ${name} [ ${discount} discount off]`;
@@ -299,9 +467,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             
-            totalPriceElement.textContent = `Price: Rs ${data.updatedPrices.total}`;
-            discountPriceElement.textContent = `Total discount: Rs ${data.updatedPrices.discount}`;
-            finalPriceElement.textContent = `Total: Rs ${data.updatedPrices.final}`;
+            totalPriceElement.textContent = `${data.updatedPrices.total}`;
+            discountPriceElement.textContent = `${data.updatedPrices.discount}`;
+            finalPriceElement.textContent = `${data.updatedPrices.final}`;
 
             
             appliedCouponDiv.style.display = 'none';
@@ -328,61 +496,62 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const radioInput1 = document.querySelector('.form-check-input1');
     const radioInput2 = document.querySelector('.form-check-input2');
-    
+
     const upiBtn = document.getElementById('upiBtn');
     const codBtn = document.getElementById('codBtn');
     const payPalBtn = document.getElementById('payPalBtn');
+    const paymentError = document.getElementById('payment-error');
+    const changePaymentButtons = () => {
+        if (radioInput1.checked) {
+            payPalBtn.style.display = 'block'; 
+            codBtn.style.display = 'none';
+            paymentError.style.display = 'none';
+        } else if (radioInput2.checked) {
+            payPalBtn.style.display = 'none';
+            codBtn.style.display = 'block';   
+            paymentError.style.display = 'none' 
+        }
+    };
+
+    radioInput1.addEventListener('change', changePaymentButtons);
+    radioInput2.addEventListener('change', changePaymentButtons);
     
+
     
     const form = document.getElementById('placeOrderForm');
 
-    radioContainers.forEach((radioContainer, index) => {
-        const radioInput = radioContainer.querySelector('.form-check-input');
-        const deliverBtn = deliverBtns[index];
-
-        radioInput.addEventListener('change', () => {
-            deliverBtns.forEach(btn => (btn.style.display = 'none')); // Hide all deliver buttons
-            deliverBtn.style.display = 'block'; // Show only the selected deliver button
-        });
-
-        deliverBtn.addEventListener('click', () => {
-            orderDiv.style.display = 'block'; // Show order summary
-        });
-    });
-
-    orderBtn.addEventListener('click', () => {
-        priceDiv.style.display = 'block';
-    });
-    
-
-    priceBtn.addEventListener('click', () => {
-        payDiv.style.display = 'block';
-    });
-
-    radioInput1.addEventListener('change', () => {
-        payPalBtn.style.display = 'block';
-        codBtn.style.display = 'none';
-        
-    });
-
-    radioInput2.addEventListener('change', () => {
-        codBtn.style.display = 'block';
-        payPalBtn.style.display = 'none';
-        
-    });
-    
-    
     
     form.addEventListener('submit', (e) => {
         const selectedAddress = document.querySelector('input[name="selectedAddress"]:checked');
         const selectedPayment = document.querySelector('input[name="selectedPayment"]:checked');
-
+        const addressError = document.getElementById('address-error');
+        const paymentError = document.getElementById('payment-error');
+        
         if (!selectedAddress || !selectedPayment) {
+            if(!selectedAddress){
+                addressError.style.display='block';
+                addressError.style.color = 'red';
+                addressError.innerText = 'Please add a valid shipping address';
+            }else if(!selectedPayment){
+                paymentError.style.display = 'block';
+                paymentError.style.color = 'red';
+                paymentError.innerText = 'Please select a vaid payment method';
+            }
             e.preventDefault();
             
+        }else{
+            const finalAmount = parseFloat(document.querySelector('.final-price').innerText.replace(/[^\d.-]/g, ''));
+            if(selectedPayment.value === 'COD' && finalAmount > 1000){
+                paymentError.style.display = 'block';
+                paymentError.style.color = 'red';
+                paymentError.innerText = 'COD is not allowed for orders above Rs 1000';
+                 e.preventDefault();
+            }
+           
         }
     });
 });
+
 
 </script>
 

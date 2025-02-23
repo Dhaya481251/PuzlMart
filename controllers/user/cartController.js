@@ -11,17 +11,27 @@ const updatePopularityScore = async(productId) => {
     await Product.findByIdAndUpdate(productId,{$inc:{popularity:1}});
 }
 
-const loadCart = async(req,res) => {
+const loadCart = async (req, res) => {
     try {
         const userId = req.session.user;
         const user = await User.findById(userId);
-        const cart = await Cart.findOne({userId}).populate('items.productId');
-        const category = await Category.find({isListed:true});
-        res.render('cart',{user,cart,category:category});
+        let cart = await Cart.findOne({ userId }).populate('items.productId');
+        const category = await Category.find({ isListed: true });
+
+        if (cart && cart.items) {
+            cart.items = cart.items.filter(item => !item.productId.isBlocked);
+        }
+        if(cart.items.length > 0){
+        res.render('cart', { user, cart, category: category });
+        }else{
+            res.redirect(302,'/products')
+        }
     } catch (error) {
+        console.error('Error while loading cart:', error);
         res.status(500).send('Internal Server Error');
     }
-}
+};
+
 const addToCart = async (req, res) => {
     try {
         const userId = req.session.user;

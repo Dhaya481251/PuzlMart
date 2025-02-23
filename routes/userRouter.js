@@ -82,6 +82,7 @@ router.post('/buy',userAuth,orderController.orderPlaced);
 router.get('/orderConfirmation',userAuth,orderController.orderConfirmation)
 router.get('/myOrders',userAuth,orderController.loadMyOrdersPage);
 router.get('/orderDetails/:id',userAuth,orderController.orderDetails);
+router.post('/startPayPalPayment/:id',userAuth,orderController.payFromOrderDetails);
 router.post('/rateProduct/:orderId/:productId',userAuth,orderController.rateProduct);
 router.get('/orderAddAddress',userAuth,orderController.loadAddAddress);
 router.post('/orderAddAddress',userAuth,orderController.addAddress);
@@ -91,8 +92,10 @@ router.post('/cancelOrder/:id',userAuth, orderController.cancelOrder);
 router.post('/returnOrder/:id',userAuth, orderController.returnOrder);
 router.post('/applyCoupon',userAuth,orderController.applyCoupon);
 router.post('/removeCoupon',userAuth,orderController.removeCoupon);
+router.get('/order/invoice/:id',userAuth,orderController.downloadInvoice);
 
 //Wishlist management
+router.get('/wishlist',userAuth,wishlistController.loadWishlist)
 router.get('/addToWishlist/:id',userAuth,wishlistController.addToWishlist);
 router.get('/removeFromWishlist/:id',userAuth,wishlistController.removeFromWishlist);
 //wallet management

@@ -48,7 +48,7 @@ const editName = async(req,res) => {
         const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');        
         user.name = newName;
         await user.save();
-        res.redirect('/userDetails',{cart,wishlist,category:category});
+        res.redirect(302,'/userDetails');
 
     } catch (error) {
         res.status(500).send('Internal server error');
@@ -211,7 +211,7 @@ const addAddress = async(req,res) => {
             userAddress.address.push({addressType,name,city,landMark,state,pincode,phone,altPhone,cart});
             await userAddress.save();
         }
-        res.redirect('/userAddress');
+        res.redirect(302,'/userAddress');
     } catch (error) {
         console.error('Error adding address',error);
         res.status(500).send('Internal server error');
@@ -276,7 +276,7 @@ const editAddress = async(req,res) => {
             }}
         )
 
-        res.redirect('/userAddress');
+        res.redirect(302,'/userAddress');
     } catch (error) {
         console.error('editting error',error);
         res.status(500).send('Internal server error');
@@ -301,7 +301,7 @@ const deleteAddress = async(req,res) => {
                 address:{_id:addressId}
             }}
         )
-        res.redirect('/userAddress')
+        res.redirect(302,'/userAddress')
     } catch (error) {
         console.error('deleting error',error);
         res.status(500).send('Internal server error');

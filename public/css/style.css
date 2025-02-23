@@ -4355,3 +4355,11 @@ ol {
 .breadcrumbs a:hover{
    color:#e7ab3c
 }
+.star-rating .star {
+    font-size: 24px; 
+    color: gray; 
+}
+
+.star-rating .star.selected {
+    color: yellow; 
+}

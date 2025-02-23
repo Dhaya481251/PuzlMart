@@ -2,6 +2,7 @@ const axios = require('axios');
 const Cart = require('../models/cartSchema');
 const User = require('../models/userSchema');
 const Product = require('../models/productSchema');
+const Order = require('../models/orderSchema');
 
 async function generateAccessToken() {
     try {
@@ -34,51 +35,81 @@ async function convertCurrency(amountInINR) {
 }
 
 
-exports.createOrder = async (userId, couponDiscount = 0) => {
+const capturePayment = async (paypalOrderId,orderId,accessToken) => {
+    try {
+         // Regenerate the access token
+        const response = await axios({
+            url: `${process.env.PAYPAL_BASE_URL}/v2/checkout/orders/${paypalOrderId}/capture`,
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`,
+            },
+        });
+        console.log('OrderId : ',orderId);
+        console.log('Paypal Order Id : ',paypalOrderId);
+        console.log('Capture payment status : ',response.data.status);
+        console.log('Capture Payment Response:', response.data);
+
+        if (response.data.status === 'COMPLETED') {
+            console.log('Payment successful');
+            await Order.findByIdAndUpdate({_id:orderId}, { paymentStatus: 'Paid' },{new:true});
+            return 'Paid';
+        } else {
+            console.log('Payment not completed');
+            await Order.findByIdAndUpdate({_id:orderId}, { paymentStatus: 'Pending'},{new:true});
+            return 'Pending';
+        }
+    } catch (error) {
+        console.error('Error capturing payment:', error);
+        await Order.findByIdAndUpdate({_id:orderId}, { paymentStatus: 'Pending' },{new:true});
+        return 'Pending';
+    }
+};
+
+
+exports.createOrder = async (userId, couponDiscount = 0,orderId) => {
     try {
         const cart = await Cart.findOne({ userId }).populate('items.productId');
         if (!cart || cart.items.length === 0) {
             throw new Error('Cart is empty');
         }
 
-        
         const validItems = cart.items.filter(item => {
             const product = item.productId;
             return product && product.productName && product.salePrice;
         });
-        
-        const purchaseUnits = []; 
+
+        const purchaseUnits = [];
         let itemTotalUSD = 0;
-        for (const item of validItems) { 
-            const product = item.productId; 
-            const unitPriceINR = product.salePrice; 
-            const unitPriceUSD = await convertCurrency(unitPriceINR); 
-            const description = product.description || 'No description provided'; 
-            const truncatedDescription = description.length > 127 ? description.substring(0, 127) : description; 
-            
+        for (const item of validItems) {
+            const product = item.productId;
+            const unitPriceINR = product.salePrice;
+            const unitPriceUSD = await convertCurrency(unitPriceINR);
+            const description = product.description || 'No description provided';
+            const truncatedDescription = description.length > 127 ? description.substring(0, 127) : description;
+
             itemTotalUSD += parseFloat(unitPriceUSD) * item.quantity;
 
-            purchaseUnits.push({ 
-                name: product.productName, 
-                description: truncatedDescription,  
-                quantity: item.quantity, 
-                unit_amount: { 
-                    currency_code: 'USD', 
-                    value: unitPriceUSD, 
-                }, 
-            }); 
+            purchaseUnits.push({
+                name: product.productName,
+                description: truncatedDescription,
+                quantity: item.quantity,
+                unit_amount: {
+                    currency_code: 'USD',
+                    value: unitPriceUSD,
+                },
+            });
         }
 
-        const discountUSD = await convertCurrency(couponDiscount); 
+        const discountUSD = await convertCurrency(couponDiscount);
         const finalAmountUSD = (itemTotalUSD - discountUSD).toFixed(2);
-        console.log('itemTotalUSD:', itemTotalUSD.toFixed(2)); 
-        console.log('finalAmountUSD:', finalAmountUSD); 
+        console.log('itemTotalUSD:', itemTotalUSD.toFixed(2));
+        console.log('finalAmountUSD:', finalAmountUSD);
         console.log('discountUSD:', discountUSD);
 
-        // Generate PayPal access token
         const accessToken = await generateAccessToken();
 
-        // Create PayPal order
         const response = await axios({
             url: process.env.PAYPAL_BASE_URL + '/v2/checkout/orders',
             method: 'POST',
@@ -92,7 +123,7 @@ exports.createOrder = async (userId, couponDiscount = 0) => {
                     reference_id: 'default',
                     amount: {
                         currency_code: 'USD',
-                        value: finalAmountUSD,  // Ensure value matches itemTotalUSD
+                        value: finalAmountUSD,
                         breakdown: {
                             item_total: {
                                 currency_code: 'USD',
@@ -116,19 +147,20 @@ exports.createOrder = async (userId, couponDiscount = 0) => {
             }
         });
 
-        // Extract the approval URL from the response
         const approvalLink = response.data.links.find((link) => link.rel === 'approve');
         if (!approvalLink) {
             throw new Error('Approval link not found in PayPal response');
         }
-
+        
+        await capturePayment(response.data.id,orderId,accessToken);
+        await Order.findByIdAndUpdate({_id:orderId},{paypalOrderId:response.data.id});
         console.log('PayPal order created:', response.data.id);
-        return approvalLink.href;  // Return the approval URL to redirect the user to PayPal
+        
+        return approvalLink.href;
 
     } catch (error) {
         console.error('Error creating PayPal order:', error.response?.data || error.message);
 
-        // Enhanced logging for more details
         if (error.response) {
             console.error('Error response data:', error.response.data);
             console.error('Error response status:', error.response.status);
@@ -138,3 +170,7 @@ exports.createOrder = async (userId, couponDiscount = 0) => {
         throw new Error('Failed to create PayPal order');
     }
 };
+
+
+
+

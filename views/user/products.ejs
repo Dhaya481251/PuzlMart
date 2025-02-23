@@ -12,7 +12,27 @@
         <div class="col-lg-3 col-md-12 px-2 py-2 my-2" style="background-color: #e7ab3c; color:white;border-radius: 5px;">
             <!-- Price Start -->
             <div class="border-bottom mb-4 pb-4">
-                <form id="filterForm" action="/filterProductByCategory" method="GET"></form>
+                <div class="filter-section" style="display: flex; justify-content: flex-end; padding: 10px;"> 
+                    <% if (appliedFilters.category) { %>
+                      <% (Array.isArray(appliedFilters.category) ? appliedFilters.category : [appliedFilters.category]).forEach(cat => { %>
+                          <input type="hidden" name="category" value="<%= cat %>">
+                          <div class="px-2 py-2 mr-2" style="display:none;border-radius: 5px;border:1px solid white;"><%=cat%></div>
+                      <% }) %>
+                  <% } %>
+                  <% if (appliedFilters.brand) { %>
+                      <% (Array.isArray(appliedFilters.brand) ? appliedFilters.brand : [appliedFilters.brand]).forEach(br => { %>
+                          <input type="hidden" name="brand" value="<%= br %>">
+                          <div class="px-2 py-2 mr-2" style="display:none;border-radius: 5px;border:1px solid white;"><%=br%></div>
+                      <% }) %>
+                  <% } %>
+                  <% if (appliedFilters.sort) { %>
+                      <% (Array.isArray(appliedFilters.sort) ? appliedFilters.sort : [appliedFilters.sort]).forEach(srt => { %>
+                          <input type="hidden" name="brand" value="<%= srt %>">
+                          <div class="px-2 py-2 mr-2" style="display:none;border-radius: 5px;border:1px solid white;"><%=srt%></div>
+                      <% }) %>
+                  <% } %>
+                   </div>
+                <form id="filterForm" action="/filterProductByCategory" method="GET">
                 <h5 class="font-weight-semi-bold mb-4">Category</h5>
                 
                     <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
@@ -49,8 +69,9 @@
                            </div>
                     </div>
                     <button class="mx-4 my-4 px-1 py-1" style="background:#f0ffff; color:#e7ab3c;border-radius: 5px;font-size: larger;font-weight: 500;border: none;" type="submit">Apply filters</button>
-                    <button id="clearFiltersBtn" class="mx-4 my-4 px-1 py-1" style="background:#f0ffff; color:#e7ab3c;border-radius: 5px;font-size: larger;font-weight: 500;border: none;" type="submit">Clear All filters</button>
+                    
                 </form>
+                <button id="clearFiltersBtn" class="mx-4 my-4 px-1 py-1" style="background:#f0ffff; color:#e7ab3c;border-radius: 5px;font-size: larger;font-weight: 500;border: none;" >Clear All filters</button>
             </div>
         </div>
         <!-- Shop Sidebar End -->
@@ -142,15 +163,27 @@
                <% } %>
                </div>
             </div>
+            <div class="pagination" style="display: flex; justify-content: center;">
+                <% if (currentPage > 1) { %>
+                    <a class="btn mx-1 my-1" style="background: #e7ab3c; color:white; text-decoration: none;" href="/products?page=<%= currentPage - 1 %>">Prev</a>
+                <% } %>
+                <% for (let i = 1; i <= totalPages; i++) { %>
+                    <a class="btn mx-1 my-1 <%= currentPage === i ? 'active' : '' %>" style="background: #e7ab3c; color: white; text-decoration: none;" href="/products?page=<%= i %>"><%= i %></a>
+                <% } %>
+                <% if (currentPage < totalPages) { %>
+                    <a class="btn mx-1 my-1" style="background: #e7ab3c; color: white; text-decoration: none;" href="/products?page=<%= currentPage + 1 %>">Next</a>
+                <% } %>
+            </div>
         </div>
         <!-- Shop Product End -->
     </div>
+    
 </div>
-       <!-- <section class="featured-puzzles py-5" style="display: flex; flex-direction: row;">
-           <div class="product-list-container py-2" style="display: flex; flex-direction: row;">
+       <section class="featured-puzzles py-5" style="display: flex; flex-direction: row;">
+           <!-- <div class="product-list-container py-2" style="display: flex; flex-direction: row;">
                <div class="sidebar px-4 py-3" style="background-color: #04625f; color: #f0ffff; border-radius: 10px; display: flex; flex-direction: column;">
-                   <h3>Filters</h3>-->
-                   <!--<div class="filter-section" style="display: flex; justify-content: flex-end; padding: 10px;"> 
+                   <h3>Filters</h3>
+                   <div class="filter-section" style="display: flex; justify-content: flex-end; padding: 10px;"> 
                     <% if (appliedFilters.category) { %>
                       <% (Array.isArray(appliedFilters.category) ? appliedFilters.category : [appliedFilters.category]).forEach(cat => { %>
                           <input type="hidden" name="category" value="<%= cat %>">
@@ -169,8 +202,8 @@
                           <div class="px-2 py-2 mr-2" style="border-radius: 5px;border:1px solid white;"><%=srt%></div>
                       <% }) %>
                   <% } %>
-                   </div>-->
-                   <!--<form id="filterForm" action="/filterProductByCategory" method="GET">
+                   </div>
+                   <form id="filterForm" action="/filterProductByCategory" method="GET">
                        <div class="filter-section px-3">
                            <h4>Category</h4>
                            <ul class="px-2">
@@ -271,19 +304,9 @@
                            </div>
                        <% }) %>
                    <% } %>
-               </div> -->
-               <div class="pagination" style="display: flex; justify-content: center;">
-                   <% if (currentPage > 1) { %>
-                       <a class="btn mx-1 my-1" style="background: #e7ab3c; color:white; text-decoration: none;" href="/products?page=<%= currentPage - 1 %>">Prev</a>
-                   <% } %>
-                   <% for (let i = 1; i <= totalPages; i++) { %>
-                       <a class="btn mx-1 my-1 <%= currentPage === i ? 'active' : '' %>" style="background: #e7ab3c; color: white; text-decoration: none;" href="/products?page=<%= i %>"><%= i %></a>
-                   <% } %>
-                   <% if (currentPage < totalPages) { %>
-                       <a class="btn mx-1 my-1" style="background: #e7ab3c; color: white; text-decoration: none;" href="/products?page=<%= currentPage + 1 %>">Next</a>
-                   <% } %>
-               </div>
-           </section>
+               </div>-->
+               
+           <!--</section> -->
        </section>
    
    
@@ -306,118 +329,29 @@
 <script>
 
 
-let wishlist = document.querySelector('.wishlist');
-function openWishlist(){
-    wishlist.classList.add('active');
-    wishlist.style.display = 'block'
-}
-function closeWishlist(){
-    wishlist.style.display = 'none'
-    wishlist.classList.remove('active');
-}
+// let wishlist = document.querySelector('.wishlist');
+// function openWishlist(){
+//     wishlist.classList.add('active');
+//     wishlist.style.display = 'block'
+// }
+// function closeWishlist(){
+//     wishlist.style.display = 'none'
+//     wishlist.classList.remove('active');
+// }
 
-let cart = document.querySelector('.cart'); 
-function openCart() {
-  cart.style.display = 'block';
-  cart.classList.add('active');
-}
+// let cart = document.querySelector('.cart'); 
+// function openCart() {
+//   cart.style.display = 'block';
+//   cart.classList.add('active');
+// }
 
-function closeCart() {
-  cart.style.display = 'none';
-  cart.classList.remove('active');
-}
-
-document.querySelectorAll('.cart-remove').forEach(button => {
-        button.addEventListener('click', async (event) => {
-            event.preventDefault();
-            
-            const confirmation = await Swal.fire({
-                title: 'Are you sure?',
-                text: "Do you want to remove this item from your cart?",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, remove it!',
-                cancelButtonText: 'Cancel',
-                reverseButtons: true
-            });
-
-            if (confirmation.isConfirmed) {
-                const productId = event.target.closest('a').getAttribute('href').split('/').pop();
-
-                try {
-                    const response = await fetch(`/removeFromCart/${productId}`, {
-                        method: 'GET', 
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                    });
-
-                    const data = await response.json();
-
-                    if (response.ok) {
-                        Swal.fire('Removed!', 'The item has been removed from your cart.', 'success').then(() => location.reload());
-                    } else {
-                        Swal.fire('Error!', 'There was an issue removing the item. Please try again.', 'error');
-                    }
-                } catch (error) {
-                    console.error('Error removing item:', error);
-                    Swal.fire('Error!', 'An error occurred while removing the item. Please try again.', 'error');
-                }
-            } else {
-                Swal.fire('Cancelled', 'The item is still in your cart.', 'info');
-            }
-        });
-    });
+// function closeCart() {
+//   cart.style.display = 'none';
+//   cart.classList.remove('active');
+// }
 
 
 
-document.querySelectorAll('.cart-btn').forEach(button => {
-  button.addEventListener('click',(e) => {
-    e.preventDefault();
-    
-    const productId = button.getAttribute('data-id');
-    
-    fetch(`/addToCart/${productId}`, {
-   method: 'GET',
-   headers: { 'Content-Type': 'application/json' }
-})
-.then(response => {
-    if (!response.ok) {
-        return response.json().then(errData => {
-            throw new Error(errData.error || 'Something went wrong');
-        });
-    }
-    return response.json();
-})
-.then(data => {
-    if (data.success) {
-        Swal.fire({
-            title: 'Added to cart',
-            text: data.message,
-            icon: 'success',
-            confirmButtonText: 'OK'
-        }).then(() => location.reload());
-    } else {
-        Swal.fire({
-            title: 'Error',
-            text: data.error || 'An unknown error occurred',
-            icon: 'error',
-            confirmButtonText: 'OK'
-        });
-    }
-})
-.catch(error => {
-    console.log(error);
-    Swal.fire({
-        title: 'Error',
-        text: error.message,
-        icon: 'error',
-        confirmButtonText: 'OK'
-    });
-});
-
-  })
-})
 
 document.querySelectorAll('.wishlist-btn').forEach(button => {
   button.addEventListener('click',(e) => {
@@ -466,48 +400,48 @@ document.querySelectorAll('.wishlist-btn').forEach(button => {
 
   })
 })
-const sendRequest = async (url,method) => {
-    try {
-      const response = await fetch(url,{method});
-      const data = await response.json();
+// const sendRequest = async (url,method) => {
+//     try {
+//       const response = await fetch(url,{method});
+//       const data = await response.json();
 
-      if(!response.ok){
-        Swal.fire({
-          icon:'error',
-          title:'Oops',
-          text:data.error || 'Something went wrong!'
-        });
-      }else{
-        Swal.fire({
-          icon:'success',
-          title:'success',
-          text:data.message || 'Action completed successfully'
-         }).then(() => location.reload());
-      }
-    } catch (error) {
-      Swal.fire({
-        icon:'error',
-        title:'Error',
-        text:error.message || 'An unexpected error occured!'
-      });
-    }
-  };
+//       if(!response.ok){
+//         Swal.fire({
+//           icon:'error',
+//           title:'Oops',
+//           text:data.error || 'Something went wrong!'
+//         });
+//       }else{
+//         Swal.fire({
+//           icon:'success',
+//           title:'success',
+//           text:data.message || 'Action completed successfully'
+//          }).then(() => location.reload());
+//       }
+//     } catch (error) {
+//       Swal.fire({
+//         icon:'error',
+//         title:'Error',
+//         text:error.message || 'An unexpected error occured!'
+//       });
+//     }
+//   };
 
-  document.querySelectorAll('.increase-btn').forEach(button => {
-    button.addEventListener('click',(e) => {
-      e.preventDefault();
-      const productId = button.dataset.id;
-      sendRequest(`/increaseQuantity/${productId}`,'POST');
-    });
-  });
+//   document.querySelectorAll('.increase-btn').forEach(button => {
+//     button.addEventListener('click',(e) => {
+//       e.preventDefault();
+//       const productId = button.dataset.id;
+//       sendRequest(`/increaseQuantity/${productId}`,'POST');
+//     });
+//   });
 
-  document.querySelectorAll('.decrease-btn').forEach(button => {
-    button.addEventListener('click',(e) => {
-      e.preventDefault();
-      const productId = button.dataset.id;
-      sendRequest(`/decreaseQuantity/${productId}`,'POST')
-    });
-  });
+//   document.querySelectorAll('.decrease-btn').forEach(button => {
+//     button.addEventListener('click',(e) => {
+//       e.preventDefault();
+//       const productId = button.dataset.id;
+//       sendRequest(`/decreaseQuantity/${productId}`,'POST')
+//     });
+//   });
   document.addEventListener('DOMContentLoaded', () => {
     const filterForm = document.getElementById('filterForm');
     const clearFiltersBtn = document.getElementById('clearFiltersBtn');

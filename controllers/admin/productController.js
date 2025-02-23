@@ -3,10 +3,12 @@ const Category = require('../../models/categorySchema');
 const Brand = require("../../models/brandSchema");
 const User = require('../../models/userSchema');
 const Offer = require('../../models/offerSchema');
+const Order = require('../../models/orderSchema');
 
 const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
+const { OrderedBulkOperation } = require('mongodb');
 
 const getProducts = async(req,res) => {
     try {
@@ -77,7 +79,7 @@ const addProducts = async(req,res) => {
         const productExists = await Product.findOne({
             productName: products.productName
         })
-
+        
         if(!productExists){
             const images = [];
             if(req.files && req.files.length>0){
@@ -92,10 +94,10 @@ const addProducts = async(req,res) => {
             }
             const category = await Category.findOne({name:products.category});
             if(!category){
-                return res.status(400).json('Invalid category name');
+                return res.status(400).json({message:'Invalid category name',type:'error'});
             }
             if(images.length>4){
-                return res.status(400).json('No. of product should be less than or equal to 4')
+                return res.status(400).json({message:'No. of product should be less than or equal to 4',type:'error'})
             }
             const newProduct = new Product({
                 productName:products.productName,
@@ -112,9 +114,9 @@ const addProducts = async(req,res) => {
             });
 
             await newProduct.save();
-            return res.redirect('/admin/products');
+            return res.status(200).json({message:'Product added successfully',type:'success'});
         }else{
-            return res.status(400).json('Product already exist. Please try with another name.');
+            return res.status(400).json({message:'Product already exist. Please try with another name.',type:'error'});
         }
     } catch (error) {
         console.error('Error saving products : ',error);
@@ -125,7 +127,10 @@ const addProducts = async(req,res) => {
 const loadAddProductOffer = async (req,res) => {
     try {
         const id = req.query.id;
-        const product = await Product.findOne({_id:id});
+        const product = await Product.findOne({_id:id}).populate('productOffer');
+        if(product.isBlocked === true){
+            return res.status(400).json({type:'error',message:'Product is blocked, so add product offer to this product is not possible'})
+        }
         res.render('addProductOffer',{product});
     } catch (error) {
         console.error('Error while loading add product offer page : ',error);
@@ -135,16 +140,17 @@ const loadAddProductOffer = async (req,res) => {
 
 const addProductOffer = async (req, res) => {
     try {
-        const {offerType,discounType,value,startDate,endDate } = req.body;
+        const {offerType,discountType,value,startDate,endDate } = req.body;
         const productId = req.params.id;
-        const findProduct = await Product.findOne({_id:productId}).populate('productOffer');
+        
+        const findProduct = await Product.findOne({_id:productId,isBlocked:false}).populate('productOffer');
         
         if (!findProduct) {
-            return res.status(404).json({ status: false, message: 'Product not found' });
+            return res.status(404).json({ type:'error', message: 'Product not found' });
         }
-        if(discounType === 'Percentage'){
-            if (value < 1 || value > 100) {
-                return res.status(400).json({ status: false, message: 'value must be between 1 and 100' });
+        if(discountType === 'Percentage'){
+            if (value < 1 || value > 90) {
+                return res.status(400).json({ type:'error', message: 'value must be between 1 and 90' });
             }else{
                 const newOffer = new Offer({
                     offerType: offerType,
@@ -152,7 +158,7 @@ const addProductOffer = async (req, res) => {
                     value:value,
                     startDate: startDate,
                     endDate: endDate, 
-                    isActive: true
+                    isActive: true,
                 });
                 await newOffer.save();
                 const discount = Math.floor(findProduct.regularPrice * (value / 100));;
@@ -161,11 +167,11 @@ const addProductOffer = async (req, res) => {
 
                 await findProduct.save();
 
-                res.status(200).json({ status: true, message: 'Offer added successfully' });
+                res.status(200).json({type:'success', message: 'Offer added successfully' });
             }
-        }else{
-            if(value>findProduct.regularPrice){
-                return res.status(400).json({status:false,message:'value must be less than product price'});
+        }else if(discountType==='Flat'){
+            if(value>=findProduct.regularPrice){
+                return res.status(400).json({type:'error',message:'value must be less than product price'});
             }else{
                 const newOffer = new Offer({
                     offerType: offerType,
@@ -182,14 +188,14 @@ const addProductOffer = async (req, res) => {
 
                 await findProduct.save();
 
-                res.status(200).json({ status: true, message: 'Offer added successfully' });
+                res.status(200).json({type:'success', message: 'Offer added successfully' });
             }
         }
 
 
     } catch (error) {
         console.error('Error in addProductOffer:', error);
-        res.status(500).json({ status: false, message: 'Internal Server Error' });
+        res.status(500).json({type:'error', message: 'Internal Server Error' });
     }
 };
 
@@ -202,30 +208,49 @@ const removeProductOffer = async (req, res) => {
             return res.status(400).json({ message: 'Product ID is required.' });
         }
 
-        const findProduct = await Product.findById(productId);
-        const removedOffer = await Offer.findByIdAndDelete(findProduct.productOffer);
+        const findProduct = await Product.findById(productId).populate('productOffer');
         if (!findProduct) {
             return res.status(404).json({ message: 'Product not found.' });
         }
 
-        if (findProduct.productOffer && findProduct.productOffer.value) {
-            
-            findProduct.salePrice += Math.floor(
-                findProduct.regularPrice * (findProduct.productOffer.value / 100)
-            );
-            findProduct.productOffer.value= 0;
-            findProduct.productOffer = null; 
+        console.log('Product details:', findProduct);
+
+        if (findProduct.productOffer) {
+            let discount = 0;
+
+            if (findProduct.productOffer.discountType === 'Percentage') {
+                discount = Math.floor(parseFloat(findProduct.regularPrice) * (parseFloat(findProduct.productOffer.value) / 100));
+            } else if (findProduct.productOffer.discountType === 'Flat') {
+                discount = parseFloat(findProduct.productOffer.value);
+            }
+
+            console.log('Calculated discount:', discount);
+
+            // Update the salePrice
+            findProduct.salePrice = (parseFloat(findProduct.salePrice) + discount).toFixed(2);
+            console.log('Updated salePrice:', findProduct.salePrice);
+
+            // Store offer ID before nullifying
+            const offerId = findProduct.productOffer._id;
+
+            findProduct.productOffer.value = 0;
+            findProduct.productOffer = null;
             await findProduct.save();
-        } 
 
-        await findProduct.save();
+            const removedOffer = await Offer.findByIdAndDelete(offerId);
+            console.log('Offer removed:', removedOffer);
 
-        res.status(200).json({ status: true, message: 'Offer removed successfully.',removedOffer });
+            return res.status(200).json({ status: true, message: 'Offer removed successfully.', removedOffer });
+        } else {
+            return res.status(404).json({ message: 'Offer not found for the product.' });
+        }
+
     } catch (error) {
         console.error('Product offer removing error:', error);
-        res.status(500).send('Internal Server Error');
+        return res.status(500).send('Internal Server Error');
     }
 };
+
 
 
 const blockProduct = async(req,res) => {
@@ -333,7 +358,7 @@ const editProduct = async (req, res) => {
       }
   
       await Product.findByIdAndUpdate(id, updateFields, { new: true });
-      res.redirect("/admin/products");
+      res.redirect(302,"/admin/products");
     } catch (error) {
       console.error(error);
       res.status(500).send("Internal Server Error");
@@ -394,6 +419,7 @@ const featuredProduct = async(req,res) => {
 const unFeaturedProduct = async(req,res) => {
     try {
         let id = req.query.id;
+        
         await Product.updateOne({_id:id},{$set:{featured:false}});
         res.redirect("/admin/products");
     } catch (error) {
@@ -418,7 +444,8 @@ const searchProduct = async (req, res) => {
     .exec();
 
     const count = await Product.find({
-      productName:{$regex:searchString,$options:"i"}
+      productName:{$regex:searchString,$options:"i"},
+      
     }).countDocuments();
     
     res.render("product", {
@@ -426,9 +453,9 @@ const searchProduct = async (req, res) => {
         totalPages: Math.ceil(count / limit),
         currentPage: page,
       });
-    console.log(orders);
+    console.log('Searched Products : ',products);
   } catch (error) {
-    console.log('Error while searching user : ', error);
+    console.log('Error while searching product : ', error);
     res.status(500).send('Internal Server Error');
   }
 };

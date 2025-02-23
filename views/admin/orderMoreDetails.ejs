@@ -1,14 +1,15 @@
 <%- include("../../views/partials/admin/header") %>
+<main id="main" class="main">
 <div class="orders-list">
            
-    <div class="order-card px-3 py-3 mx-3 my-3" style="border:1px solid #04625f;box-shadow: inset 0px 0px 9px 0px #04625f;
+    <div class="order-card px-3 py-3 mx-3 my-3" style="border:1px solid #e7ab3c;box-shadow: inset 0px 0px 9px 0px #e7ab3c;
 border-radius: 8px;">
         <p>Order ID: <%= orders.orderId %></p>
         <hr>
         <ul>
             <% orders.items.forEach(item => { %>
                 <li>
-                    <img src="/uploads/re-image/<%= item.productId.productImage[0]%>" alt="<%= item.productId.productName %>" style="width: 50px; height: 50px;"><br>
+                    <img src="/uploads/re-image/<%= item.productId.productImage %>" alt="<%= item.productId.productName %>" style="width: 50px; height: 50px;"><br>
                     <span><%= item.productId.productName %>    |    <%= item.quantity %> item</span><br>
                     <span>Rs <%= orders.finalAmount %></span>
 
@@ -36,21 +37,21 @@ border-radius: 8px;">
         
         
         <h3>Delivered on <%=orders.deliveryDate.toLocaleDateString()%></h3>
-        <div style="display: flex;flex-direction: column;gap:1rem">
-            <button id="cancelBtn" class="btn text-white" style="border-color:unset; border-radius: 8px;background-color:#04625f">Cancel the order</button>
-            <button id="returnBtn" class="btn text-white" style="border-color:unset; border-radius: 8px;background-color:#04625f">Return the order</button>
-        </div>
+        <!-- <div style="display: flex;flex-direction: column;gap:1rem">
+            <button id="cancelBtn" class="btn text-white" style="border-color:unset; border-radius: 8px;background-color:#e7ab3c">Cancel the order</button>
+            <button id="returnBtn" class="btn text-white" style="border-color:unset; border-radius: 8px;background-color:#e7ab3c">Return the order</button>
+        </div> -->
         
     </div>
     
-    <div class="order-card px-3 py-3 mx-3 my-3" style="border:1px solid #04625f;box-shadow: inset 0px 0px 9px 0px #04625f;
+    <div class="order-card px-3 py-3 mx-3 my-3" style="border:1px solid #e7ab3c;box-shadow: inset 0px 0px 9px 0px #e7ab3c;
 border-radius: 8px;">
         <p>Shipping Details</p>
         <hr>
         <% if (orders.addressDetails) { %>
             
               <address>
-                <div class=" text-white w-25 text-center" style="border-radius: 10px;background:#04625f"><h5 class="py-2"><%= orders.addressDetails.addressType%></h5></div>
+                <div class=" text-white w-25 text-center" style="border-radius: 10px;background:#e7ab3c"><h5 class="py-2"><%= orders.addressDetails.addressType%></h5></div>
                 <%= orders.addressDetails.name %> <br>
                 <%= orders.addressDetails.city %>, <%= orders.addressDetails.state %> <br>
                 <%= orders.addressDetails.pincode %> <br>
@@ -64,7 +65,7 @@ border-radius: 8px;">
           
         <h3>Delivered on <%=orders.deliveryDate.toLocaleDateString()%></h3>
     </div>
-    <div class="order-card px-3 py-3 mx-3 my-3" style="border:1px solid #04625f;box-shadow: inset 0px 0px 9px 0px #04625f;
+    <div class="order-card px-3 py-3 mx-3 my-3" style="border:1px solid #e7ab3c;box-shadow: inset 0px 0px 9px 0px #e7ab3c;
 border-radius: 8px;">
         <p>Price Details</p>
         <hr>
@@ -83,5 +84,5 @@ border-radius: 8px;">
     </div>
 
 </div>
-
+</main>
 <%- include("../../views/partials/admin/footer") %>

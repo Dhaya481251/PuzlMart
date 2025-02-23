@@ -29,11 +29,11 @@ const orderSchema = new Schema({
         },
         regularPrice:{
             type:Number,
-            required:true
+            
         },
         salePrice:{
             type:Number,
-            required:true
+            
         },
         rating :{
             type:Number,
@@ -52,7 +52,9 @@ const orderSchema = new Schema({
         type:Number,
         default:0
     },
-    
+    deliveryCharge:{
+        type:Number,
+    },
     addressId:{
         type:Schema.Types.ObjectId,
         ref:'Address',
@@ -123,15 +125,18 @@ const orderSchema = new Schema({
             default:false
         }
     },
+    paypalOrderId:{
+        type:String
+    },
     paymentStatus:{
         type:String,
-        required:true,
-        enum:['Not paid','Paid']
+        enum:['Pending','Not paid','Paid'],
+        default:'Pending'
     },
     date:{
         type:Date,
         default:Date.now
-    }
+    },
 })
 
 const Order = mongoose.model('Order',orderSchema);

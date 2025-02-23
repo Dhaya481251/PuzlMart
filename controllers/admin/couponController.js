@@ -39,22 +39,43 @@ const addCoupon = async (req,res) => {
     try {
         const {name,code,expireOn,minimumPrice,discountType,discount,usageLimit} = req.body;
 
-        const existingCoupon = await Coupon.findOne({code});
+        const existingCoupon = await Coupon.findOne({$or:[{name:name},{code:code}]});
         if(existingCoupon){
             res.status(400).json({message:'Coupon already exists',type:'error'});
-        }
-        const newCoupon = new Coupon({
-            name,
-            code,
-            expireOn,
-            minimumPrice,
-            discountType,
-            discount,
-            usageLimit,
-            usedCount:0
-        });
-        await newCoupon.save();
-        return res.status(200).json({message:'Coupon added successfully',type:'success'})
+        }else{
+            if(discountType === 'Percentage'){
+                if(discount < 1 || discount > 90){
+                    return res.status(400).json({message:'Discount value must be between 1 and 90'});
+                }else{
+                    const newCoupon = new Coupon({
+                        name,
+                        code,
+                        expireOn,
+                        minimumPrice,
+                        discountType,
+                        discount,
+                        usageLimit,
+                        usedCount:0
+                    });
+                    await newCoupon.save();
+                    return res.status(200).json({message:'Coupon added successfully',type:'success'});
+                }
+            }else if(discountType === 'Flat'){
+                const newCoupon = new Coupon({
+                    name,
+                    code,
+                    expireOn,
+                    minimumPrice,
+                    discountType,
+                    discount,
+                    usageLimit,
+                    usedCount:0
+                });
+                await newCoupon.save();
+                return res.status(200).json({message:'Coupon added successfully',type:'success'});
+            }
+        
+    }
     } catch (error) {
         console.error('Coupon adding error : ',error);
         res.status(500).json({message:"Internal server error",type:'error'});

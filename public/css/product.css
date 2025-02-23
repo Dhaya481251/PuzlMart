@@ -422,10 +422,10 @@ section{
     transition: 0.3s cubic-bezier(0.075,0.82,0.165,1);
 }
 .availableCoupons.active{
-    top:1rem;
-    right: -148px;
+    top:-2rem;
+    right: -42px;
     transition: 0.3s cubic-bezier(0.075,0.82,0.165,1);
-    background:#a8dad7;
+    background:#000000b0;
     border-radius: 9px;
     z-index:100;
 }
@@ -472,16 +472,24 @@ section{
     color: black;
 }
 #couponBtn{
-    background-color: #076a66;
-    color: white;
+    font-size: 16px;
     border-radius: 5px;
     border: none;
+    background: #e7ab3c;
+    padding: 14px 20px;
+    text-align: center;
+    display: block;
+    margin: 1rem;
 }
 #showCouponsDiv{
-    background-color: #076a66;
-    color: white;
+    font-size: 16px;
     border-radius: 5px;
     border: none;
+    background: #e7ab3c;
+    padding: 14px 20px;
+    text-align: center;
+    display: block;
+    margin: 1rem;
 }
 #copyMessage{
     font-size: 1rem;

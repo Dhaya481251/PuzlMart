@@ -71,6 +71,7 @@
       align-items: center;
       justify-content: center;
       text-align: center;
+      flex-direction: column;
     }
   
     /* Modify the modal's position if you want */
@@ -323,17 +324,17 @@
                   <td><%=category.name%></td>
                   <td><%=category.description%></td>
                   <td>
-                      <% if(category.categoryOffer){ %>
-                          <%= (category.categoryOffer.value).toFixed(2) %>%
-                      <% }else{%>
-                          0%
-                      <% } %>
+                    <% if (category.categoryOffer?.discountType === 'Percentage') { %>
+                      <%= (category.categoryOffer.value)%>% 
+                  <% }else{ %>
+                      <%= (category.categoryOffer?.value) %>
+                  <% } %>
                   </td>
                   <td>
                       <% if(category.categoryOffer){ %>
                           <button class="btn btn-info btn-sm"><a href="#" style="text-decoration: none;" class="text-white" onclick="removeOffer('<%=category._id%>')">Remove</a></button>
                       <% }else{ %>
-                          <button class="btn btn-info btn-sm"><a href="#" style="text-decoration: none;" class="text-white" onclick="addOffer('<%=category._id%>')">Add Offer</a></button>
+                          <button class="btn btn-info btn-sm"><a href="/admin/addCategoryOffer?id=<%=category._id%>" style="text-decoration: none;" class="text-white" >Add Offer</a></button>
                       <% } %>
                   </td>
                   <td>
