@@ -11,6 +11,7 @@ const updatePopularityScore = async(productId) => {
     await Product.findByIdAndUpdate(productId,{$inc:{popularity:1}});
 }
 
+
 const loadCart = async (req, res) => {
     try {
         const userId = req.session.user;
@@ -31,6 +32,7 @@ const loadCart = async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 };
+
 
 const addToCart = async (req, res) => {
     try {

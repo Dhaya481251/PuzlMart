@@ -416,101 +416,194 @@ const downloadEXCEL = async(req,res) => {
     }
 }
 
-
 const getChartData = async (req, res) => {
-    try {
+  try {
       const { filter } = req.query;
-  
+
       // Define date ranges based on filters
       let startDate, endDate;
       const now = new Date();
       switch (filter) {
-        case 'daily':
-          startDate = new Date(now.setHours(0, 0, 0, 0));
-          endDate = new Date(now.setHours(23, 59, 59, 999));
-          break;
-        case 'weekly':
-          startDate = new Date(now.setDate(now.getDate() - 7));
-          endDate = new Date();
-          break;
-        case 'monthly':
-          startDate = new Date(now.getFullYear(), now.getMonth(), 1);
-          endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-          break;
-        case 'yearly':
-          startDate = new Date(now.getFullYear(), 0, 1);
-          endDate = new Date(now.getFullYear(), 11, 31);
-          break;
-        default:
-          return res.status(400).json({ error: 'Invalid filter type' });
+          case 'daily':
+              startDate = new Date(now.setHours(0, 0, 0, 0));
+              endDate = new Date(now.setHours(23, 59, 59, 999));
+              break;
+          case 'weekly':
+              startDate = new Date(now.setDate(now.getDate() - 7));
+              endDate = new Date();
+              break;
+          case 'monthly':
+              startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+              endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+              break;
+          case 'yearly':
+              startDate = new Date(now.getFullYear(), 0, 1);
+              endDate = new Date(now.getFullYear(), 11, 31);
+              break;
+          default:
+              return res.status(400).json({ error: 'Invalid filter type' });
       }
-  
+
       // Query data based on filters
       const userCount = await User.find().countDocuments({
-        createdAt: { $gte: startDate, $lte: endDate },
+          createdAt: { $gte: startDate, $lte: endDate },
       });
       const orderCount = await Order.countDocuments({
-        createdAt: { $gte: startDate, $lte: endDate },
+          createdAt: { $gte: startDate, $lte: endDate },
       });
       const productCount = await Product.countDocuments({
-        createdAt: { $gte: startDate, $lte: endDate },
+          createdAt: { $gte: startDate, $lte: endDate },
       });
-  
+
       // Aggregate revenue and number of orders by category
       const categoryRevenue = await Order.aggregate([
-        { $match: { createdOn: { $gte: startDate, $lte: endDate } } },
-        { $unwind: '$items' },
-        {
-          $lookup: {
-            from: 'products',
-            localField: 'items.productId',
-            foreignField: '_id',
-            as: 'productDetails',
-          },
-        },
-        { $unwind: '$productDetails' },
-        {
-          $group: {
-            _id: '$productDetails.category',
-            totalRevenue: {
-              $sum: {
-                $multiply: ['$items.quantity', '$productDetails.salePrice'],
+          { $match: { createdOn: { $gte: startDate, $lte: endDate } } },
+          { $unwind: '$items' },
+          {
+              $lookup: {
+                  from: 'products',
+                  localField: 'items.productId',
+                  foreignField: '_id',
+                  as: 'productDetails',
               },
-            },
-            totalOrders: { $sum: 1 },
           },
-        },
-        {
-          $lookup: {
-            from: 'categories',
-            localField: '_id',
-            foreignField: '_id',
-            as: 'categoryDetails',
+          { $unwind: '$productDetails' },
+          {
+              $group: {
+                  _id: '$productDetails.category',
+                  totalRevenue: {
+                      $sum: {
+                          $multiply: ['$items.quantity', '$productDetails.salePrice'],
+                      },
+                  },
+                  totalOrders: { $sum: 1 },
+              },
           },
-        },
-        { $unwind: '$categoryDetails' },
-        {
-          $project: {
-            _id: '$categoryDetails.name',
-            totalRevenue: 1,
-            totalOrders: 1,
+          {
+              $lookup: {
+                  from: 'categories',
+                  localField: '_id',
+                  foreignField: '_id',
+                  as: 'categoryDetails',
+              },
           },
-        },
+          { $unwind: '$categoryDetails' },
+          {
+              $project: {
+                  _id: '$categoryDetails.name',
+                  totalRevenue: 1,
+                  totalOrders: 1,
+              },
+          },
       ]);
       
       console.log('Intermediate Category Revenue:', categoryRevenue);
-      
-  
+
       // Respond with the data for charts
       res.json({
-        barChartData: [userCount, orderCount, productCount],
-        doughnutChartData: categoryRevenue,
+          barChartData: [userCount, orderCount, productCount],
+          doughnutChartData: categoryRevenue,
       });
-    } catch (error) {
+  } catch (error) {
       console.error(error);
       res.status(500).json({ error: 'Failed to fetch chart data' });
-    }
-  };
+  }
+};
+
+// const getChartData = async (req, res) => {
+//     try {
+//       const { filter } = req.query;
+  
+//       // Define date ranges based on filters
+//       let startDate, endDate;
+//       const now = new Date();
+//       switch (filter) {
+//         case 'daily':
+//           startDate = new Date(now.setHours(0, 0, 0, 0));
+//           endDate = new Date(now.setHours(23, 59, 59, 999));
+//           break;
+//         case 'weekly':
+//           startDate = new Date(now.setDate(now.getDate() - 7));
+//           endDate = new Date();
+//           break;
+//         case 'monthly':
+//           startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+//           endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+//           break;
+//         case 'yearly':
+//           startDate = new Date(now.getFullYear(), 0, 1);
+//           endDate = new Date(now.getFullYear(), 11, 31);
+//           break;
+//         default:
+//           return res.status(400).json({ error: 'Invalid filter type' });
+//       }
+  
+//       // Query data based on filters
+//       const userCount = await User.find().countDocuments({
+//         createdAt: { $gte: startDate, $lte: endDate },
+//       });
+//       const orderCount = await Order.countDocuments({
+//         createdAt: { $gte: startDate, $lte: endDate },
+//       });
+//       const productCount = await Product.countDocuments({
+//         createdAt: { $gte: startDate, $lte: endDate },
+//       });
+  
+//       // Aggregate revenue and number of orders by category
+//       const categoryRevenue = await Order.aggregate([
+//         { $match: { createdOn: { $gte: startDate, $lte: endDate } } },
+//         { $unwind: '$items' },
+//         {
+//           $lookup: {
+//             from: 'products',
+//             localField: 'items.productId',
+//             foreignField: '_id',
+//             as: 'productDetails',
+//           },
+//         },
+//         { $unwind: '$productDetails' },
+//         {
+//           $group: {
+//             _id: '$productDetails.category',
+//             totalRevenue: {
+//               $sum: {
+//                 $multiply: ['$items.quantity', '$productDetails.salePrice'],
+//               },
+//             },
+//             totalOrders: { $sum: 1 },
+//           },
+//         },
+//         {
+//           $lookup: {
+//             from: 'categories',
+//             localField: '_id',
+//             foreignField: '_id',
+//             as: 'categoryDetails',
+//           },
+//         },
+//         { $unwind: '$categoryDetails' },
+//         {
+//           $project: {
+//             _id: '$categoryDetails.name',
+//             totalRevenue: 1,
+//             totalOrders: 1,
+//           },
+//         },
+//       ]);
+      
+//       console.log('Intermediate Category Revenue:', categoryRevenue);
+      
+  
+//       // Respond with the data for charts
+//       res.json({
+//         barChartData: [userCount, orderCount, productCount],
+//         doughnutChartData: categoryRevenue,
+//       });
+//     } catch (error) {
+//       console.error(error);
+//       res.status(500).json({ error: 'Failed to fetch chart data' });
+//     }
+//   };
   
 module.exports = {
     loadLogin,

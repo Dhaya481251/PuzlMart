@@ -67,8 +67,13 @@
                     <% order.items.forEach(item => { %>
                   <tr id="">
                     <td><%= item.productId?.productName %></td>
+<<<<<<< HEAD
                     <td><%= item.productId?.regularPrice %></td>
                     <td><%= item.productId?.salePrice %></td>
+=======
+                    <td><%= item.productId.regularPrice %></td>
+                    <td><%= item.productId.salePrice %></td>
+>>>>>>> 95262d6c86292846b12ea6cf325757b473673e1d
                     <td><%= item.quantity %></td>
                     <td><%= order.discount %></td>
                     <td><%= order.finalAmount %></td>

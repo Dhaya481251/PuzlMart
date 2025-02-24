@@ -7,7 +7,10 @@
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="/admin">Home</a></li>
           <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
+<<<<<<< HEAD
           <li class="breadcrumb-item"><a href="/admin/coupons">Coupons</a></li>
+=======
+>>>>>>> 95262d6c86292846b12ea6cf325757b473673e1d
           <li class="breadcrumb-item active"><a href="/admin/addCoupon">Add Coupon</a></li>
         </ol>
       </nav>
@@ -21,7 +24,11 @@
     <div class="card-body">
       <h5 class="card-title">Add New Coupon</h5>
   
+<<<<<<< HEAD
       <form class="row g-3"  onsubmit="validateAndSubmit(event)">
+=======
+      <form class="row g-3" action="/admin/addCoupon" method="POST" onsubmit="validateAndSubmit(event)">
+>>>>>>> 95262d6c86292846b12ea6cf325757b473673e1d
         <div class="col-md-6">
           <div class="form-floating">
               <input type="text" class="form-control" name="name" />
@@ -132,6 +139,7 @@
   });
   
   function validateAndSubmit(event) {
+<<<<<<< HEAD
     event.preventDefault();
 
     if (!validateForm()) return;
@@ -184,6 +192,50 @@
         });
 }
 
+=======
+      event.preventDefault();
+  
+      if (!validateForm()) return;
+  
+      const form = event.target;
+      const formData = Object.fromEntries(new FormData(form));
+  
+      fetch(form.action, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData),
+      })
+          .then(response => {
+              if (!response.ok) {
+                  throw new Error('HTTP error: ' + response.status);
+              }
+              return response.json();
+          })
+          .then(data => {
+              Swal.fire({
+                  icon: data.type,
+                  title: data.message,
+                  showConfirmButton: true,
+                  timer: 1500,
+              }).then(() => {
+                  if (data.type === 'success') {
+                      window.location.href = '/admin/coupons';
+                  }
+              });
+          })
+          .catch(error => {
+              console.error('Error:', error);
+              Swal.fire({
+                  icon: 'error',
+                  title: 'Something went wrong!',
+                  showConfirmButton: true,
+                  timer: 1500,
+              });
+          });
+  }
+>>>>>>> 95262d6c86292846b12ea6cf325757b473673e1d
   
   
       function validateForm(){
@@ -217,6 +269,7 @@
   
   
           if(expireOn === ""){
+<<<<<<< HEAD
               displayErrorMessage('expireOn-error','Please enter a expired date for coupon');
               isValid = false;
           }else{
@@ -226,6 +279,10 @@
                 displayErrorMessage('expireOn-error','Expiration date cannot be in the past');
                 isValid = false;
             }
+=======
+              displayErrorMessage('expireOn-error','Please enter a expired date of coupon');
+              isValid = false;
+>>>>>>> 95262d6c86292846b12ea6cf325757b473673e1d
           }
   
           if(!discountType){
@@ -252,7 +309,10 @@
           var errorElement = document.getElementById(elementId);
           errorElement.innerText = message;
           errorElement.style.display = "block";
+<<<<<<< HEAD
           errorElement.style.color = 'red';
+=======
+>>>>>>> 95262d6c86292846b12ea6cf325757b473673e1d
       }
       
       

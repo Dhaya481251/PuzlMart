@@ -223,7 +223,9 @@ const orderConfirmation = async (req, res) => {
         const cart = await Cart.findOne({ userId }).populate('items.productId');
         const wishlist = await Wishlist.findOne({ userId }).populate('products.productsId');
         const category = await Category.find({ isListed: true });
-        res.render('orderConfirmation', { order, cart, wishlist, category });
+       
+        res.render(`orderConfirmation`,{order,cart,wishlist,category:category});
+        
     } catch (error) {
         console.error('Error while loading orderConfirmation page : ', error);
         res.status(500).send('Internal Server Error');
@@ -398,7 +400,9 @@ const addAddress = async(req,res) => {
         }
         req.session.cart = cart;
         req.session.wishlist = wishlist;
+
         res.redirect(302,'/buyNow');
+
     } catch (error) {
         console.error('Error adding address',error);
         res.status(500).send('Internal server error');
@@ -462,9 +466,14 @@ const editAddress = async(req,res) => {
                 }
             }}
         )
+
         req.session.cart = cart;
         req.session.wishlist = wishlist;
         res.redirect(302,'/buyNow');
+
+
+        // res.redirect('/buyNow',{cart,wishlist,category:category});
+
     } catch (error) {
         console.error('editing error',error);
         res.status(500).send('Internal server error');

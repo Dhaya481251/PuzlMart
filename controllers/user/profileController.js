@@ -48,7 +48,9 @@ const editName = async(req,res) => {
         const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');        
         user.name = newName;
         await user.save();
+
         res.redirect(302,'/userDetails');
+
 
     } catch (error) {
         res.status(500).send('Internal server error');

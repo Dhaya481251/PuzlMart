@@ -382,6 +382,7 @@ ol {
 
 .inner-header {
 	padding:15px 0;
+	/* padding: 39px 0; */
 }
 
 .inner-header .logo {
@@ -919,6 +920,9 @@ ol {
 	left: 40px;
 	top: 45%;
 	color: white;
+
+	/* color: #252525; */
+
 }
 
 .hero-items .owl-nav button[type=button]:hover {
@@ -1002,6 +1006,7 @@ ol {
 .women-banner {
 	padding-right: 65px;
 	padding-left: 10px;
+	/* padding-left: 65px; */
 	padding-top: 0;
 	padding-bottom: 80px;
 }
@@ -1620,6 +1625,7 @@ ol {
 .copyright-reserved .copyright-text {
 	display: flex;
 	justify-content: space-around;
+	/* float: left; */
 	font-size: 16px;
 	color: #b2b2b2;
 }
@@ -2646,6 +2652,7 @@ ol {
 
 .cart-table table tr td.cart-pic {
 	width: 15%;
+	/* width: 21%; */
 }
 
 .cart-table table tr td.cart-title {
@@ -2682,6 +2689,7 @@ ol {
 
 .cart-table table tr td.qua-col .pro-qty {
 	width: 150px;
+	/* width: 123px; */
 	height: 46px;
 	border: 2px solid #ebebeb;
 	padding: 0 15px;
@@ -4347,6 +4355,7 @@ ol {
 .closeEye-icon{
     left: calc(20.5rem);
     top:calc(1.25rem);
+<<<<<<< HEAD
 } */
 .breadcrumbs a{
 	text-decoration: none;

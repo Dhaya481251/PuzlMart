@@ -103,6 +103,7 @@ const loadProductDetailspage = async (req, res) => {
             return res.status(404).send('Product not found');
         }
 
+
         const brand = await Brand.find({});
         const cart = await Cart.findOne({ userId }).populate('items.productId');
         const wishlist = await Wishlist.findOne({ userId }).populate('products.productsId');
@@ -119,6 +120,13 @@ const loadProductDetailspage = async (req, res) => {
             discount,
             wishlist,
         });
+
+        // const category = await Category.find({isListed:true});
+        // const brand = await Brand.find({});
+        // const cart = await Cart.findOne({ userId }).populate('items.productId');
+        // const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');
+        // const discount = Math.ceil(((product.regularPrice-product.salePrice)/product.regularPrice)*100);
+        // res.render('productDetails',{isAuthenticated: req.isAuthenticated(),user:userData,product:product,category:category,brand:brand,relatedProducts:product.relatedProducts || [],cart,discount,wishlist});
     } catch (error) {
         console.error('Error loading product details:', error);
         res.status(500).send('Internal Server Error');

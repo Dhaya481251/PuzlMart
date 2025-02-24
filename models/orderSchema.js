@@ -29,12 +29,15 @@ const orderSchema = new Schema({
         },
         regularPrice:{
             type:Number,
-            
         },
         salePrice:{
             type:Number,
-            
-        },
+//             required:true
+//         },
+//         salePrice:{
+//             type:Number,
+//             required:true
+      },
         rating :{
             type:Number,
             min:1,
