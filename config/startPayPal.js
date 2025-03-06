@@ -105,7 +105,7 @@ exports.createOrder = async (userId, id) => {
                     items: purchaseUnits,
                 }],
                 application_context: {
-                    return_url: `http://localhost:3000/orderDetails/${id}`,
+                    return_url: `http://localhost:3000/paymentSuccessfull`,
                     cancel_url: 'http://localhost:3000',
                     shipping_preference: 'NO_SHIPPING',
                     user_action: 'PAY_NOW',
@@ -118,8 +118,7 @@ exports.createOrder = async (userId, id) => {
         if (!approvalLink) {
             throw new Error('Approval link not found in PayPal response');
         }
-        await capturePayment(response.data.id,id,accessToken);
-        await Order.findByIdAndUpdate({_id:id},{paypalOrderId:response.data.id});
+
         console.log('PayPal order created:', response.data.id);
         return approvalLink.href;
 
@@ -137,8 +136,8 @@ exports.createOrder = async (userId, id) => {
 };
 
 
-exports.capturePayment = async function capturePayment(paypalOrderId,id,accessToken) {
-    try {
+exports.capturePayment = async function capturePayment(id) {
+    
         const accessToken = await generateAccessToken();
 
         const response = await axios({
@@ -152,15 +151,13 @@ exports.capturePayment = async function capturePayment(paypalOrderId,id,accessTo
 
         if (response.data.status === 'COMPLETED') {
             console.log('Payment successful');
+            await Order.findOneAndUpdate({ paypalOrderId:id}, { paymentStatus: 'Paid' }, { new: true });
             return 'Paid';
         } else {
             console.log('Payment not completed');
+            await Order.findByIdAndUpdate({paypalOrderId:id}, { paymentStatus: 'Pending'},{new:true});
             return 'Pending';
         }
-    } catch (error) {
-        console.error('Error capturing payment:', error);
-        return 'Pending';
-    }
 }
 
 

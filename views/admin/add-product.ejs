@@ -26,13 +26,13 @@
     <h1>Add New Product</h1>
     <nav>
       <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="/admin">Home</a></li>
+        
         <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
         <li class="breadcrumb-item"><a href="/admin/products">Products</a></li>
         <li class="breadcrumb-item active"><a href="/admin/addProducts">Add Product</a></li>
       </ol>
     </nav>
-  </div><!-- End Page Title -->
+  </div>
 
   <section class="section">
     <div class="row">
@@ -142,46 +142,10 @@
         </div>
       </div>
 </main>
-<footer id="footer" class="footer">
-<div class="copyright">
-&copy; Copyright <strong><span>Puzl Mart</span></strong>. All Rights Reserved
-</div>
-</footer>
+
    <script src="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.js"></script>
    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.js"></script>
    <script>
-document.addEventListener("DOMContentLoaded", function () {
-    const toggleButton = document.querySelector(".toggle-sidebar-btn");
-    const body = document.body;
-  
-    if (toggleButton) {
-      toggleButton.addEventListener("click", function () {
-        body.classList.toggle("toggle-sidebar");
-      });
-    }
-
-    const toggleLinks = document.querySelectorAll(".nav-link[data-bs-toggle='collapse']");
-
-    toggleLinks.forEach((link) => {
-      link.addEventListener("click", function () {
-        const chevronIcon = this.querySelector(".bx");
-
-
-          if (this.classList.contains("show")) {
-            setTimeout(() => {
-            chevronIcon.classList.remove("bx-chevron-up");
-            chevronIcon.classList.add("bx-chevron-down");
-          }, 100); 
-          } else {
-            setTimeout(() => {
-            chevronIcon.classList.remove("bx-chevron-down");
-            chevronIcon.classList.add("bx-chevron-up");
-          }, 100); 
-          }
-         
-      });
-    });
-});
 
 function validateAndSubmit(event) {
     event.preventDefault();
@@ -232,12 +196,6 @@ function validateAndSubmit(event) {
         timer:1500
       })
     })
-    // if (validateForm()) {
-    //     console.log('Form validation passed');
-    //     event.target.submit();
-    // } else {
-    //     console.log('Form validation failed');
-    // }
 }
   
     
@@ -456,5 +414,4 @@ function clearErrorMessages() {
             })
            }
        </script>
-</body>
-</html>
+<%- include("../../views/partials/admin/footer") %>

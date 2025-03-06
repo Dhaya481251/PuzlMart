@@ -32,19 +32,10 @@ const orderSchema = new Schema({
         },
         salePrice:{
             type:Number,
-//             required:true
-//         },
-//         salePrice:{
-//             type:Number,
-//             required:true
-      },
-        rating :{
-            type:Number,
-            min:1,
-            max:5
-        },
-        review:{
-            type:String
+       },
+        reviews:{
+            type:Schema.Types.ObjectId,
+            ref:'Review'
         }
     }],
     finalAmount:{
@@ -78,7 +69,7 @@ const orderSchema = new Schema({
     },
     paymentMethod:{
         type:String,
-        enum:['COD','PayPal','Razorpay'],
+        enum:['COD','PayPal','Razorpay','Wallet'],
         required:true
     },
     status:{
@@ -93,6 +84,14 @@ const orderSchema = new Schema({
     returnReason:{
         type:String,
         default:'none'
+    },
+    returnStatus: { 
+        type: String,
+        enum: ['Pending', 'Accepted', 'Declined'],
+        default: 'Pending'
+    },
+    returnProcedureStartDate: { 
+        type: Date
     },
     createdOn:{
         type:Date,

@@ -1,7 +1,7 @@
 const Category = require('../../models/categorySchema');
 const Product = require('../../models/productSchema');
 const Offer = require('../../models/offerSchema');
-
+const Notification = require('../../models/notificationSchema');
 
 const categoryInfo = async(req,res) => {
     try {
@@ -18,12 +18,15 @@ const categoryInfo = async(req,res) => {
 
         const totalCategories = await Category.countDocuments();
         const totalPages = Math.ceil(totalCategories/limit);
+        
+        const notifications = await Notification.find({notificationType:'returnRequest'}).populate('orderId').sort({createdOn:-1});
 
         res.render('category',{
             cat:categoryData,
             currentPage:page,
             totalPages:totalPages,
-            totalCategories:totalCategories
+            totalCategories:totalCategories,
+            notifications
         });
     } catch (error) {
         console.error(error);
@@ -33,7 +36,8 @@ const categoryInfo = async(req,res) => {
 
 const loadAddCategory = async(req,res) => {
     try {
-        res.render('add-category');
+        const notifications = await Notification.find({notificationType:'returnRequest'}).populate('orderId').sort({createdOn:-1});
+        res.render('add-category',{notifications});
     } catch (error) {
         res.status(500).send('Internal Server Error');
     }
@@ -80,7 +84,8 @@ const loadAddCategoryOffer = async (req,res) => {
         if(category.isListed === false){
             return res.status(400).json({type:'error',message:'Category is unlisted, so add category offer to this category is not possible'})
         }
-        res.render('addCategoryOffer',{category});
+        const notifications = await Notification.find({notificationType:'returnRequest'}).populate('orderId').sort({createdOn:-1});
+        res.render('addCategoryOffer',{category,notifications});
     } catch (error) {
         console.error('Error while loading add category offer page : ',error);
         res.status(500).send('Internal Server Error')
@@ -102,7 +107,7 @@ const addCategoryOffer = async (req, res) => {
         if (products.length === 0) {
             return res.status(400).json({ type: 'error', message: 'All products within this category already have product offers' });
         }
-
+        
         if (discountType === 'Percentage') {
             if (value < 1 || value > 90) {
                 return res.status(400).json({ type:'error', message: 'Value must be between 1 and 90' });
@@ -163,42 +168,6 @@ const addCategoryOffer = async (req, res) => {
     }
 };
 
-
-
-// const removeCategoryOffer = async(req,res) => {
-//     try {
-//         const {categoryId} = req.body;
-//         const category = await Category.findById(categoryId).populate('categoryOffer');
-
-//         if(!categoryId){
-//             return res.status(404).json({type:'error',message:'CategoryId not found'})
-//         }
-//         const findProduct = await Product.find({category:category._id});
-
-//         const removedOffer = await Offer.findByIdAndDelete(category.categoryOffer);
-//         if (!category) {
-//             return res.status(404).json({type:'error', message: 'Category not found.' });
-//         }
-//         const percentage = category.categoryOffer;
-//         const products = await Product.find({category:category._id});
-
-//         if(products.length > 0){
-//             for(const product of products){
-//                 product.salePrice += Math.floor(product.regularPrice*(percentage/1000));
-                
-//                 await product.save();
-//             }
-//         }
-
-        
-//         category.categoryOffer = null;
-//         await category.save();
-//         res.status(200).json({ type: 'success', message: 'Offer removed successfully.',removedOffer });
-
-//     } catch (error) {
-//         res.status(500).json({type:'error',message:'Internal Server Error'});
-//     }
-// }
 const removeCategoryOffer = async (req, res) => {
     try {
         const { categoryId } = req.body;
@@ -215,7 +184,7 @@ const removeCategoryOffer = async (req, res) => {
         console.log('Category details:', findCategory);
 
         if (findCategory.categoryOffer) {
-            const products = await Product.find({ category: categoryId });
+            const products = await Product.find({ category: categoryId }).populate('reviews');
 
             products.forEach(async (product) => {
                 let discount = 0;
@@ -284,7 +253,8 @@ const getEditCategory = async(req,res) => {
         if (!category) {
             return res.status(404).send('Category not found');
         }
-        res.render('edit-category',{category});
+        const notifications = await Notification.find({notificationType:'returnRequest'}).populate('orderId').sort({createdOn:-1});
+        res.render('edit-category',{category,notifications});
     } catch (error) {
         console.error(error);
         res.status(500).send('Internal Server Error')

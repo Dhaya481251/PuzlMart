@@ -132,7 +132,7 @@
                                         <img class="rounded" style="width: 50px; height: 60px;"
                                             src="/uploads/re-image/<%=product.productImage[i]%>"
                                             alt="" id="row-image[i]">
-                                        <i onclick="deleteSingleImage('<%=product.productImage[i]%>','<%=product._id%>')" style="position: absolute;margin-left: .5rem; cursor: pointer;" class="fa-solid fa-xmark"></i>
+                                        <i onclick="deleteSingleImage('<%=product.productImage[i]%>','<%=product._id%>')" style="position: absolute;margin-left: .5rem; cursor: pointer;" class="bi bi-x-circle-fill"></i>
                                     </td>
                                 </div>
                                
@@ -170,213 +170,15 @@
           </div>
         </div>
   </main>
-   <!-- <section class="content-main">
-       <div class="row">
-           <div class="col-9">
-               <div class="content-header">
-                   <h2 class="content-title">Edit Product</h2>
-
-
-               </div>
-           </div>
-           <div class="col-lg-6">
-               <div class="card mb-4">
-
-
-                   <div class="card-body">
-                       <form method="post" action="/admin/editProduct/<%=product._id%>" enctype="multipart/form-data"
-                           onsubmit="return validateForm()">
-                           <div class="mb-4">
-                               <label for="product_name" class="form-label">Product Name</label>
-                               <input type="text" name="productName" value="<%=product.productName%>"class="form-control border" id="product_name">
-                                <div id="productName-error" class="error-message"></div>
-                           </div>
-                           <div class="col-lg-4 mb-4">
-                               <label class="form-label">Brand</label>
-                               <select class="form-select border" name="brand">
-                                  <% for(let i=0 ; i<brand.length ; i++){ %>
-                                       <option value="<%=brand[i].brandName%>">
-                                        <%=brand[i].brandName%>
-                                       </option>
-                                  <% } %>
-                               </select>
-                               <div id="brand-error" class="error-message"></div>
-                           </div>
-                           <div class="mb-4">
-                               <label class="form-label">Full description</label>
-                               <input name="descriptionData" value="<%=product.description%>"  class="form-control border"
-                                   rows="4">
-                                   <div id="description-error" class="error-message"></div>
-                           </div>
-                           <div class="row">
-                               <div class="col-lg-4">
-                                   <div class="mb-4">
-                                       <label class="form-label">Regular price</label>
-                                       <input placeholder="$" name="regularPrice" type="text"
-                                           value="<%=product.regularPrice%>" class="form-control border">
-                                           <div id="regularPrice-error" class="error-message"></div>
-                                   </div>
-                               </div>
-                               <div class="col-lg-4">
-                                   <div class="mb-4">
-                                       <label class="form-label">Sale price</label>
-                                       <input name="salePrice" type="text" value="<%=product.salePrice%>"
-                                           class="form-control border">
-                                   </div>
-                                   <div id="salePrice-error" class="error-message"></div>
-                               </div>
-                               <div class="col-lg-4">
-                                   <div class="mb-4">
-                                       <label class="form-label">Quantity</label>
-                                       <input name="quantity" type="text" value="<%=product.quantity%>"
-                                           class="form-control border">
-                                           <div id="quantity-error" class="error-message"></div>
-                                   </div>
-                               </div>
-                           </div>
-                           
-                           <div class="card mb-4">
-                               <div class="card-body">
-                                   <div class="row gx-2">
-                                       <div class="col-sm-6 mb-3">
-                                           <label class="form-label">Category</label>
-                                           <select class="form-select border" style="width: 150px;" name="category">
-                                              <% for(let i=0 ; i<cat.length ; i++){%>
-                                                   <option value="<%=cat[i].name%>">
-                                                    <%=cat[i].name%>
-                                                   </option>
-                                              <% } %>
-                                           </select>
-                                           <div id="category-error" class="error-message"></div>
-                                       </div>
-                                   </div>
-                               </div>
-                           </div>
-
-                           <div class="card mb-4">
-                            <div class="card-body">
-                                <div class="row gx-2">
-                                    <div class="col-sm-6 mb-3">
-                                        <label for="relatedProducts" class="form-label">Related Products</label>
-                                        <select multiple class="form-control" name="relatedProducts[]" id="relatedProducts">
-                                            <% products.forEach((prod) => { %>  
-                                                <option value="<%= prod._id %>" <% if (product.relatedProducts && product.relatedProducts.some(rp => rp.toString() === prod._id.toString())) { %> selected <% } %> >
-                                                    <%= prod.productName %>
-                                                </option>
-                                            <% }) %>
-                                        </select>
-                                        
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                           <div class="card mb-2">
-                               <div class="card-header">
-                                   <h4>Choose images</h4>
-                               </div>
-                               <div class="border row">
-                                <div id="addedImagesContainer" class="thumbnails-container">
-                                    <% for(let i=0 ; i<product.productImage.length ; i++){ %>
-                                        <div class="col-md-12">
-                                            <div class="mb-4">
-                                                <div class="col-12">
-                                                    <td>
-                                                        <input value="<%=product.productImage[i]%>" id="imageDatas">
-                                                        <img class="rounded" style="width: 50px; height: 60px;"
-                                                            src="/uploads/re-image/<%=product.productImage[i]%>"
-                                                            alt="" id="row-image[i]">
-                                                        <i onclick="deleteSingleImage('<%=product.productImage[i]%>','<%=product._id%>')" style="position: absolute; cursor: pointer;" class="fa-solid fa-xmark"></i>
-                                                    </td>
-                                                </div>
-                                               
-                                            </div>
-                                        </div>
-                               
-                                 <% } %>
-                                </div>
-                            </div>
-                               <div class="card-body">
-                                   <div class="card-body align-items-center" style="margin-bottom: 20px;">
-                                       <img src="" alt="" id="imgView1">
-                                       <input class="form-control" type="file" name="images" id="input1"
-                                           accept="image/png, image/jpeg, image/jpg"
-                                           onchange="viewImage1(event), viewImage(event, 1)">
-                                           <div id="images-error" class="error-message"></div>
-                                   </div>
-                                   <div class="image-cropper d-flex align-items-center"
-                                   style="display:none; width: 300px; height: 200px; margin-bottom: 20px;">
-                                   <img src="" id="croppedImg1" alt="">
-                                   <button type="button" id="saveButton1" class="btn-sm btn-primary">Save</button>
-                               </div>
-                                                           <div class="row">
-                                                               <div class="card-body align-items-center" style="margin-bottom: 20px;">
-                                                                   <img src="" alt="" id="imgView2">
-                                                                   <input class="form-control" type="file" name="images" id="input2"
-                                                                       accept="image/png, image/jpeg, image/jpg"
-                                                                       onchange="viewImage2(event),viewImage(event, 2)">
-                                                               </div>
-                                                               <div class="image-cropper d-flex align-items-center"
-                                                                   style="display:none; width: 300px; height: 200px; margin-bottom: 20px;">
-                                                                   <img src="" id="croppedImg2" alt="">
-                                                                   <button type="button" id="saveButton2" class="btn-sm btn-primary">Save</button>
-                                                               </div>
-                                                           </div>
-                                                          
-                                                           <div class="row">
-                                                               <div class="card-body align-items-center" style="margin-bottom: 20px;">
-                                                                   <img src="" alt="" id="imgView3">
-                                                                   <input class="form-control" type="file" name="images" id="input3"
-                                                                       accept="image/png, image/jpeg, image/jpg"
-                                                                       onchange="viewImage3(event),viewImage(event, 3)">
-                                                               </div>
-                                                               <div class="image-cropper d-flex align-items-center"
-                                                                   style="display:none; width: 300px; height: 200px; margin-bottom: 20px;">
-                                                                   <img src="" id="croppedImg3" alt="">
-                                                                   <button type="button" id="saveButton3" class="btn-sm btn-primary">Save</button>
-                                                               </div>
-                                                           </div>
-                                                          
-                                                           <div class="row">
-                                                               <div class="card-body align-items-center" style="margin-bottom: 20px;">
-                                                                   <img src="" alt="" id="imgView4">
-                                                                   <input class="form-control" type="file" name="images" id="input4"
-                                                                       accept="image/png, image/jpeg, image/jpg"
-                                                                       onchange="viewImage4(event),viewImage(event, 4)">
-                                                               </div>
-                                                               <div class="image-cropper d-flex align-items-center"
-                                                                   style="display:none; width: 300px; height: 200px; margin-bottom: 20px;">
-                                                                   <img src="" id="croppedImg4" alt="">
-                                                                   <button type="button" id="saveButton4" class="btn-sm btn-primary">Save</button>
-                                                               </div>
-                                                           </div>
-                               </div>
-                           </div>
-                           <div>
-
-
-                               <button class="btn btn-md rounded font-sm hover-up" id="updatebtn"
-                                   type="button"  onclick="validateAndSubmit()">Update</button>
-                           </div>
-                       </form>
-                   </div>
-               </div>
-           </div>
-       </div>
-       </div>
-   </section> -->
+   
    <script src="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.js"></script>
+
    <script>
-
-
     function validateAndSubmit() {
     if (validateForm()) {
        document.forms[0].submit();
     }
     }
-    
-    
-    
     
     function validateForm() {
     let imageDatas = false;
@@ -423,6 +225,9 @@
     if (!imageDatas && images?.files.length === 0) {
         displayErrorMessage("images-error", 'Please select an image.');
         isValid = false;
+    }
+    if(images?.files.length > 4){
+        displayErrorMessage('images-error','You can upload a maximum of 4 images')
     }
 
     return isValid;
@@ -536,6 +341,16 @@
                const addedImagesContainer = document.getElementById("addedImagesContainer");
                addedImagesContainer.innerHTML = "";
                const files = event.target.files;
+    if (files.length > 4) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'You can upload a maximum of 4 images!',
+        });
+        event.target.value = ""; // Clear the file input
+        return;
+    }
+               
                for (let i = 0; i < files.length; i++) {
                    const file = files[i];
                    selectedImages.push(file);
@@ -562,20 +377,36 @@
                    addedImagesContainer.appendChild(thumbnail);
                    viewImage(file, i + 1);
                }
+
+               
            };
 
-           function deleteSingleImage(imageId,productId){
-            $.ajax({
-                url:'/admin/deleteImage',
-                method:'post',
-                data:{imageNameToServer:imageId,productIdToServer:productId},
-                success:((response) => {
-                    if(response.status===true){
-                        window.location.reload();
-                    }
-                })
-            })
-           }
+           function deleteSingleImage(imageId, productId) {
+    $.ajax({
+        url: '/admin/deleteImage',
+        method: 'post',
+        data: { imageNameToServer: imageId, productIdToServer: productId },
+        success: (response) => {
+            if (response.status === true) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Deleted!',
+                    text: 'The image has been successfully deleted.',
+                }).then(() => {
+                    window.location.reload(); // Refresh after the alert
+                });
+            }
+        },
+        error: (err) => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to delete the image. Please try again.',
+            });
+        },
+    });
+}
+
            
        </script>
     

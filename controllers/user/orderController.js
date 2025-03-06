@@ -7,6 +7,9 @@ const Cart = require('../../models/cartSchema')
 const Order = require('../../models/orderSchema');
 const Coupon = require('../../models/couponSchema');
 const Wishlist = require('../../models/wishlistSchema');
+const Notification = require('../../models/notificationSchema');
+const Review = require('../../models/reviewSchema');
+
 const mongoose = require('mongoose');
 const env = require('dotenv').config();
 const payment = require('../../config/paymentRoute');
@@ -185,8 +188,8 @@ const orderPlaced = async (req, res) => {
 
         if (selectedPayment === 'PayPal') {
             try {
-                const url = await payment.createOrder(userId, couponDiscount,orderData._id);
-                 orderData.paymentStatus = 'Paid'
+                const url = await payment.createOrder(userId, couponDiscount);
+                orderData.paypalOrderId =new URL(url).searchParams.get('token');
                 await orderData.save();
                 cart.items = [];
                 await cart.save();
@@ -194,17 +197,35 @@ const orderPlaced = async (req, res) => {
                 return res.redirect(url);
             } catch (error) {
                 console.error('PayPal order creation failed:', error);
-                orderData.paymentStatus = 'Pending'; // Keep it pending if PayPal creation fails
+                orderData.paymentStatus = 'Pending';// Keep it pending if PayPal creation fails
                 await orderData.save();
                 return res.status(500).send('Failed to create PayPal order, status updated to payment pending');
             }
         } else if (selectedPayment === 'COD') {
             const order = new Order(orderData);
-            order.paymentStatus = 'Not paid';
+           order.paymentStatus = 'Not paid';
             await order.save();
             cart.items = [];
             await cart.save();
             return res.render('orderConfirmation', { cart, wishlist, category });
+        } else if(selectedPayment === 'Wallet'){
+           const order = new Order(orderData);
+           const user = await User.findById(userId);
+           
+           user.wallet.balance = user.wallet.balance - order.finalAmount || 0;
+           const newTransaction = {
+            transactionsType:'debit',
+            amount:order.finalAmount,
+            reason:'Order Payment',
+            date: new Date()
+           }
+           user.wallet.transactions.push(newTransaction);
+           await user.save();
+           order.paymentStatus = 'Paid';
+           await order.save();
+           cart.items = [];
+           await cart.save();
+           return res.render('orderConfirmation',{cart,wishlist,category});
         } else {
             return res.status(400).send('Invalid payment method');
         }
@@ -219,12 +240,32 @@ const orderConfirmation = async (req, res) => {
     try {
         const userId = req.session.user;
         const id = req.params.id;
-        const order = await Order.findById(id);
+        
         const cart = await Cart.findOne({ userId }).populate('items.productId');
         const wishlist = await Wishlist.findOne({ userId }).populate('products.productsId');
         const category = await Category.find({ isListed: true });
-       
-        res.render(`orderConfirmation`,{order,cart,wishlist,category:category});
+        
+            await payment.capturePayment(req.query.token);
+            
+        res.render(`orderConfirmation`,{cart,wishlist,category:category});
+        
+    } catch (error) {
+        console.error('Error while loading orderConfirmation page : ', error);
+        res.status(500).send('Internal Server Error');
+    }
+};
+
+const paymentSuccessfull = async (req, res) => {
+    try {
+        const userId = req.session.user;
+        
+        const cart = await Cart.findOne({ userId }).populate('items.productId');
+        const wishlist = await Wishlist.findOne({ userId }).populate('products.productsId');
+        const category = await Category.find({ isListed: true });
+        
+            await startPayPal.capturePayment(req.query.token);
+            
+        res.render(`paymentSuccessfull`,{cart,wishlist,category:category});
         
     } catch (error) {
         console.error('Error while loading orderConfirmation page : ', error);
@@ -243,15 +284,24 @@ const loadMyOrdersPage = async (req, res) => {
         const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');
         console.log('User ID from session:', userId);
         const category = await Category.find({isListed:true});
+        
+        
+        const page = parseInt(req.query.page) || 1; 
+        const limit = 10;
+        const skip = (page - 1) * limit;
+
         const orders = await Order.find({userId})
         .populate('items.productId')
         .populate('userId')
-        .sort({createdOn:-1});
+        .sort({createdOn:-1})
+        .skip(skip)
+        .limit(limit);
 
-        console.log('Fetched Orders:', orders);
-        console.log('Address : ',orders.address);
+        const totalOrders = await Order.countDocuments({userId});
+        const totalPages = Math.ceil(totalOrders/limit);
+
         
-        res.render('myOrders', { orders ,user,cart,wishlist,category:category});
+        res.render('myOrders', { orders ,user,cart,wishlist,category:category,totalOrders:totalOrders,currentPage:page,totalPages:totalPages});
     } catch (error) {
         console.error('Error while loading my orders:', error);
         res.status(500).send('Internal server error');
@@ -265,8 +315,12 @@ const orderDetails = async(req,res) => {
         const id = req.params.id;
         const order = await Order.findById({_id:id})
         .populate('items.productId')
+        .populate('items.reviews')
         .populate('userId');
-
+        const notifications = await Notification.find({orderId:order._id});
+        const reviews = await Review.find({userId:userId});
+        
+        console.log('Notifications:', notifications);
         if(!order){
         return  res.status(404).send('Order not found');
         }
@@ -274,7 +328,8 @@ const orderDetails = async(req,res) => {
         const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');
         console.log('Order : ',order);
         const category = await Category.find({isListed:true});
-        res.render('orderDetails',{orders:order,cart,wishlist,category:category});
+        
+        res.render('orderDetails',{orders:order,cart,wishlist,category:category,notifications:notifications,reviews});
     }catch(error){
         console.error('error while loading order details',error);
         res.status(500).send('Internal server error');
@@ -284,15 +339,17 @@ const orderDetails = async(req,res) => {
 const payFromOrderDetails = async (req, res) => {
     try {
         const id = req.params.id;
+        
         const userId = req.session.user;
+        const approvalUrl = await startPayPal.createOrder(userId,id);
         const order = await Order.findById({_id:id});
         
         if (!order) {
             return res.status(404).send('Order not found');
         }
 
-        const approvalUrl = await startPayPal.createOrder(userId,id);
-        order.paymentStatus = 'Paid';
+        order.paypalOrderId =new URL(approvalUrl).searchParams.get('token');
+        
         await order.save();
 
         return res.redirect(approvalUrl);
@@ -317,11 +374,17 @@ const rateProduct = async(req,res) => {
 
         console.log('Order ID : ',orderId);
         console.log('Product ID : ',productId);
+        const newReview = new Review({
+            productId,
+            userId,
+            review,
+            rating
+        })
+        await newReview.save();
         const order = await Order.findOneAndUpdate(
             {_id:orderId,'items.productId':productId},
             {$set:{
-                'items.$.rating':rating,
-                'items.$.review':review
+                'items.$.reviews':newReview._id
             }},{new:true}
         )
         if(!order){
@@ -329,18 +392,16 @@ const rateProduct = async(req,res) => {
         }
 
         const product = await Product.findByIdAndUpdate(
-            productId,{
-                $push:{
-                    reviews:{
-                        userId,
-                        review,
-                        rating
-                    }
+            productId,
+            {
+                $set:{
+                    reviews:newReview._id
                 }
             }
+            ,{new:true}
         );
 
-        await product.save();
+       
 
         if(product){
             const currentAverageRating = product.averageRating || 0;
@@ -560,36 +621,18 @@ const returnOrder = async(req,res) => {
         if(order.status!=='Delivered'){
             return res.status(400).json({message:'Order cannot be returned.',type:'error'})
         }
-
-        order.status ="Returned";
-        if(order.paymentMethod==='PayPal'){
-            order.paymentStatus='Paid';
-        }else{
-            order.paymentStatus = 'Not paid';
-        }
         
-        await order.save();
+        const notification = new Notification({
+            userId:order.userId,
+            orderId:order._id,
+            NotificationMesssage:`Return Request for order ${order._id}`,
+            notificationType:'returnRequest'
+        });
 
+        await notification.save();
+
+        res.status(200).json({message:'Return request sent to admin',type:'success'});
         
-        if(order.paymentStatus === 'Paid'){
-            const userId = req.session.user;
-            const user = await User.findById(userId);
-
-            user.wallet.balance = user.wallet.balance + order.finalAmount || 0;
-            const newTransaction = {
-                transactionsType : 'credit',
-                amount : order.finalAmount,
-                reason : 'Order return refund',
-                date : new Date()
-            };
-            user.wallet.transactions.push(newTransaction);
-            await user.save()
-            console.log('order is returned');
-            res.status(200).json({message:'Order returned and refund credited in wallet successfully',type:'success'});
-        }else{
-        console.log('order is returned');
-        res.status(200).json({message:'Order returned successfully',type:'success'});
-        }
     }catch(error){
         console.log('order returning error',error);
         res.status(500).json({message:'Internal server error',type:'error'});
@@ -759,7 +802,7 @@ const downloadInvoice = async(req,res) => {
         const columnwidths = [150,70,70,70,70];
         const startX = 50;
         const rowHeight = 20;
-        let tableY = doc.y + 20;
+        let tableY = doc.y + 40;
 
         const tableHeaders = [
             'Product Name',
@@ -796,7 +839,7 @@ const downloadInvoice = async(req,res) => {
             subtotal +=itemSubTotal;
 
             const row = [
-                item.productId.name || 'Unknown Product',
+                item.productId.productName || 'Unknown Product',
                 item.quantity || 0,
                 `Rs ${item.salePrice || 0}`,
                 `Rs ${(item.regularPrice || 0) - (item.salePrice || 0)}`,
@@ -827,11 +870,11 @@ const downloadInvoice = async(req,res) => {
     doc.text(`Rs ${subtotal.toFixed(2)}`, 450, tableY);
 
     tableY += 20;
-    doc.text('Shipping:', 350, tableY);
-    // doc.text(`Rs ${order.shippingCost.toFixed(2)}`, 450, tableY);
+    doc.text('Delivery Charge:', 350, tableY);
+    doc.text(`Rs ${order.deliveryCharge.toFixed(2)}`, 450, tableY);
 
     tableY += 20;
-    const total = subtotal /*+ order.shippingCost*/;
+    const total = subtotal + order.deliveryCharge;
     doc.fontSize(12).font('Helvetica-Bold');
     doc.text('Total:', 350, tableY);
     doc.text(`Rs ${total.toFixed(2)}`, 450, tableY);
@@ -850,6 +893,7 @@ module.exports = {
     loadCheckOutPage,
     orderPlaced,
     orderConfirmation,
+    paymentSuccessfull,
     loadMyOrdersPage,
     orderDetails,
     payFromOrderDetails,

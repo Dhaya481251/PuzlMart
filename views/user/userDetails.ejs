@@ -12,9 +12,11 @@
             <div class="border-info mx-3 my-3 px-2 py-2" style="border: 1px solid;background-color: #e7ab3c;color:black;border-radius: 10px;display:flex;flex-direction: row;justify-content:space-between;">
                 <h5 id="email" class="mx-1 my-1">Email : <%=user.email%></h5><a class="btn " id="editEmailBtn" href="" style="text-decoration: none;color: #e7ab3c;background-color: white;font-weight: 600;">Edit</a>
             </div>
+            <% if(user.phone) {%>
             <div class="border-info mx-3 my-3 px-2 py-2" style="border: 1px solid;background-color: #e7ab3c;color:black;border-radius: 10px;display:flex;flex-direction: row;justify-content:space-between;">
                 <h5 id="phone" class="mx-1 my-1">Mobile Number : <%=user.phone%></h5>
             </div>
+            <% } %>
         </div>
     </div>
 </div>

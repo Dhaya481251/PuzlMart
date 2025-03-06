@@ -54,6 +54,7 @@ router.get("/products",userAuth,productController.loadProductpage);
 router.get('/productDetails/:id',userAuth,productController.loadProductDetailspage);
 router.get('/filterProductByCategory',userAuth,productController.filterProductByCategory);
 router.post('/search',userAuth,productController.searchProducts);
+router.post('/rateProduct/:productId',userAuth,productController.leaveAReview);
 //User profile management
 router.get('/userProfile',userAuth,profileController.loadUserProfilePage);
 router.get('/userDetails',userAuth,profileController.loadUserDetailsPage);
@@ -79,7 +80,8 @@ router.post('/decreaseQuantity/:id',userAuth,cartController.decreaseQuantity);
 //Order management
 router.get('/buyNow',userAuth,orderController.loadCheckOutPage);
 router.post('/buy',userAuth,orderController.orderPlaced);
-router.get('/orderConfirmation',userAuth,orderController.orderConfirmation)
+router.get('/orderConfirmation',userAuth,orderController.orderConfirmation);
+router.get('/paymentSuccessfull',userAuth,orderController.paymentSuccessfull);
 router.get('/myOrders',userAuth,orderController.loadMyOrdersPage);
 router.get('/orderDetails/:id',userAuth,orderController.orderDetails);
 router.post('/startPayPalPayment/:id',userAuth,orderController.payFromOrderDetails);

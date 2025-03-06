@@ -1,6 +1,6 @@
 const User = require('../../models/userSchema');
 const Offer = require('../../models/offerSchema');
-
+const Notification = require('../../models/notificationSchema');
 
 const loadOffer = async(req,res) => {
     try {
@@ -15,12 +15,15 @@ const loadOffer = async(req,res) => {
 
         const totalOffers = await Offer.countDocuments();
         const totalPages = Math.ceil(totalOffers/limit);
+        
+        const notifications = await Notification.find({notificationType:'returnRequest'}).populate('orderId').sort({createdOn:-1});
 
         res.render('offer',{
             offers,
             currentPage:page,
             totalPages:totalPages,
-            totalOffers:totalOffers
+            totalOffers:totalOffers,
+            notifications
         });
     } catch (error) {
         res.status(500).send('Internal Server Error');

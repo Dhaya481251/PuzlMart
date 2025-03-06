@@ -24,9 +24,8 @@ const uploads = multer({storage:storage});
 router.get('/login',adminController.loadLogin);
 router.post('/login',adminController.login);
 router.get('/',adminAuth,adminController.loadDashboard);
+router.post('/search',adminAuth,adminController.searchAll);
 router.get('/logout',adminController.logout);
-router.get('/search',adminAuth,adminController.search);
-
 
 //user management
 router.get('/users',adminAuth,customerController.customerInfo);
@@ -35,7 +34,7 @@ router.post('/unblockCustomer/:id',adminAuth,customerController.customerunBlocke
 router.post('/searchUser',adminAuth,customerController.searchUser);
 //category management
 router.get('/category',adminAuth,categoryController.categoryInfo);
-router.get('/addCategory',categoryController.loadAddCategory);
+router.get('/addCategory',adminAuth,categoryController.loadAddCategory);
 router.post('/addCategory',adminAuth,uploads.single('CategoryImage'),categoryController.addCategory);
 router.get('/addCategoryOffer',adminAuth,categoryController.loadAddCategoryOffer);
 router.post('/addCategoryOffer/:id',adminAuth,categoryController.addCategoryOffer);
@@ -75,6 +74,7 @@ router.post('/orders/:id/status', adminAuth, orderController.changeOrderStatus);
 router.post('/orders/:id/cancel', adminAuth, orderController.cancelOrder);
 router.get('/moreDetails/:id',adminAuth,orderController.moreDetails);
 router.post('/searchOrder',adminAuth,orderController.searchOrder);
+router.post('/handleReturnRequest/:id',adminAuth,orderController.handleReturnRequest);
 //coupon management
 router.get('/coupons',adminAuth,couponController.getCoupons);
 router.get('/addCoupon',adminAuth,couponController.loadAddCouponPage);

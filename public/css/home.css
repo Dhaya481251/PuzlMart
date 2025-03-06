@@ -615,8 +615,8 @@ footer p {
     position: absolute;
     top: 0;
     left: 100%;
-    width: 80%; /* Width of the zoom result */
-    height: 80%; /* Height of the zoom result */
+    width: 80%; 
+    height: 80%; 
     border: 1px solid #000;
     background: no-repeat;
     background-size: cover;
@@ -628,73 +628,23 @@ footer p {
     
   }
   
-  /* Style for the thumbnail gallery */
-  
-  
- 
-  
-  
-  
-  /* For the product quantity input */
-  
-/* .wishlist-icon img {
-    width: 30px;
-    margin-left: 18rem;
-    margin-top: -31rem;
-}
-.product-wishlist-icon img{
-    width: 25px;
-    margin-left: 12.5rem;
-    margin-top: -27rem;
-}
-.rubik-cube {
-    position: relative;
-    margin-left: 1rem;
-    margin-top: 0.5rem;
-    width: 30px;
-    height: 30px;
-    transform-style: preserve-3d;
-    animation: rotate3D 6s infinite linear;
-  }
-
-  .face {
-    position: absolute;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    flex-wrap: wrap;
-    transform-origin: center;
-    transform-style: preserve-3d;
-  }
-
-  .face div {
-    width: 10px; 50px divided by 3
-    height: 10px;
+ .productGalleryColumn img{
+    opacity: 0.8;
+    cursor: pointer;
+    width: 5.75rem;
+    height: 6.15rem;
     border-radius: 5px;
-    box-sizing: border-box;
-    border: 1px solid white;
-  }
+}
 
-  Rubik's Cube Faces
-  .front { transform: rotateY(0deg) translateZ(15px); }
-  .back { transform: rotateY(180deg) translateZ(15px); }
-  .right { transform: rotateY(90deg) translateZ(15px); }
-  .left { transform: rotateY(-90deg) translateZ(15px); }
-  .top { transform: rotateX(90deg) translateZ(15px); }
-  .bottom { transform: rotateX(-90deg) translateZ(15px); }
-
-  Colors for the Rubik's Cube
-  .front div { background-color: #00fc8b; }  Orange
-  .back div { background-color: #f1e61d; }   Blue
-  .right div { background-color: #d807f8; }  Green
-  .left div { background-color: #e63010; }   Yellow
-  .top div { background-color: #157bee; }    White
-  .bottom div { background-color: #0bf42e; } Red
-
-  @keyframes rotate3D {
-    0% { transform: rotateX(0deg) rotateY(0deg); }
-    100% { transform: rotateX(360deg) rotateY(360deg); }
-  }
-  a:hover{
-    text-decoration:none;
-  } */
+.productGalleryColumn img:hover{
+    opacity: 1;
+    box-shadow: 0px 0px 5px black
+} 
+.address-btn{
+    background-color: #e7ab3c;
+    border-radius: 10px;
+}
+.address-btn:hover {
+    background-color:#b2780d;
+    border: 1px solid #e7ab3c;
+}

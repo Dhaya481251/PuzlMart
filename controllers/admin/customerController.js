@@ -1,5 +1,5 @@
 const User = require('../../models/userSchema');
-
+const Notification = require('../../models/notificationSchema');
 const customerInfo = async(req,res) => {
     try {
         let search = '';
@@ -29,11 +29,14 @@ const customerInfo = async(req,res) => {
                 {email:{$regex:'.*'+search+'.*'}}
             ]
         }).countDocuments();
+        
+        const notifications = await Notification.find({notificationType:'returnRequest'}).populate('orderId').sort({createdOn:-1});
 
         res.render('customers',{
             data:userData,
             totalPages:Math.ceil(count/limit),
-            currentPage:page
+            currentPage:page,
+            notifications
         })
 
     } catch (error) {

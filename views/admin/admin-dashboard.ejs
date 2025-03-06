@@ -6,7 +6,6 @@
     <h1>Dashboard</h1>
     <nav>
       <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="/admin">Home</a></li>
         <li class="breadcrumb-item active">Dashboard</li>
       </ol>
     </nav>
@@ -16,7 +15,7 @@
       <div class="row">
 
         <!-- Left side columns -->
-        <div class="col-lg-8">
+        <div class="col-lg-12">
           <div class="row">
 
             <!-- Sales Card -->
@@ -89,7 +88,7 @@
                 
 
                 <div class="card-body">
-                  <h5 class="card-title">Reportss</h5>
+                  <h5 class="card-title">Reports</h5>
                   <div class="container-fluid mt-4">
                     
                     <div class="text-center mb-3">
@@ -209,13 +208,6 @@
         <!-- Right side columns -->
         
 </main>
-
-    <!-- Main Dashboard Content
-    <div class="container-fluid mt-3">
-      <h1>Welcome to the Admin Dashboard</h1>
-      <p>Select an option from the sidebar to get started.</p>
-    </div>
-  </div> -->
 <script>
   let barChartInstance = null;
 let doughnutChartInstance = null;
@@ -258,7 +250,8 @@ async function fetchChartData(filter = 'monthly') {
             options: {
                 scales: {
                     y: { beginAtZero: true }
-                }
+                },
+                
             }
         });
         // Doughnut Chart

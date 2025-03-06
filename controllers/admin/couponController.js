@@ -1,5 +1,5 @@
 const Coupon = require('../../models/couponSchema');
-
+const Notification = require('../../models/notificationSchema');
 const getCoupons = async (req,res) => {
     try {
         const page = parseInt(req.query.page) || 1;
@@ -14,11 +14,14 @@ const getCoupons = async (req,res) => {
         const totalCoupons = await Coupon.countDocuments();
         const totalPages = Math.ceil(totalCoupons/limit);
 
+        const notifications = await Notification.find({notificationType:'returnRequest'}).populate('orderId').sort({createdOn:-1});
+
         res.render('coupons',{
             coupons,
             currentPage:page,
             totalPages:totalPages,
-            totalCoupons:totalCoupons
+            totalCoupons:totalCoupons,
+            notifications
         });
     } catch (error) {
         console.error('coupons page error : ',error);
@@ -28,7 +31,9 @@ const getCoupons = async (req,res) => {
 
 const loadAddCouponPage = async (req,res) => {
     try {
-        res.render('addCoupon');
+        const notifications = await Notification.find({notificationType:'returnRequest'}).populate('orderId').sort({createdOn:-1});
+
+        res.render('addCoupon',{notifications});
     } catch (error) {
         console.error('Error while loading add coupon page : ',error);
         res.status(500).send('Internal Server Error')

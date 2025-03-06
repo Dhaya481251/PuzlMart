@@ -16,18 +16,35 @@ const loadHomepage = async(req,res) => {
         const categories = await Category.find({isListed:true});
         const cart = await Cart.findOne({ userId }).populate('items.productId');
         const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');
+        const brands = await Brand.find({isBlocked:false});
         if (cart && cart.items) {
             cart.items = cart.items.filter(item => item.productId); // Remove items with null productId
           }
         let productData = await Product.find({
             isBlocked:false,
             category:{$in:categories.map(category => category._id)},
-            quantity:{$gt:0}
+            featured:true
+        })
+        .populate('category')
+        .populate('productOffer')
+        .populate({
+            path: 'category',
+            populate: {
+                path: 'categoryOffer',
+                model: 'Offer'
+            }
         })
         .sort({createdOn:-1})
         .limit(4);
+        productData = productData.map(product => {
+            const status = product.quantity > 0 ? 'Available' : 'Out of Stock';
+            return { ...product.toObject(), status };
+        });
+
         if(userId){
-        res.render('home',{user:userData,products:productData,cart,wishlist,category:categories});
+        res.render('home',{user:userData,products:productData,cart,wishlist,category:categories,brands});
+        }else{
+            res.render('home',{user:null});
         }
         console.log('Home Page loaded');
     } catch (error) {
@@ -276,7 +293,7 @@ const logout = async(req,res) => {
             return res.redirect('/login');
         })
     } catch (error) {
-        console.log('Logout error',err);
+        console.log('Logout error',error);
         res.status(500).send('Internal Server Error');
     }
 }
@@ -293,7 +310,7 @@ const loadForgotPassword = async(req,res) => {
 const forgotEmailValid = async(req,res) => {
     try {
         const {email} = req.body;
-        const findUser = await User.findOne({email:email});
+        const findUser = await User.findOne({email:email,isAdmin:false});
         if(findUser){
             const otp = generateOtp();
             console.log(otp)

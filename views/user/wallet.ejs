@@ -1,7 +1,7 @@
 <%- include("../../views/partials/user/header") %>
 <nav class="breadcrumbs mt-3 mb-3 container">
-    <a href="/" class="breadcrumbs-txt" style="text-decoration: none;">Home</a>/
-    <a href="/userProfile" class="breadcrumbs-txt" style="text-decoration: none;">My Account</a>/
+    <a href="/" class="breadcrumbs-txt" style="text-decoration: none;">Home</a>&gt;
+    <a href="/userProfile" class="breadcrumbs-txt" style="text-decoration: none;">My Account</a>&gt;
     <a href="/Wallet" class="breadcrumbs-txt" style="text-decoration: none;">My Wallet</a>
 </nav>
 <div class="container my-5">
@@ -37,6 +37,19 @@
                 <% }) %>
               </tbody>
             </table>
+            <div class="pagination" style="display: flex; justify-content: center;">
+              <% if (currentPage > 1) { %>
+                  <a class="btn mx-1 my-1" style="background: #e7ab3c; color:white; text-decoration: none;" href="?page=<%= currentPage - 1 %>">&laquo; Prev</a>
+              <% } %>
+              
+              <% for (let i = 1; i <= totalPages; i++) { %>
+                  <a class="btn mx-1 my-1" style="background: #e7ab3c; color:white; text-decoration: none;" href="?page=<%= i %>" class="<%= i === currentPage ? 'active' : '' %>"><%= i %></a>
+              <% } %>
+
+              <% if (currentPage < totalPages) { %>
+                  <a class="btn mx-1 my-1" style="background: #e7ab3c; color:white; text-decoration: none;" href="?page=<%= currentPage + 1 %>">Next &raquo;</a>
+              <% } %>
+          </div>
           <% } else { %>
             <p>No transactions available.</p>
           <% } %>

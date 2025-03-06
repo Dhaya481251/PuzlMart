@@ -1,6 +1,6 @@
 const Brand = require('../../models/brandSchema');
 const Product = require('../../models/productSchema');
-
+const Notification = require('../../models/notificationSchema')
 
 const getBrandPage = async(req,res) => {
     try {
@@ -11,12 +11,13 @@ const getBrandPage = async(req,res) => {
         const totalBrands = await Brand.countDocuments();
         const totalPages = Math.ceil(totalBrands/limit);
         const reverseBrand = brandData.reverse();
-
+        const notifications = await Notification.find({notificationType:'returnRequest'}).populate('orderId').sort({createdOn:-1});
         res.render('brands',{
             data:reverseBrand,
             currentPage:page,
             totalPages:totalPages,
-            totalBrands:totalBrands
+            totalBrands:totalBrands,
+            notifications
         })
     } catch (error) {
         res.status(500).send('Internal Server Error');

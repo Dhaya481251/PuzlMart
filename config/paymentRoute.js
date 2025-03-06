@@ -35,40 +35,40 @@ async function convertCurrency(amountInINR) {
 }
 
 
-const capturePayment = async (paypalOrderId,orderId,accessToken) => {
-    try {
-         // Regenerate the access token
-        const response = await axios({
-            url: `${process.env.PAYPAL_BASE_URL}/v2/checkout/orders/${paypalOrderId}/capture`,
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${accessToken}`,
-            },
-        });
-        console.log('OrderId : ',orderId);
-        console.log('Paypal Order Id : ',paypalOrderId);
-        console.log('Capture payment status : ',response.data.status);
-        console.log('Capture Payment Response:', response.data);
+// const capturePayment = async (paypalOrderId,orderId,accessToken) => {
+//     try {
+//          // Regenerate the access token
+//         const response = await axios({
+//             url: `${process.env.PAYPAL_BASE_URL}/v2/checkout/orders/${paypalOrderId}/capture`,
+//             method: 'POST',
+//             headers: {
+//                 'Content-Type': 'application/json',
+//                 'Authorization': `Bearer ${accessToken}`,
+//             },
+//         });
+//         console.log('OrderId : ',orderId);
+//         console.log('Paypal Order Id : ',paypalOrderId);
+//         console.log('Capture payment status : ',response.data.status);
+//         console.log('Capture Payment Response:', response.data);
 
-        if (response.data.status === 'COMPLETED') {
-            console.log('Payment successful');
-            await Order.findByIdAndUpdate({_id:orderId}, { paymentStatus: 'Paid' },{new:true});
-            return 'Paid';
-        } else {
-            console.log('Payment not completed');
-            await Order.findByIdAndUpdate({_id:orderId}, { paymentStatus: 'Pending'},{new:true});
-            return 'Pending';
-        }
-    } catch (error) {
-        console.error('Error capturing payment:', error);
-        await Order.findByIdAndUpdate({_id:orderId}, { paymentStatus: 'Pending' },{new:true});
-        return 'Pending';
-    }
-};
+//         if (response.data.status === 'COMPLETED') {
+//             console.log('Payment successful');
+//             await Order.findByIdAndUpdate({_id:orderId}, { paymentStatus: 'Paid' },{new:true});
+//             return 'Paid';
+//         } else {
+//             console.log('Payment not completed');
+//             await Order.findByIdAndUpdate({_id:orderId}, { paymentStatus: 'Pending'},{new:true});
+//             return 'Pending';
+//         }
+//     } catch (error) {
+//         console.error('Error capturing payment:', error);
+//         await Order.findByIdAndUpdate({_id:orderId}, { paymentStatus: 'Pending' },{new:true});
+//         return 'Pending';
+//     }
+// };
 
 
-exports.createOrder = async (userId, couponDiscount = 0,orderId) => {
+exports.createOrder = async (userId, couponDiscount = 0) => {
     try {
         const cart = await Cart.findOne({ userId }).populate('items.productId');
         if (!cart || cart.items.length === 0) {
@@ -152,8 +152,6 @@ exports.createOrder = async (userId, couponDiscount = 0,orderId) => {
             throw new Error('Approval link not found in PayPal response');
         }
         
-        await capturePayment(response.data.id,orderId,accessToken);
-        await Order.findByIdAndUpdate({_id:orderId},{paypalOrderId:response.data.id});
         console.log('PayPal order created:', response.data.id);
         
         return approvalLink.href;
@@ -170,6 +168,29 @@ exports.createOrder = async (userId, couponDiscount = 0,orderId) => {
         throw new Error('Failed to create PayPal order');
     }
 };
+
+
+exports.capturePayment = async(orderId) => {
+    const accessToken = await generateAccessToken();
+
+    const response = await axios({
+        url: process.env.PAYPAL_BASE_URL + `/v2/checkout/orders/${orderId}/capture`,
+        method: 'POST',
+        headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + accessToken
+        },
+    })
+    if (response.data.status === 'COMPLETED') {
+                    console.log('Payment successful');
+                    await Order.findOneAndUpdate({ paypalOrderId:orderId}, { paymentStatus: 'Paid' }, { new: true });
+                    return 'Paid';
+                } else {
+                    console.log('Payment not completed');
+                    await Order.findByIdAndUpdate({paypalOrderId:orderId}, { paymentStatus: 'Pending'},{new:true});
+                    return 'Pending';
+                }
+}
 
 
 
