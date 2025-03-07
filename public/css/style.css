@@ -381,7 +381,11 @@ ol {
 }
 
 .inner-header {
+<<<<<<< HEAD
 	padding:15px 0;
+=======
+	padding: 39px 0;
+>>>>>>> 95262d6c86292846b12ea6cf325757b473673e1d
 }
 
 .inner-header .logo {
@@ -918,7 +922,11 @@ ol {
 	position: absolute;
 	left: 40px;
 	top: 45%;
+<<<<<<< HEAD
 	color: white;
+=======
+	color: #252525;
+>>>>>>> 95262d6c86292846b12ea6cf325757b473673e1d
 }
 
 .hero-items .owl-nav button[type=button]:hover {
@@ -1001,7 +1009,11 @@ ol {
 
 .women-banner {
 	padding-right: 65px;
+<<<<<<< HEAD
 	padding-left: 10px;
+=======
+	padding-left: 65px;
+>>>>>>> 95262d6c86292846b12ea6cf325757b473673e1d
 	padding-top: 0;
 	padding-bottom: 80px;
 }
@@ -1618,8 +1630,12 @@ ol {
 }
 
 .copyright-reserved .copyright-text {
+<<<<<<< HEAD
 	display: flex;
 	justify-content: space-around;
+=======
+	float: left;
+>>>>>>> 95262d6c86292846b12ea6cf325757b473673e1d
 	font-size: 16px;
 	color: #b2b2b2;
 }
@@ -2645,7 +2661,11 @@ ol {
 }
 
 .cart-table table tr td.cart-pic {
+<<<<<<< HEAD
 	width: 15%;
+=======
+	width: 21%;
+>>>>>>> 95262d6c86292846b12ea6cf325757b473673e1d
 }
 
 .cart-table table tr td.cart-title {
@@ -2681,7 +2701,11 @@ ol {
 }
 
 .cart-table table tr td.qua-col .pro-qty {
+<<<<<<< HEAD
 	width: 150px;
+=======
+	width: 123px;
+>>>>>>> 95262d6c86292846b12ea6cf325757b473673e1d
 	height: 46px;
 	border: 2px solid #ebebeb;
 	padding: 0 15px;
@@ -4329,7 +4353,11 @@ ol {
     100% { transform: rotateX(360deg) rotateY(360deg); }
   }
 
+<<<<<<< HEAD
   /* .eye-icon, .closeEye-icon{
+=======
+  .eye-icon, .closeEye-icon{
+>>>>>>> 95262d6c86292846b12ea6cf325757b473673e1d
     width: 30px;
     height: 30px;
     top: 37%;
@@ -4347,6 +4375,7 @@ ol {
 .closeEye-icon{
     left: calc(20.5rem);
     top:calc(1.25rem);
+<<<<<<< HEAD
 } */
 .breadcrumbs a{
 	text-decoration: none;
@@ -4362,4 +4391,6 @@ ol {
 
 .star-rating .star.selected {
     color: yellow; 
+=======
+>>>>>>> 95262d6c86292846b12ea6cf325757b473673e1d
 }

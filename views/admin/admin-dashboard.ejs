@@ -1,12 +1,10 @@
 <%- include('../../views/partials/admin/header') %>
           
 <main id="main" class="main">
-
   <div class="pagetitle">
     <h1>Dashboard</h1>
     <nav>
       <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="/admin">Home</a></li>
         <li class="breadcrumb-item active">Dashboard</li>
       </ol>
     </nav>
@@ -16,7 +14,7 @@
       <div class="row">
 
         <!-- Left side columns -->
-        <div class="col-lg-8">
+        <div class="col-lg-12">
           <div class="row">
 
             <!-- Sales Card -->
@@ -32,7 +30,7 @@
                     </div>
                     <div class="ps-3">
                       <h6><%=users.length%></h6>
-                      
+
                     </div>
                   </div>
                 </div>
@@ -86,12 +84,12 @@
             <div class="col-12">
               <div class="card">
 
-                
+
 
                 <div class="card-body">
-                  <h5 class="card-title">Reportss</h5>
+                  <h5 class="card-title">Reports</h5>
                   <div class="container-fluid mt-4">
-                    
+
                     <div class="text-center mb-3">
                         <button class="btn btn-primary me-2" onclick="fetchChartData('daily')">Daily</button>
                         <button class="btn btn-primary me-2" onclick="fetchChartData('weekly')">Weekly</button>
@@ -207,40 +205,27 @@
         </div><!-- End Left side columns -->
 
         <!-- Right side columns -->
-        
-</main>
 
-    <!-- Main Dashboard Content
-    <div class="container-fluid mt-3">
-      <h1>Welcome to the Admin Dashboard</h1>
-      <p>Select an option from the sidebar to get started.</p>
-    </div>
-  </div> -->
+</main>
 <script>
   let barChartInstance = null;
 let doughnutChartInstance = null;
-
 async function fetchChartData(filter = 'monthly') {
    try {
         const response = await fetch(`/admin/getChartData?filter=${filter}`);
         const data = await response.json();
-
         // Data for Bar Chart (Users, Orders, Products)
         const barChartData = data.barChartData;
-
         // Data for Doughnut Chart (Revenue and Number of Orders by Categories)
         const doughnutChartData = data.doughnutChartData;
-
         // Destroy previous bar chart if it exists
         if (barChartInstance) {
             barChartInstance.destroy();
         }
-
         // Destroy previous doughnut chart if it exists
         if (doughnutChartInstance) {
             doughnutChartInstance.destroy();
         }
-
         // Create the Bar Chart
         const barCtx = document.getElementById("barChart").getContext("2d");
         barChartInstance = new Chart(barCtx, {
@@ -258,7 +243,8 @@ async function fetchChartData(filter = 'monthly') {
             options: {
                 scales: {
                     y: { beginAtZero: true }
-                }
+                },
+                
             }
         });
         // Doughnut Chart
@@ -295,7 +281,6 @@ console.log(data.doughnutChartData);
         console.error('Error fetching chart data:', error);
     }
 }
-
 // Initial chart load
 document.addEventListener('DOMContentLoaded', () => {
     fetchChartData('monthly');

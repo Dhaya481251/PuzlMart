@@ -1,233 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Puzl Mart | Explore the world of puzzles</title>
-
-    <!-- Google Font -->
-    <link href="https://fonts.googleapis.com/css?family=Muli:300,400,500,600,700,800,900&display=swap" rel="stylesheet">
-
-    <!-- Css Styles -->
-    <link rel="stylesheet" href="/css/bootstrap.min.css" type="text/css">
-    <link rel="stylesheet" href="/css/font-awesome.min.css" type="text/css">
-    <link rel="stylesheet" href="/css/themify-icons.css" type="text/css">
-    <link rel="stylesheet" href="/css/elegant-icons.css" type="text/css">
-    <link rel="stylesheet" href="/css/owl.carousel.min.css" type="text/css">
-    <link rel="stylesheet" href="/css/nice-select.css" type="text/css">
-    <link rel="stylesheet" href="/css/jquery-ui.min.css" type="text/css">
-    <link rel="stylesheet" href="/css/slicknav.min.css" type="text/css">
-    <link rel="stylesheet" href="/css/style.css" type="text/css">
-    <link rel="stylesheet" href="/css/product.css">
-    <link rel="stylesheet" href="/css/productDetail.css">
-    <link rel="stylesheet" href="/css/home.css">
-      <!-- Bootstrap -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-  <script>
-    function imageZoom(imgID, resultID) {
-   let img = document.getElementById(imgID);
-   let result = document.getElementById(resultID);
-   let lens = document.createElement("DIV");
-   lens.setAttribute("class", "img-zoom-lens");
-   img.parentElement.insertBefore(lens, img);
- 
-   let cx = result.offsetWidth / lens.offsetWidth;
-   let cy = result.offsetHeight / lens.offsetHeight;
- 
-   result.style.backgroundImage = `url('${img.src}')`;
-   result.style.backgroundSize = `${img.width * cx}px ${img.height * cy}px`;
- 
-   lens.addEventListener("mousemove", moveLens);
-   img.addEventListener("mousemove", moveLens);
-   lens.addEventListener("touchmove", moveLens);
-   img.addEventListener("touchmove", moveLens);
- 
-   function moveLens(e) {
-     e.preventDefault();
-     let pos = getCursorPos(e);
-     let x = pos.x - lens.offsetWidth / 2;
-     let y = pos.y - lens.offsetHeight / 2;
- 
-     if (x > img.width - lens.offsetWidth) x = img.width - lens.offsetWidth;
-     if (x < 0) x = 0;
-     if (y > img.height - lens.offsetHeight) y = img.height - lens.offsetHeight;
-     if (y < 0) y = 0;
- 
-     lens.style.left = `${x}px`;
-     lens.style.top = `${y}px`;
-     result.style.backgroundPosition = `-${x * cx}px -${y * cy}px`;
-   }
- 
-   function getCursorPos(e) {
-     e = e || window.event;
-     let a = img.getBoundingClientRect();
-     let x = e.pageX - a.left;
-     let y = e.pageY - a.top;
-     x -= window.pageXOffset;
-     y -= window.pageYOffset;
-     return { x: x, y: y };
-   }
- }
- 
-    </script>
-</head>
-
-<body>
-    <!-- Page Preloder -->
-    
-
-    <!-- Header Section Begin -->
-    <header class="header-section">
-        
-        <div class="container">
-            <div class="inner-header">
-                <div class="row" style="align-items: center;">
-                    <div class="col-lg-2 col-md-2">
-                        <div class="logo" style="display: flex;border: 2px solid #e7ab3c;width: 7.5rem;padding:0.5rem;border-radius: 5px; box-shadow: 1px 0px 12px 3px #0000006b;">
-                            <p class="logo-container" style="font-size: 2rem;;font-weight: 600;color:#e7ab3c;font-family: 'Train One', serif;font-style: normal;border-radius: 5px;">
-                              Puzl
-                              Mart
-                            </p>
-                            
-                            <div class="rubik-cube">
-                                <div class="face front">
-                                  <div></div><div></div><div></div>
-                                  <div></div><div></div><div></div>
-                                  <div></div><div></div><div></div>
-                                </div>
-                                <div class="face back">
-                                  <div></div><div></div><div></div>
-                                  <div></div><div></div><div></div>
-                                  <div></div><div></div><div></div>
-                                </div>
-                                <div class="face right">
-                                  <div></div><div></div><div></div>
-                                  <div></div><div></div><div></div>
-                                  <div></div><div></div><div></div>
-                                </div>
-                                <div class="face left">
-                                  <div></div><div></div><div></div>
-                                  <div></div><div></div><div></div>
-                                  <div></div><div></div><div></div>
-                                </div>
-                                <div class="face top">
-                                  <div></div><div></div><div></div>
-                                  <div></div><div></div><div></div>
-                                  <div></div><div></div><div></div>
-                                </div>
-                                <div class="face bottom">
-                                  <div></div><div></div><div></div>
-                                  <div></div><div></div><div></div>
-                                  <div></div><div></div><div></div>
-                                </div>
-                              </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-7 col-md-7">
-                        <div class="advanced-search">
-                            
-                            <div class="input-group">
-                                <form action="/search" method="POST" class="form-inline search">
-                                <input name="query" type="search" placeholder="What do you need?">
-                                <button type="submit"><i class="ti-search"></i></button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 text-right col-md-3">
-                        <ul class="nav-right">
-                            
-                            <li class="cart-icon">
-                                <a href="#">
-                                    <i class="icon_bag_alt"></i>
-                                </a>
-                                <div class="cart-hover">
-                                    <div class="select-items">
-                                        <table>
-                                            <tbody>
-                                                <% if(cart && cart.items && cart.items.length > 0){ %>
-                                                <% cart.items.forEach(item => { %>
-                                                <% if(item.productId) { %>
-                                                <tr>
-                                                    <td class="si-pic">
-                                                        <a href="/productDetails/<%=item.productId._id%>" style="text-decoration: none;">
-                                                            <img src="/uploads/re-image/<%=item.productId.productImage[0]%>" style="width: 99%;" alt="Item" class="img-fluid cart-img">
-                                                        </a>
-                                                    </td>
-                                                    <td class="si-text">
-                                                        <div class="product-selected">
-                                                            <p>Rs <%=item.productId.salePrice%> x <%=item.quantity%></p>
-                                                            <h6><%=item.productId.productName%></h6>
-                                                        </div>
-                                                    </td>
-                                                    <td class="si-close">
-                                                        <a href="/removeFromCart/<%=item.productId._id%>"><i class="ti-close"></i></a>
-                                                    </td>
-                                                </tr>
-                                                
-                                                <% } else { %> 
-                                                    <p>Product not found</p>  
-                                                  <% } %>
-                                                <% }) %>
-                                              <% }else{ %>
-                                                      
-                                                <h4 colspan="4">Your cart is empty</h4>
-                                                      
-                                              <% } %>
-                                             
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <div class="select-total">
-                                      <span>total:</span>
-                                      <h5>Rs <%= cart ? cart.items.reduce((acc, item) => acc + item.productId.salePrice * item.quantity, 0) : 0 %></h5>
-                                  </div>
-                                  <div class="select-button">
-                                      <a href="/cart" class="primary-btn view-card">VIEW CART</a>
-                                      <a href="/buyNow" class="primary-btn checkout-btn">CHECK OUT</a>
-                                  </div>
-                                </div>
-                            </li>
-                           
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="nav-item">
-            <div class="container">
-                
-                <nav class="nav-menu mobile-menu">
-                    <ul>
-                        <li class="active"><a href="/">Home</a></li>
-                        <li><a href="/products">Products</a></li>
-                        <li><a href="#">Categories</a>
-                            <ul class="dropdown">
-                                <% category.forEach(cat => { %>
-                                <li><a href=""><%= cat.name %></a></li>
-                                <% }) %>
-                            </ul>
-                        </li>
-                        <li><a href="">About us</a></li>
-                        <li><a href="">Contact us</a></li>
-                        <li><a href="#">My account</a>
-                            <ul class="dropdown">
-                                <% if (user ) { %>
-                                <li><a href="/userProfile"><%= user.name %></a></li>
-                                <li><a href="/logout">Logout</a></li>
-                                <% }else{ %>
-                                <li><a href="/login">Login</a></li>
-                                <li><a href="/signup">Signup</a></li>
-                                <% } %>
-                            </ul>
-                        </li>
-                    </ul>
-                </nav>
-                <div id="mobile-menu-wrap"></div>
-            </div>
-        </div>
-    </header>
+<%-include('../../views/partials/user/header')%>
+<nav class="breadcrumbs mt-3 mb-3 ml-5">
+    <a href="/" class="breadcrumbs-txt" >Home</a>&gt;
+    <a href="/products" class="breadcrumbs-txt">Products</a>&gt;
+    <a href="" class="breadcrumbs-txt" active><%=product.productName%></a>
+</nav>
   <div class="container-fluid py-5">
     <div class="row px-xl-5">
         <div class="col-lg-5 pb-5">
@@ -241,30 +17,64 @@
                     </div>
                     <% } %>
                 </div>
-                <div class="column productGalleryRow" style="display: flex; flex-direction: row;gap:2rem">
+                <div class="column productGalleryRow" style="display: flex; flex-direction: row;gap:2rem; margin:1rem">
                   <% for (let i=0; i<product.productImage.length ; i++){ %>
                       <div class="row productGalleryColumn" style="width: 25%;">
-                          <img class="img-fluid" src="/uploads/re-image/<%= product.productImage[i] %>" alt="<%= product.productName %>" onclick="myFunction(this)">
+                          <img class="img-fluid" style="border:1px ridge #0000002e; border-radius: 10px;" src="/uploads/re-image/<%= product.productImage[i] %>" alt="<%= product.productName %>" onclick="myFunction(this)">
                       </div>
                   <% } %>
               </div>
             </div>
-            
+
         </div>
 
         <div class="col-lg-7 pb-5">
-            <h3 class="font-weight-semi-bold"><%=product.productName%></h3>
+            <h3 class="" style="font-weight: 400;font-size: 25px;"><%=product.productName%></h3>
             <div class="d-flex mb-3 stars">
-                <div class="text-primary mr-2">
-                    <span class="star-rating">
-                        <% for (let i = 1; i <= 5; i++) { %>
-                            <span class="star <%= i <= product.averageRating ? 'selected' : '' %>">&#9733;</span>
-                        <% } %>
-                    </span>
+                <div class="text-primary mr-2" style="display:flex;gap:1rem">
+                    <div class="text-white" style="border-radius: 5px;background-color: green;padding: 2px 4px 2px 6px;font-weight: 500;font-size: 12px;"><%=product.averageRating%> &#9733;</div>
+                    <div style="color:#878787;font-weight: 500;font-size: 14px;"><%=totalRatings%> Ratings & <%=totalReviews%> Reviews</div>
                 </div>
-                <!-- <small class="pt-1">(50 Reviews)</small> -->
+
             </div>
-            <h3 class="font-weight-semi-bold mb-4">Rs <%=product.salePrice%></h3>
+            <div style="display: flex;align-items: baseline;gap: 1rem;" class="my-1">
+                <div>
+                    <h3 class="mb-4" style="font-weight: 500;font-size: 28px;color:black">Rs <%=product.salePrice%></h3>
+                </div>
+                <% if (product.productOffer) { %>
+                    <% if (product.productOffer.discountType === 'Percentage') { %>
+                        <div>
+                        <span style="text-decoration: line-through; color:#878787">Rs <%=product.regularPrice%></span>
+                        <span style="text-decoration: none; color: green;">
+                            <%= product.productOffer.value %> % Off
+                        </span>
+                        </div>
+                    <% } else { %>
+                        <div>
+                        <span style="text-decoration: line-through; color:#878787">Rs <%=product.regularPrice%></span>
+                        <span style="text-decoration: none; color: green;">
+                            Rs <%= product.productOffer.value %> Off
+                        </span>
+                        </div>
+                    <% } %>
+                <% } else if (product.category.categoryOffer) { %> 
+                    <% if (product.category.categoryOffer.discountType === 'Percentage') { %>
+                        <div>
+                        <span style="text-decoration: line-through; color:#878787">Rs <%=productregularPrice%></span>
+                        <span style="text-decoration: none; color: green;">
+                            <%= product.category.categoryOffer.value %> % Off
+                        </span>
+                        </div>
+                    <% } else { %>
+                        <div>
+                        <span style="text-decoration: line-through; color:#878787">Rs <%=product.regularPrice%></span>
+                        <span style="text-decoration: none; color: green;">
+                            Rs <%= product.category.categoryOffer.value %> Off
+                        </span>
+                        </div>
+                    <% } %>
+                <% } %>
+            </div>
             <p class="mb-4"><%=product.description%></p>
             <div class="d-flex align-items-center mb-4 pt-2">
                 <a href="/addToCart/<%= product._id %>" data-id="<%=product._id%>" class="btn cart-btn" style="background-color: #e7ab3c;color:#f0ffff"><button class="btn  px-3"><i class="fa fa-shopping-cart mr-1"></i> Add To Cart</button></a>
@@ -287,7 +97,7 @@
                 </div>
                 <div class="tab-pane fade" id="tab-pane-2">
                     <h4 class="mb-3">Product Highlights</h4>
-                    
+
                     <div class="row">
                         <div class="col-md-12">
                             <ul class="list-group list-group-flush">
@@ -306,7 +116,7 @@
                 </div>
                 <div class="tab-pane fade" id="tab-pane-3">
                     <h4 class="mb-3">Available Offers</h4>
-                    
+
                     <div class="row">
                         <div class="col-md-12">
                             <ul class="list-group list-group-flush">
@@ -317,7 +127,7 @@
                                         </li>
                                     <% } else { %>
                                         <li class="list-group-item px-0">
-                                            Product Offer for the <%= product.productName %> - <%= product.productOffer.value %> Off
+                                            Product Offer for the <%= product.productName %> - Rs <%= product.productOffer.value %> Off
                                         </li>
                                     <% } %>
                                 <% } else if (product.category.categoryOffer) { %> 
@@ -327,7 +137,7 @@
                                         </li>
                                     <% } else { %>
                                         <li class="list-group-item px-0">
-                                            Category Offer for the <%= product.category.name %> - <%= product.category.categoryOffer.value %> Off
+                                            Category Offer for the <%= product.category.name %> - Rs <%= product.category.categoryOffer.value %> Off
                                         </li>
                                     <% } %>
                                 <% } else { %>
@@ -339,38 +149,39 @@
                             <pre><%= JSON.stringify(product.categoryOffer, null, 2) %></pre>  -->
                         </div>
                     </div>
-                    
-                    
+
+
                 </div>
                 <div class="tab-pane fade" id="tab-pane-4">
                     <h4 class="mb-3">Ratings and Reviews</h4>
                     <div class="row">
-                        <div class="col-md-6">
-                            <h4 class="mb-4">Reviews for <%=product.productName%></h4>
-                            <% if(product.reviews.length>0){ %>
-                            <% product.reviews.forEach(review => { %>
-                            <div class="media mb-4">
-                                <img src="/uploads/re-image/<%= product.productImage[0] %>" alt="Image" class="img-fluid mr-3 mt-1" style="width: 45px;">
-                                <div class="media-body">
-                                    <h6><%= review.userId.name%><small> - <i><%=review.createdAt%></i></small></h6>
-                                    <div class="text-primary mb-2">
-                                        <span class="star-rating">
-                                            <% for (let i = 1; i <= 5; i++) { %>
-                                                <span class="star <%= i <= review.rating ? 'selected' : '' %>">&#9733;</span>
-                                            <% } %>
-                                        </span>
+                        <% if (reviews.length > 0) { %>
+                            <h5 class="mb-4">Reviews for <%= product.productName %></h5>
+                            <div class="col-md-6">
+                                <% reviews.forEach(review => { %>
+                                    <div class="media mb-4">
+                                        <img src="/uploads/re-image/<%= review.productId?.productImage[0] %>" alt="Image" class="img-fluid mr-3 mt-1" style="width: 45px;">
+                                        <div class="media-body">
+                                            <h6><%= review.userId.name %><small> - <i><%= review.formattedDate %></i></small></h6>
+                                            <div class="text-primary mb-2">
+                                                <span class="star-rating">
+                                                    <% for (let i = 1; i <= 5; i++) { %>
+                                                        <span class="star <%= i <= review.rating ? 'selected' : '' %>">&#9733;</span>
+                                                    <% } %>
+                                                </span>
+                                            </div>
+                                            <p><%= review.review %></p>
+                                        </div>
                                     </div>
-                                    <p><%= review.review %></p>
-                                </div>
+                                <% }) %>
                             </div>
-                            <% }) %>
-                            <% }else{ %>
-                                <p>No ratings and reviews yet</p>
-                            <% } %>
-                        </div>
-                        <div class="col-md-6">
+                        <% } else { %>
+                            <p>No ratings and reviews yet</p>
+                        <% } %>
+
+                        <div class="col-md-6" id="rateDiv">
                             <h4 class="mb-4">Leave a review</h4>
-                            <form class="rate-form" action="/rateProduct/<%= product._id %>%>" method="POST">
+                            <form class="rate-form" action="/rateProduct/<%= product._id %>" method="POST">
                                 <label for="rating">Rate the product</label>
                                 <div class="star-rating">
                                     <span class="star" data-value="1">&#9733;</span>
@@ -380,7 +191,7 @@
                                     <span class="star" data-value="5">&#9733;</span>
                                 </div>
                                 <input type="hidden" name="rating" id="rating" value="0">
-                                
+
                                 <label for="review">Write a Review</label><br>
                                 <textarea name="review" id="review" rows="3" placeholder="Share your feedback"></textarea>
                                 <button type="submit" class="px-1 py-1 text-white" style="background:#e7ab3c;border:none;border-radius:5px;margin-left:1rem">Submit</button>
@@ -410,7 +221,11 @@
             <div class="product-item " style="border:1px ridge #e7ab3c;height:420px;width:250px;margin-top:2rem;border-radius:10px">
               <div class="pi-pic" style="border-radius: 5px;">
                 <img src="/uploads/re-image/<%=relatedProduct.productImage[0]%>" alt="">
-                <div class="sale"><%=relatedProduct.status%></div>
+                <% if(relatedProduct.quantity === 0){ %>
+                    <div class="sale" style="background-color: red;">Out of Stock</div>
+                <% }else{ %>
+                    <div class="sale">Available</div>
+                <% } %>
                 <div class="icon">
                   <a href="/addToWishlist/<%= relatedProduct._id %>" data-id="<%=relatedProduct._id%>" class="btn wishlist-btn">
                     <i class="icon_heart_alt"></i>
@@ -430,7 +245,33 @@
            
                 <h5><%=relatedProduct.productName%></h5>
             
-                <div class="product-price">Rs <%=relatedProduct.salePrice%><span>Rs <%=relatedProduct.regularPrice%></span></div>
+                <div class="product-price">Rs <%=relatedProduct.salePrice%>
+                    <% if (relatedProduct.productOffer) { %>
+                        <% if (relatedProduct.productOffer.discountType === 'Percentage') { %>
+                            <span>Rs <%=relatedProduct.regularPrice%></span>
+                            <span style="text-decoration: none; color: green;">
+                                <%= relatedProduct.productOffer.value %> % Off
+                            </span>
+                        <% } else { %>
+                            <span>Rs <%=relatedProduct.regularPrice%></span>
+                            <span style="text-decoration: none; color: green;">
+                                Rs <%= relatedProduct.productOffer.value %> Off
+                            </span>
+                        <% } %>
+                    <% } else if (relatedProduct.category.categoryOffer) { %> 
+                        <% if (relatedProduct.category.categoryOffer.discountType === 'Percentage') { %>
+                            <span>Rs <%=relatedProduct.regularPrice%></span>
+                            <span style="text-decoration: none; color: green;">
+                                <%= relatedProduct.category.categoryOffer.value %> % Off
+                            </span>
+                        <% } else { %>
+                            <span>Rs <%=relatedProduct.regularPrice%></span>
+                            <span style="text-decoration: none; color: green;">
+                                Rs <%= relatedProduct.category.categoryOffer.value %> Off
+                            </span>
+                        <% } %>
+                    <% } %>
+                </div>
               </div>
             </div>
           <%})%>
@@ -445,521 +286,34 @@
   <h3 class="text-center">No related products available.</h3>
 <% } %>
 
-    <!-- <nav class="breadcrumbs">
-        <a href="/" class="breadcrumbs-txt" style="text-decoration: none;">Home / </a>
-        <a href="/products" class="breadcrumbs-txt" style="text-decoration: none;">Products / </a>
-        <span class="breadcrumbs-txt"><%= product.productName %></span>
-    </nav>
 
-    <div class="product-details-page">
-        <section class="row product-details">
-            <div class="col-md-6" style="display: flex;flex-direction: row;">
-                <div class="column productGalleryRow" style="display: flex; flex-direction: column;">
-                    <% for (let i=0; i<product.productImage.length ; i++){ %>
-                        <div class="row productGalleryColumn" >
-                            <img class="img-fluid" src="/uploads/re-image/<%= product.productImage[i] %>" alt="<%= product.productName %>" onclick="myFunction(this)">
-                        </div>
-                    <% } %>
-                </div>
-                <div id="carouselExampleControls" class="carousel slide">
-                    <div class="carousel-inner">
-                        <% for(let i=0 ; i<product.productImage.length ; i++){ %>
-                            <div class="carousel-item <%= i === 0 ? 'active' : '' %>" data-bs-interval="false">
-                                <div class="img-zoom-container">
-                                    <img src="/uploads/re-image/<%= product.productImage[i] %>" class="d-block w-100 img-fluid" alt="<%= product.productName %>" id="expandedImg" data-index="<%= i %>" onmouseover="zoomLensVisible(this)" onmouseout="zoomLensHidden(this)">
-                                    
-                                </div>
-                            </div>
-                        <% } %>
-                    </div>
-                    <div style="display:flex;justify-content:center;align-items:center;gap:2rem;margin-left: 2rem;margin-top: 1rem;">
-                        <a href="/addToCart/<%= product._id %>" data-id="<%=product._id%>" class="btn cart-btn" style="background-color: #04625f;color:#f0ffff">Add To Cart</a>
-                        <a href="/addToWishlist/<%= product._id %>" data-id="<%=product._id%>" class=" btn wishlist-btn" style="background-color: #04625f;color:#f0ffff">Add to Wishlist</a>
-                    </div>
-                </div>
-                
-            </div>
-            
-            <div class="col-md-6" style="margin-top: -3rem;">
-                <div class="product-details">
-                <h2 class="productName"><%=product.productName%></h2>
-                <h5 class="productBrand"><%=product.brand%></h5>
-                <div class="ratings">
-                    <div class="stars">
-                        <% for(let i=0 ; i<5 ; i++ ){ %>
-                            <span class="star <%= i <= product.averageRating ? 'selected': '' %>">&#9733;</span>
-                        <% } %>
-                    </div>
-                    
-                </div>
-                <div class="price">
-                        <p><%=product.salePrice%>  <span style="text-decoration: line-through;">Rs. <%=product.regularPrice%></span>  <span style="color:green"><%=discount%>% off</span></p>
-                </div>
-                <div class="offers">
-                    <p>Available Offers</p>
-                    <div class="card" style="width: 18rem;">
-                        <% if(product.productOffer){%>
-                        <div class="card-body">
-                          <h5 class="card-title"><%=product.productOffer.value %> Off</h5>
-                          <p class="card-text"></p> 
-                        </div>
-                        <% }else{%>
-                            <p>No offers</p>
-                        <% } %>
-                    </div>
-                </div>
-                <div class="stock">
-                    <% if(product.quantity > 0 && product.status === 'Available'){ %>
-                        <p style="color:green;font-weight: lighter;font-size: 2rem;"><%=product.quantity%> items available</p>
-                    <% }else if(product.quantity<=0 || product.status === 'Out of stock'){ %>
-                        <p style="color:red;font-weight: lighter;font-size: 2.5rem;">Out of stock</p>
-                    <% }else if(product.status === 'Discontinued'){ %>
-                        <p>Product has been discontinued</p>
-                    <% }else{ %>
-                        <p>Stock information unavailable</p>
-                    <% } %>
-                </div>
-                <div class="description">
-                    <h2>About this item</h2>
-                    <p><%=product.description%></p>
-                </div>
-            
-                <div class="highlights">
-                    <h2>Product Highlights</h2>
-                    <ul style="font-family: monospace;">
-                       <li>Materials:plastic</li>
-                       <li>Age 3+ Years</li>
-                       <li>Skillset : Analysis & Critical Thinking, Hand & Eye Co-ordination,Object Recognition,Time Management,Creativity & Imagination</li>
-                    </ul>
-                </div>
-                <div class="reviews" style="border: 1px solid #42ada8; padding-left: 1rem; padding-top: 1rem;">
-                        <div style="display: flex; flex-direction: row; justify-content: space-around;">
-                            <h2>Ratings and Reviews</h2>
-                           
-                        </div>
-                        <% if(product.reviews.length>0){ %>
-                        <div class="ratings" style="margin-top: 2rem;">
-                            <% product.reviews.forEach(review => { %>
-                                    <div class="card-body text-center" style="border:1px solid #42ada8;">
-                                        <h5 class="card-title" class="stars">
-                                            <% for(let i = 1 ; i<=5 ; i++){ %>
-                                                <span class="star <%= i <= review.rating ? 'selected' : '' %>">&#9733;</span>
-                                            <% } %>
-                                        </h5>
-                             
-                                        <p class="card-text" style="font-weight: 100;"><%= review.review %></p>
-                                        <p class="card-footer" style="font-style: italic;">- <%= review.userId.name%></p>
-                                        <p><small><%= new Date(review.createdOn).toLocaleString() %></small></p>
-                                    </div>
-                            <% }) %>
-                                    
-                        </div>
-                        <% }else{ %>
-                            <p>No ratings and reviews yet</p>
-                        <% } %>
-                    
-                </div>
-                </div>
-                <div id="myresult" class="img-zoom-result"></div>
-            </div>
-            
-        </section> -->
-        <!-- <section>
-            <div class="related-products">
-                <h2 style="color:#04625f;margin-left: 2rem;">Related Products</h2>
-                <div class="shop-content" style="margin-left:2rem;display:flex;flex-direction: row;">
-                <% if (product.relatedProducts && product.relatedProducts.length > 0) { %>
-                    <% product.relatedProducts.forEach(relatedProduct =>{ %>
-                <div class="product-box">
-                
-                    <a href="/productDetails/<%=relatedProduct._id%>">
-                        <img src="/uploads/re-image/<%=relatedProduct.productImage[0]%>" class="proudct-img" alt="<%=relatedProduct.productName%>">
-                    </a>
-                    <h2 class="product-title"><%=relatedProduct.productName%></h5>
-                    <p class="card-text"><%=relatedProduct.brand%></p>
-                    <div class="ratings">
-                            <div class="stars" style="display: flex;justify-content: start;">
-                              <% for(let star=0 ; star<5 ; star++ ){ %>
-                                <span class="star <%= star <= relatedProduct.averageRating ? 'selected': '' %>">&#9733;</span>
-                              <% } %>
-                            </div>
-                          </div>
-                        <span class="price"><%=relatedProduct.salePrice%></span>
-                        <a href="/addToCart?id=<%=relatedProduct._id%>" data-id="<%=relatedProduct._id%>" class="btn cart-btn">
-                            <i class="bx bx-shopping-bag add-cart"></i>
-                        </a>
-                        <a href="/addToWishlist/<%= relatedProduct._id %>" data-id="<%=relatedProduct._id%>" class="btn wishlist-btn">
-                            <i class='bx bxs-heart add-wishlist' ></i>
-                        </a>
-                </div>
-                <% }) %>
-                </div>
-                <% } else { %>
-                    <p>No related products available.</p>
-                <% } %>
-            </div>
-        </section> 
-    </div>-->
-    <footer class="footer-section">
-      <div class="container">
-          <div class="row">
-              <div class="col-lg-3">
-                  <div class="footer-left">
-                      <div class="footer-logo">
-                          <a href="#"><img src="img/footer-logo.png" alt=""></a>
-                      </div>
-                      <ul>
-                          <li>Address: Puzl Mart, 123 Main Street, Bangalore, India</li>
-                          <li>Phone: +1(123)456-456</li>
-                          <li>Email: support@puzlmart.com</li>
-                      </ul>
-                      <div class="footer-social">
-                          <a href="#"><i class="fa fa-facebook"></i></a>
-                          <a href="#"><i class="fa fa-instagram"></i></a>
-                          <a href="#"><i class="fa fa-twitter"></i></a>
-                  
-                      </div>
-                  </div>
-              </div>
-              <div class="col-lg-2 offset-lg-1">
-                  <div class="footer-widget">
-                      <h5>Information</h5>
-                      <ul>
-                          <li><a href="#">About Us</a></li>
-                          <li><a href="#">Checkout</a></li>
-                          <li><a href="#">Contact</a></li>
-                          
-                      </ul>
-                  </div>
-              </div>
-              <div class="col-lg-2">
-                  <div class="footer-widget">
-                      <h5>My Account</h5>
-                      <ul>
-                          <li><a href="#">My Account</a></li>
-                          <li><a href="#">Contact</a></li>
-                          <li><a href="#">About us</a></li>
-                          <li><a href="#">Products</a></li>
-                      </ul>
-                  </div>
-              </div>
-              <div class="col-lg-4">
-                  <div class="newslatter-item">
-                      <h5>Join Our Newsletter Now</h5>
-                      <p>Get E-mail updates about our latest shop and special offers.</p>
-                      <form action="#" class="subscribe-form">
-                          <input type="text" placeholder="Enter Your Mail">
-                          <button type="button">Subscribe</button>
-                      </form>
-                  </div>
-              </div>
-          </div>
-      </div>
-      <div class="copyright-reserved">
-          <div class="container">
-              <div class="row">
-                  <div class="col-lg-12">
-                      <div class="copyright-text">
-                          <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-  Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | Puzl Mart
-  <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-                      </div>
-                  </div>
-              </div>
-          </div>
-      </div>
-  </footer>
-  <!-- Footer Section End -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
-  <!-- Js Plugins -->
-  <script src="/js/jquery-3.3.1.min.js"></script>
-  <script src="/js/bootstrap.min.js"></script>
-  <script src="/js/jquery-ui.min.js"></script>
-  <script src="/js/jquery.countdown.min.js"></script>
-  <script src="/js/jquery.nice-select.min.js"></script>
-  <script src="/js/jquery.zoom.min.js"></script>
-  <script src="/js/jquery.dd.min.js"></script>
-  <script src="/js/jquery.slicknav.js"></script>
-  <script src="/js/owl.carousel.min.js"></script>
-  <script src="/js/main.js"></script>
-  <!-- Footer Section -->
-  
-  
-  <!-- Bootstrap & JS Scripts -->
-  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
-  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-  
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-
 function myFunction(imgs) {
     
     var expandImg = document.getElementById('expandedImg')
-    expandImg.src = imgs.src;  // Set the source of the expanded image to the clicked thumbnail
-    expandImg.parentElement.style.display = 'block';  // Show the expanded image
+    expandImg.src = imgs.src;  
+    expandImg.parentElement.style.display = 'block';  
     
     imageZoom("expandedImg", "myresult");
 }
-
 function zoomLensVisible(imgs){
     var result = document.getElementById('myresult');
     var lens = document.createElement('DIV');
     const productDetails = document.getElementsByClassName('product-details');
     lens.setAttribute('class','img-zoom-lens');
     imgs.parentElement.insertBefore(lens,imgs);
-
     result.style.display = 'block';
     
     imageZoom('expandedImg','myresult');
  
     lens.style.visibility = 'visible';
 }
-
 function zoomLensHidden(imgs){
     var result = document.getElementById('myresult');
     var lens = document.querySelector('.img-zoom-lens');
-
     result.style.display = 'none';
-
     lens.style.visibility = 'visible'
 }
-let wishlist = document.querySelector('.wishlist');
-function openWishlist(){
-    wishlist.classList.add('active');
-    wishlist.style.display = 'block'
-}
-function closeWishlist(){
-    wishlist.style.display = 'none'
-    wishlist.classList.remove('active');
-}
-
-let cart = document.querySelector('.cart'); 
-function openCart() {
-  cart.style.display = 'block';
-  cart.classList.add('active');
-}
-
-function closeCart() {
-  cart.style.display = 'none';
-  cart.classList.remove('active');
-}
-
-document.querySelectorAll('.cart-remove').forEach(button => {
-        button.addEventListener('click', async (event) => {
-            event.preventDefault();
-            
-            const confirmation = await Swal.fire({
-                title: 'Are you sure?',
-                text: "Do you want to remove this item from your cart?",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, remove it!',
-                cancelButtonText: 'Cancel',
-                reverseButtons: true
-            });
-
-            if (confirmation.isConfirmed) {
-                const productId = event.target.closest('a').getAttribute('href').split('/').pop();
-
-                try {
-                    const response = await fetch(`/removeFromCart/${productId}`, {
-                        method: 'GET', 
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                    });
-
-                    const data = await response.json();
-
-                    if (response.ok) {
-                        Swal.fire('Removed!', 'The item has been removed from your cart.', 'success').then(() => location.reload());
-                    } else {
-                        Swal.fire('Error!', 'There was an issue removing the item. Please try again.', 'error');
-                    }
-                } catch (error) {
-                    console.error('Error removing item:', error);
-                    Swal.fire('Error!', 'An error occurred while removing the item. Please try again.', 'error');
-                }
-            } else {
-                Swal.fire('Cancelled', 'The item is still in your cart.', 'info');
-            }
-        });
-    });
-    document.querySelectorAll('.wishlist-remove').forEach(button => {
-        button.addEventListener('click', async (event) => {
-            event.preventDefault();
-            
-            const confirmation = await Swal.fire({
-                title: 'Are you sure?',
-                text: "Do you want to remove this item from your wishlist?",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, remove it!',
-                cancelButtonText: 'Cancel',
-                reverseButtons: true
-            });
-
-            if (confirmation.isConfirmed) {
-                const productsId = event.target.closest('a').getAttribute('href').split('/').pop();
-
-                try {
-                    const response = await fetch(`/removeFromWishlist/${productsId}`, {
-                        method: 'GET', 
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                    });
-
-                    const data = await response.json();
-
-                    if (response.ok) {
-                        Swal.fire('Removed!', 'The item has been removed from your wishlist.', 'success').then(() => location.reload());
-                    } else {
-                        Swal.fire('Error!', 'There was an issue removing the item. Please try again.', 'error');
-                    }
-                } catch (error) {
-                    console.error('Error removing item:', error);
-                    Swal.fire('Error!', 'An error occurred while removing the item. Please try again.', 'error');
-                }
-            } else {
-                Swal.fire('Cancelled', 'The item is still in your wishlist.', 'info');
-            }
-        });
-    });
-   
-document.querySelectorAll('.wishlist-btn').forEach(button => {
-  button.addEventListener('click',(e) => {
-    e.preventDefault();
-    
-    const productId = button.getAttribute('data-id');
-    
-    fetch(`/addToWishlist/${productId}`, {
-   method: 'GET',
-   headers: { 'Content-Type': 'application/json' }
-})
-.then(response => {
-    return response.json().then(data => {
-        if (!response.ok) {
-            throw new Error(data.message || 'Something went wrong');
-        }
-    return data;
-    });
-})
-.then(data => {
-    if (data.success) {
-        Swal.fire({
-            title: 'Added to wishlist',
-            text: data.message,
-            icon: 'success',
-            confirmButtonText: 'OK'
-        }).then(() => location.reload());
-    } 
-})
-.catch(error => {
-    console.log(error);
-    Swal.fire({
-        title: 'Error',
-        text: error.message,
-        icon: 'error',
-        confirmButtonText: 'OK'
-    });
-});
-
-  })
-})
-
-document.querySelectorAll('.cart-btn').forEach(button => {
-  button.addEventListener('click',(e) => {
-    e.preventDefault();
-    
-    const productId = button.getAttribute('data-id');
-    
-    fetch(`/addToCart/${productId}`, {
-   method: 'GET',
-   headers: { 'Content-Type': 'application/json' }
-})
-.then(response => {
-    if (!response.ok) {
-        return response.json().then(errData => {
-            throw new Error(errData.error || 'Something went wrong');
-        });
-    }
-    return response.json();
-})
-.then(data => {
-    if (data.success) {
-        Swal.fire({
-            title: 'Added to cart',
-            text: data.message,
-            icon: 'success',
-            confirmButtonText: 'OK'
-        }).then(() => location.reload());
-    } else {
-        Swal.fire({
-            title: 'Error',
-            text: data.error || 'An unknown error occurred',
-            icon: 'error',
-            confirmButtonText: 'OK'
-        });
-    }
-})
-.catch(error => {
-    console.log(error);
-    Swal.fire({
-        title: 'Error',
-        text: error.message,
-        icon: 'error',
-        confirmButtonText: 'OK'
-    });
-});
-
-  })
-})
-const sendRequest = async (url,method) => {
-    try {
-      const response = await fetch(url,{method});
-      const data = await response.json();
-
-      if(!response.ok){
-        Swal.fire({
-          icon:'error',
-          title:'Oops',
-          text:data.error || 'Something went wrong!'
-        });
-      }else{
-        location.reload();
-      }
-    } catch (error) {
-      Swal.fire({
-        icon:'error',
-        title:'Error',
-        text:error.message || 'An unexpected error occured!'
-      });
-    }
-  };
-
-  document.querySelectorAll('.increase-btn').forEach(button => {
-    button.addEventListener('click',(e) => {
-      e.preventDefault();
-      const productId = button.dataset.id;
-      sendRequest(`/increaseQuantity/${productId}`,'POST');
-    });
-  });
-
-  document.querySelectorAll('.decrease-btn').forEach(button => {
-    button.addEventListener('click',(e) => {
-      e.preventDefault();
-      const productId = button.dataset.id;
-      sendRequest(`/decreaseQuantity/${productId}`,'POST')
-    });
-  });
   document.querySelectorAll(".star-rating .star").forEach(star => {
     star.addEventListener("click", function() {
         let rating = this.getAttribute("data-value");
@@ -978,9 +332,52 @@ const sendRequest = async (url,method) => {
         });
     });
 });
-
+document.querySelectorAll("#rateDiv .rate-form").forEach(form => {
+    form.addEventListener("submit",function(event){
+        event.preventDefault();
+        let formData = {};
+        const formElements = this.elements;
+        for(let element of formElements){
+            if(element.name){
+                formData[element.name] = element.value;
+            }
+        }
+        console.log("Form data being sent : ",formData);
+        
+        fetch(this.action,{
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json'
+            },
+            body:JSON.stringify(formData)
+        })
+        .then(response => {
+            if(!response.ok){
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            Swal.fire({
+                icon:data.type,
+                title:data.message,
+                showConfirmButton:false,
+                timer:1500
+            })
+            .then(() => {
+                window.location.reload();
+            });
+        })
+        .catch(error => {
+            console.error('Error:',error);
+            Swal.fire({
+                icon:'error',
+                title:'Something went wrong!',
+                showConfirmButton:false,
+                timer:1500
+            });
+        });
+    });
+});
 </script>
-</body>
-</html>
-
-
+<%-include('../../views/partials/user/footer')%>

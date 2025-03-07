@@ -1,16 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>Admin Dashboard</title>
+  <title>Puzl Mart Admin Dashboard</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
-
-  <!-- Favicons -->
-  <link href="assets/img/favicon.png" rel="icon">
-  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
 
   <!-- Google Fonts -->
   <link href="https://fonts.gstatic.com" rel="preconnect">
@@ -19,114 +16,253 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Train+One&display=swap" rel="stylesheet">
+
   <!-- Box Icons -->   
   <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-  
+
   <!-- Template Main CSS File -->
   <link href="/css/admin.css" rel="stylesheet">
 
   <!-- Sweet alert -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.css">
-  
+
   <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
+  <!-- Vendor CSS Files -->
+  <link href="/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="/assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+  <link href="/assets/vendor/quill/quill.snow.css" rel="stylesheet">
+  <link href="/assets/vendor/quill/quill.bubble.css" rel="stylesheet">
+  <link href="/assets/vendor/remixicon/remixicon.css" rel="stylesheet">
+  <link href="/assets/vendor/simple-datatables/style.css" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="/assets/css/style.css" rel="stylesheet">
+  <!-- Chart -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* Change the background color and text color of the SweetAlert modal */
+    .swal2-popup {
+      background-color: #f8f9fa; /* Light background color */
+      color: #343a40; /* Dark text color */
+      border-radius: 10px;
+    }
+  
+    /* Change the button color */
+    .swal2-confirm {
+      background-color: #28a745; /* Green button */
+      color: white;
+      border: none;
+    }
+  
+    /* Change the button hover color */
+    .swal2-confirm:hover {
+      background-color: #218838; /* Darker green on hover */
+    }
+  
+    /* Change the title text style */
+    .swal2-title {
+      font-family: 'Arial', sans-serif; /* Change font */
+      font-size: 24px;
+      color: #007bff; /* Change title color */
+      text-align: center; /* Center the title */
+    }
+  
+    /* Change the content text style */
+    .swal2-html-container {
+      font-size: 18px;
+      color: #6c757d; /* Grey color for content text */
+      text-align: center; /* Center the content */
+    }
+  
+    /* Center the modal */
+    .swal2-popup {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      flex-direction: column;
+    }
+  
+    /* Modify the modal's position if you want */
+    .swal2-container {
+      position: fixed;
+      top: 50% !important;
+      left: 50% !important;
+      transform: translate(-50%, -50%);
+    }
+  
+    /* Customize the cancel button */
+    .swal2-cancel {
+      background-color: #dc3545; /* Red button */
+      color: white;
+    }
+  
+    /* Change cancel button hover */
+    .swal2-cancel:hover {
+      background-color: #c82333;
+    }
+  </style>
 </head>
 
 <body>
-
   <!-- ======= Header ======= -->
   <header id="header" class="header fixed-top d-flex align-items-center">
 
     <div class="d-flex align-items-center justify-content-between">
-      <a href="index.html" class="logo d-flex align-items-center" style="text-decoration: none;">
-        <div style="margin-top: 1rem;">
-          <p class="logo-container" style="font-size: 2rem;border: 1px solid;font-weight: 600;color:#113779;font-family: 'Train One', serif;font-style: normal;border-style: ridge;padding: 0.5rem;border-radius: 5px;">
-            Puzl Mart
-            </p>
-                    </div>
-      <div class="rubik-cube">
-        <div class="face front">
-          <div></div><div></div><div></div>
-          <div></div><div></div><div></div>
-          <div></div><div></div><div></div>
-        </div>
-        <div class="face back">
-          <div></div><div></div><div></div>
-          <div></div><div></div><div></div>
-          <div></div><div></div><div></div>
-        </div>
-        <div class="face right">
-          <div></div><div></div><div></div>
-          <div></div><div></div><div></div>
-          <div></div><div></div><div></div>
-        </div>
-        <div class="face left">
-          <div></div><div></div><div></div>
-          <div></div><div></div><div></div>
-          <div></div><div></div><div></div>
-        </div>
-        <div class="face top">
-          <div></div><div></div><div></div>
-          <div></div><div></div><div></div>
-          <div></div><div></div><div></div>
-        </div>
-        <div class="face bottom">
-          <div></div><div></div><div></div>
-          <div></div><div></div><div></div>
-          <div></div><div></div><div></div>
-        </div>
+      <a href="/admin" class="logo d-flex align-items-center">
+        <div class="logo" style="display: flex;border: 2px solid #e7ab3c;width: 7rem;padding:0.4rem;border-radius: 5px; box-shadow: 1px 0px 12px 3px #0000006b;height:4rem">
+          <p class="logo-container" style="font-size: 1.5rem;;font-weight: 600;color:#e7ab3c;font-family: 'Train One', serif;font-style: normal;border-radius: 5px;">
+            Puzl
+            Mart
+          </p>
+          <div class="rubik-cube">
+              <div class="face front">
+                <div></div><div></div><div></div>
+                <div></div><div></div><div></div>
+                <div></div><div></div><div></div>
+              </div>
+              <div class="face back">
+                <div></div><div></div><div></div>
+                <div></div><div></div><div></div>
+                <div></div><div></div><div></div>
+              </div>
+              <div class="face right">
+                <div></div><div></div><div></div>
+                <div></div><div></div><div></div>
+                <div></div><div></div><div></div>
+              </div>
+              <div class="face left">
+                <div></div><div></div><div></div>
+                <div></div><div></div><div></div>
+                <div></div><div></div><div></div>
+              </div>
+              <div class="face top">
+                <div></div><div></div><div></div>
+                <div></div><div></div><div></div>
+                <div></div><div></div><div></div>
+              </div>
+              <div class="face bottom">
+                <div></div><div></div><div></div>
+                <div></div><div></div><div></div>
+                <div></div><div></div><div></div>
+              </div>
+            </div>
       </div>
       </a>
-      <!-- <i class="bi bi-list toggle-sidebar-btn" id="toggle-sidebar" onclick="openSidebar()"></i> -->
-      <i class='bx bx-list-ul toggle-sidebar-btn' id="toggle-sidebar" ></i>
+      <i class="bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->
 
-    <div class="search-bar">
-      <form class="search-form d-flex align-items-center" >
-        <input type="text" name="query" placeholder="Search" title="Enter search keyword">
-        <button type="submit" title="Search"><i class="bx bx-search"></i></button>
-      </form>
-    </div><!-- End Search Bar -->
 
+    <div class="search-bar">
+      <form class="search-form d-flex align-items-center" method="POST" action="/admin/search">
+        <select name="type" title="Select search type" style="background: #e7ab3c; color: white; width: 10rem; height: 2rem; border: none; border-top-left-radius: 5px; border-bottom-left-radius: 5px;" required>
+          <option value="users">Users</option>
+          <option value="categories">Categories</option>
+          <option value="brands">Brands</option>
+          <option value="products">Products</option>
+          <option value="orders">Orders</option>
+          <option value="coupons">Coupons</option>
+          <option value="offers">Offers</option>
+        </select>
+        <input type="text" name="query" placeholder="Search" title="Enter search keyword" required>
+        <button type="submit" title="Search"><i class="bi bi-search"></i></button>
+      </form>
+    </div>
+    
     <nav class="header-nav ms-auto">
       <ul class="d-flex align-items-center">
 
         <li class="nav-item d-block d-lg-none">
           <a class="nav-link nav-icon search-bar-toggle " href="#">
-            <i class="bx bx-search"></i>
+            <i class="bi bi-search"></i>
           </a>
         </li><!-- End Search Icon-->
 
-        <li>
-          <a href="" class="text-body">
-            <i class="bi bi-envelope-fill" style="font-size: 1.75rem; color:#012970"></i>
-        </li>
+        <li class="nav-item dropdown">
+
+          <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+            <i class="bi bi-bell"></i>
+            <span class="badge bg-primary badge-number"><%=notifications.length%></span>
+          </a><!-- End Notification Icon -->
+
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications" style="overflow-y: auto;max-height: 420px;">
+            <li class="dropdown-header">
+              You have <%=notifications.length%> new notifications
+            </li>
+            <% if(notifications && notifications.length > 0){ %>
+            <% notifications.forEach(notification => { %>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li class="notification-item">
+              <% if(notification.orderId.returnStatus === 'Pending'){ %>
+              <i class="bi bi-exclamation-circle text-warning"></i>
+              <div>
+                <h4>A return request for order <%= notification.orderId.orderId %></h4>
+                <p>Return reason : <%= notification.orderId.returnReason %></p>
+                <form action="/admin/handleReturnRequest/<%=notification.orderId%>" method="POST">
+                  <div>
+                    <a href="#" class="approve-btn btn-success" data-order-id="<%= notification.orderId._id %>">Approve</a>
+                    <a href="#" class="decline-btn btn-danger" data-order-id="<%= notification.orderId._id %>">Decline</a>
+                  </div>
+                </form>
+              </div>
+              <% }else{ %>
+              <i class="bi bi-exclamation-circle text-success"></i>
+              <div>
+                <h4>A return request for order <%= notification.orderId.orderId %></h4>
+                <p>Return reason : <%= notification.orderId.returnReason %></p>
+                
+                <p>Return Status : <%= notification.orderId.returnStatus %></p>
+                  
+              </div>
+              <% } %>
+            </li>
+            <% }) %>
+            <% }else{ %>
+              <h5>No notification</h5>
+            <% } %>
+          </ul><!-- End Notification Dropdown Items -->
+
+        </li><!-- End Notification Nav -->
         <li class="nav-item dropdown pe-3">
 
-          <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="">
+          <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
             <i class='bx bx-user-circle' style="font-size: 2rem;"></i>
-            <span class="d-none d-md-block ps-2">Admin</span>
-          </a>
-        </li>
-        <li>
-          <a class="dropdown-item d-flex align-items-center" href="/admin/logout">
-            <i class="bi bi-box-arrow-right"></i>
-            <span>Sign Out</span>
-          </a>
-        </li>
+            <span class="d-none d-md-block dropdown-toggle ps-2">Admin</span>
+          </a><!-- End Profile Iamge Icon -->
+
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+            <li class="dropdown-header">
+              <h6>Admin</h6>
+
+            </li>
+
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="/admin/logout">
+                <i class="bi bi-box-arrow-right"></i>
+                <span>Sign Out</span>
+              </a>
+            </li>
+
+          </ul><!-- End Profile Dropdown Items -->
+        </li><!-- End Profile Nav -->
+
       </ul>
     </nav><!-- End Icons Navigation -->
 
   </header><!-- End Header -->
-
   <!-- ======= Sidebar ======= -->
   <aside id="sidebar" class="sidebar">
-
     <ul class="sidebar-nav" id="sidebar-nav">
-
       <li class="nav-item">
         <a class="nav-link " href="/admin">
           <i class="bi bi-grid"></i>
@@ -135,10 +271,10 @@
       </li><!-- End Dashboard Nav -->
 
       <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#inventory-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-menu-button-wide"></i><span>Inventory</span><i class='bx bx-chevron-down ms-auto'></i>
+        <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-menu-button-wide"></i><span>Inventory</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
-        <ul id="inventory-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+        <ul id="components-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
           <li>
             <a href="/admin/category">
               <i class="bi bi-circle"></i><span>Categories</span>
@@ -154,157 +290,68 @@
               <i class="bi bi-circle"></i><span>Products</span>
             </a>
           </li>
-          
         </ul>
-      </li>
+      </li><!-- End Components Nav -->
+
       <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#orders-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-menu-button-wide"></i><span>Orders</span><i class='bx bx-chevron-down ms-auto'></i>
+        <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-journal-text"></i><span>Orders</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
-        <ul id="orders-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+        <ul id="forms-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
           <li>
             <a href="/admin/orders">
               <i class="bi bi-circle"></i><span>Orders List</span>
             </a>
           </li>
         </ul>
-      </li>
+      </li><!-- End Forms Nav -->
+
       <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#users-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-menu-button-wide"></i><span>Users</span><i class='bx bx-chevron-down ms-auto'></i>
+        <a class="nav-link collapsed" data-bs-target="#tables-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-people"></i><span>Users</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
-        <ul id="users-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+        <ul id="tables-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
           <li>
             <a href="/admin/users">
               <i class="bi bi-circle"></i><span>Users List</span>
             </a>
           </li>
-          <li>
-            <a href="/admin/referrals">
-              <i class="bi bi-circle"></i><span>Referral</span>
-            </a>
-          </li>
         </ul>
-      </li>
+      </li><!-- End Tables Nav -->
+
       <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#offersAndCoupons-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-menu-button-wide"></i><span>Offers and Coupons</span><i class='bx bx-chevron-down ms-auto'></i>
+        <a class="nav-link collapsed" data-bs-target="#charts-nav" data-bs-toggle="collapse" href="#">
+          <i class="ri-ticket-line"></i><span>Offers and Coupons</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
-        <ul id="offersAndCoupons-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+        <ul id="charts-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
           <li>
             <a href="/admin/offer">
-              <i class="bi bi-circle"></i><span>Offer</span>
+              <i class="bi bi-circle"></i><span>Offers</span>
             </a>
           </li>
           <li>
             <a href="/admin/coupons">
-              <i class="bi bi-circle"></i><span>Coupon</span>
+              <i class="bi bi-circle"></i><span>Coupons</span>
             </a>
           </li>
         </ul>
-      </li>
+      </li><!-- End Charts Nav -->
+
       <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#stockAndSale-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-menu-button-wide"></i><span>Stock and Sales Report</span><i class='bx bx-chevron-down ms-auto'></i>
+        <a class="nav-link collapsed" data-bs-target="#icons-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-currency-dollar"></i><span>Sales</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
-        <ul id="stockAndSale-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-          <li>
-            <a href="/admin/stock">
-              <i class="bi bi-circle"></i><span>Stock</span>
-            </a>
-          </li>
+        <ul id="icons-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
           <li>
             <a href="/admin/salesReport">
               <i class="bi bi-circle"></i><span>Sales Report</span>
             </a>
           </li>
+
         </ul>
-      </li>
+      </li><!-- End Icons Nav -->
+<!-- End Blank Page Nav -->
+
     </ul>
 
   </aside>
-
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Home - Puzl Mart</title>
-  Bootstrap CSS
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="/css/dashboard.css">
-  
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.css">
-</head>
-<body>
-
-  Sidebar
-  <div class="sidebar" style="background-color: #04625f;color:white">
-    <div class="ms-2"><img class="img-fluid" src="/images/PuzlMart.svg" alt="" style="width:200px"></div>
-
-    <div class="nav-item-heading"><a href="/admin">Dashboard</a></div>
-    
-    <div class="nav-item-heading">Inventory</div>
-    <div class="nav-item-heading"><a href="/admin/category">Categories</a></div>
-    <div class="nav-item-heading"><a href="/admin/brands">Brands</a></div>
-    <div class="nav-item-heading"><a href="/admin/products">Product List</a></div>
-    <div class="nav-item-heading">Orders</div>
-    <div class="nav-item-heading"><a href="/admin/orders">Orders List</a></div>
-    <div class="nav-item-heading">Users</div>
-    <div class="nav-item-heading"><a href="/admin/users">User List</a></div>
-    <div class="nav-item-heading"><a href="/admin/referrals">Referral</a></div>
-    <div class="nav-item-heading">Offers and Coupons</div>
-    <div class="nav-item-heading"><a href="/admin/offer">Offer</a></div>
-    <div class="nav-item-heading"><a href="/admin/coupons">Coupon</a></div>
-    <div class="nav-item-heading">Stock</div>
-    <div class="nav-item-heading"><a href="#">Stock</a></div>
-    <div class="nav-item-heading"><a href="/admin/salesReport">Sales Report</a></div>
-  </div>
-
-  Main content
-  <div class="content">
-    Top Navbar
-    <nav class="navbar navbar-expand-lg" style="background-color: #04625f;color:white">
-      <div class="logo" style="display: flex;flex-direction: row;">
-        <div class="logo-text">
-            <img src="/images/PuzlMart.svg" alt="" style="width: 200px;">
-        </div>
-        <div class="rubik-cube">
-          <div class="face front">
-            <div></div><div></div><div></div>
-            <div></div><div></div><div></div>
-            <div></div><div></div><div></div>
-          </div>
-          <div class="face back">
-            <div></div><div></div><div></div>
-            <div></div><div></div><div></div>
-            <div></div><div></div><div></div>
-          </div>
-          <div class="face right">
-            <div></div><div></div><div></div>
-            <div></div><div></div><div></div>
-            <div></div><div></div><div></div>
-          </div>
-          <div class="face left">
-            <div></div><div></div><div></div>
-            <div></div><div></div><div></div>
-            <div></div><div></div><div></div>
-          </div>
-          <div class="face top">
-            <div></div><div></div><div></div>
-            <div></div><div></div><div></div>
-            <div></div><div></div><div></div>
-          </div>
-          <div class="face bottom">
-            <div></div><div></div><div></div>
-            <div></div><div></div><div></div>
-            <div></div><div></div><div></div>
-          </div>
-        </div>
-      </div>
-      <div class="d-flex align-items-center ms-auto">
-        <a href="#" class="btn btn-link text-light"><i class="bi bi-envelope"></i></a>
-        <a href="#" class="btn btn-link text-light"><i class="bi bi-person-circle"></i></a>
-        <button class="btn btn-logout ms-2" style="background-color: #f0ffff;color:#04625f;border-radius: 5px;"><a style="text-decoration: none;" href="/admin/logout">Logout</a></button>
-      </div>
-    </nav> -->

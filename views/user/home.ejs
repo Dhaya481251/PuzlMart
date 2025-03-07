@@ -10,7 +10,7 @@
                             <span>Puzzles</span>
                             <h1 class="text-white">Puzzle fun for all ages</h1>
                             <p class="text-white">Create lasting memories with our puzzles, perfect for family game nights!</p>
-                            <a href="#" class="primary-btn">Explore Puzzles</a>
+                            <a href="/products" class="primary-btn">Explore Puzzles</a>
                         </div>
                     </div>
                     <div class="off-card">
@@ -25,7 +25,7 @@
                             <span>Puzzles</span>
                             <h1 class="text-white">Puzzle fun for all ages</h1>
                             <p class="text-white">Create lasting memories with our puzzles, perfect for family game nights!</p>
-                            <a href="#" class="primary-btn">Explore Puzzles</a>
+                            <a href="/products" class="primary-btn">Explore Puzzles</a>
                         </div>
                     </div>
                     <div class="off-card">
@@ -40,7 +40,7 @@
                             <span>Puzzles</span>
                             <h1 class="text-white">Puzzle fun for all ages</h1>
                             <p class="text-white">Create lasting memories with our puzzles, perfect for family game nights!</p>
-                            <a href="#" class="primary-btn">Explore Puzzles</a>
+                            <a href="/products" class="primary-btn">Explore Puzzles</a>
                         </div>
                     </div>
                     <div class="off-card">
@@ -55,7 +55,7 @@
                             <span>Puzzles</span>
                             <h1 class="text-white">Puzzle fun for all ages</h1>
                             <p class="text-white">Create lasting memories with our puzzles, perfect for family game nights!</p>
-                            <a href="#" class="primary-btn">Explore Puzzles</a>
+                            <a href="/products" class="primary-btn">Explore Puzzles</a>
                         </div>
                     </div>
                     <div class="off-card">
@@ -70,7 +70,7 @@
                             <span>Puzzles</span>
                             <h1 class="text-white">Puzzle fun for all ages</h1>
                             <p class="text-white">Create lasting memories with our puzzles, perfect for family game nights!</p>
-                            <a href="#" class="primary-btn">Explore Puzzles</a>
+                            <a href="/products" class="primary-btn">Explore Puzzles</a>
                         </div>
                     </div>
                     <div class="off-card">
@@ -80,8 +80,8 @@
             </div>
         </div>
     </section>
-    
-    
+
+
     <!-- Featured Puzzles Section -->
     <section class="women-banner spad">
         <div class="container-fluid">
@@ -94,14 +94,15 @@
                 </div>
                 <div class="col-lg-8 offset-lg-1" style="border:1px ridge #e7ab3c;border-radius:10px">
                     <div class="product-slider owl-carousel" >
-                        <% if(products.length===0){ %>
-                            <p>No Product Availabe</p>
-                          <% }else{ %>
                             <% for(let i=0 ; i<products.length ; i++){ %>
                         <div class="product-item " style="border:1px ridge #e7ab3c;height:500px;margin-top:2rem;border-radius:10px">
                             <div class="pi-pic">
                                 <img src="/uploads/re-image/<%=products[i].productImage[0]%>" alt="">
-                                <div class="sale"><%=products[i].status%></div>
+                                <% if(products[i].status === 'Out of Stock'){ %>
+                                    <div class="sale" style="background-color: red;"><%=products[i].status%></div>
+                                <% }else{ %>
+                                    <div class="sale"><%=products[i].status%></div>
+                                <% } %>
                                 <div class="icon">
                                     <a href="/addToWishlist/<%= products[i]._id %>" data-id="<%=products[i]._id%>" class="btn wishlist-btn">
                                     <i class="icon_heart_alt"></i>
@@ -123,57 +124,56 @@
                                 
                                 <div class="product-price">
                                     Rs <%=products[i].salePrice%>
-                                    <span>Rs <%=products[i].regularPrice%></span>
+                                    <% if (products[i].productOffer) { %>
+                                        <% if (products[i].productOffer.discountType === 'Percentage') { %>
+                                            <span>Rs <%=products[i].regularPrice%></span>
+                                            <span style="text-decoration: none; color: green;">
+                                                <%= products[i].productOffer.value %> % Off
+                                            </span>
+                                        <% } else { %>
+                                            <span>Rs <%=products[i].regularPrice%></span>
+                                            <span style="text-decoration: none; color: green;">
+                                                Rs <%= products[i].productOffer.value %> Off
+                                            </span>
+                                        <% } %>
+                                    <% } else if (products[i].category.categoryOffer) { %> 
+                                        <% if (products[i].category.categoryOffer.discountType === 'Percentage') { %>
+                                            <span>Rs <%=products[i].regularPrice%></span>
+                                            <span style="text-decoration: none; color: green;">
+                                                <%= products[i].category.categoryOffer.value %> % Off
+                                            </span>
+                                        <% } else { %>
+                                            <span>Rs <%=products[i].regularPrice%></span>
+                                            <span style="text-decoration: none; color: green;">
+                                                Rs <%= products[i].category.categoryOffer.value %> Off
+                                            </span>
+                                        <% } %>
+                                    <% } %>
                                 </div>
                             </div>
                         </div>
                         <% } %>
-                       <% } %>
-                        
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Categories Section -->
-     
-                
-                <!-- Add more categories as needed -->
-
     <section class="puzzle-categories py-5 mt-5" style="background-color: #e7ab3c1f;">
+
+
         <div class="container">
             <h3 class="text-center cat-txt">Popular Brands of Puzzles</h3>
             <div class="row text-center mt-5" style="display: flex;align-items: flex-end;justify-content: space-evenly;">
+                <% for(let i=0 ; i<4 ; i++){ %>
                 <div class="col-lg-3 col-md-6 mb-4" style="width:100px">
                     <div class="category-card" >
-                        <img src="/images/cubelelo.png" alt="3D Puzzle" class="img-fluid">
-                        <p class="category-txt">Cubelelo</p>
+                        <img src="/uploads/re-image/<%=brands[i]?.brandImage%>" alt="<%=brands[i]?.brandName%>" class="img-fluid">
+                        <p class="category-txt"><%=brands[i]?.brandName%></p>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-6 mb-4" style="width:100px">
-                    <div class="category-card" >
-                        <img src="/images/frank.png" alt="Jigsaw Puzzle" class="img-fluid">
-                        <p class="category-txt">Frank</p>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4" style="width:100px">
-                    <div class="category-card" >
-                        <img src="/images/funskool.png" alt="Jigsaw Puzzle" class="img-fluid">
-                        <p class="category-txt">Funskool</p>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4" style="width:100px">
-                    <div class="category-card">
-                        <img src="/images/imagimake.png" alt="Jigsaw Puzzle" class="img-fluid">
-                        <p class="category-txt">Imagimake</p>
-                    </div>
-                </div>
-                <!-- Add more categories as needed -->
+                <% } %>
             </div>
         </div>
     </section>
-
 <%- include("../../views/partials/user/footer") %>
-
-    

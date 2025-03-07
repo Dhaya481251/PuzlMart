@@ -70,12 +70,12 @@ const removeFromWishlist = async (req, res) => {
         }
 
         wishlist.products = wishlist.products.filter(product => product.productsId.toString() !== productsId);
-        console.log('Updated Wishlist Products:', wishlist.products); // Debug statement
+        
 
         await wishlist.save();
         res.status(200).json({ message: 'Product removed from wishlist successfully' });
     } catch (error) {
-        console.error('Error removing product from wishlist:', error);
+        
         res.status(500).send('Internal Server Error');
     }
 };

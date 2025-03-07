@@ -1,7 +1,8 @@
 const User = require('../../models/userSchema');
 const Cart = require('../../models/cartSchema');
 const Product = require('../../models/productSchema');
-const Category = require('../../models/categorySchema')
+const Category = require('../../models/categorySchema');
+const Wishlist = require('../../models/wishlistSchema');
 
 const incrementProductPurchase = async(productId) => {
     await Product.findByIdAndUpdate(productId,{$in:{purchases:1}})
@@ -17,12 +18,13 @@ const loadCart = async (req, res) => {
         const user = await User.findById(userId);
         let cart = await Cart.findOne({ userId }).populate('items.productId');
         const category = await Category.find({ isListed: true });
+        const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');
 
         if (cart && cart.items) {
             cart.items = cart.items.filter(item => !item.productId.isBlocked);
         }
         if(cart.items.length > 0){
-        res.render('cart', { user, cart, category: category });
+        res.render('cart', { user, cart, category: category ,wishlist});
         }else{
             res.redirect(302,'/products')
         }

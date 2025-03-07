@@ -12,9 +12,11 @@
             <div class="border-info mx-3 my-3 px-2 py-2" style="border: 1px solid;background-color: #e7ab3c;color:black;border-radius: 10px;display:flex;flex-direction: row;justify-content:space-between;">
                 <h5 id="email" class="mx-1 my-1">Email : <%=user.email%></h5><a class="btn " id="editEmailBtn" href="" style="text-decoration: none;color: #e7ab3c;background-color: white;font-weight: 600;">Edit</a>
             </div>
+            <% if(user.phone) {%>
             <div class="border-info mx-3 my-3 px-2 py-2" style="border: 1px solid;background-color: #e7ab3c;color:black;border-radius: 10px;display:flex;flex-direction: row;justify-content:space-between;">
                 <h5 id="phone" class="mx-1 my-1">Mobile Number : <%=user.phone%></h5>
             </div>
+            <% } %>
         </div>
     </div>
 </div>
@@ -34,7 +36,7 @@
     <div class="col-md-12">
         <div class="border-info px-3 py-3 mt-4" style="border-radius: 10px; background-color: #f0ffff; font-family: monospace;">
             <p style="color: #e7ab3c;font-size: larger;font-weight: 600;">Do you want to change the email?</p>
-            
+
            <form action="/editEmail" method="POST" >
             <label for=""style="color:#04625f;font-size: 1.15rem;font-weight: 500;">Email :</label>
             <input type="text" value="<%=user.email%>" name="newEmail" style="border-radius:5px;text-align: center;border-color: #e7ab3c;width:90%;height: 20%;font-size: 1.25rem;">
@@ -52,7 +54,6 @@
        div1.style.display = 'none';
        div2.style.display = 'block';
     })
-
     const div3 = document.getElementById('div3');
     const editEmailBtn = document.getElementById('editEmailBtn');
     editEmailBtn.addEventListener('click',(event) => {
@@ -60,7 +61,5 @@
         div1.style.display = 'none';
         div3.style.display = 'block';
     })
-
 </script>
-
 <%-include('../../views/partials/user/footer')%>

@@ -1,13 +1,16 @@
 const User = require('../../models/userSchema');
+const Category = require('../../models/categorySchema');
+const Brand = require('../../models/brandSchema');
 const Product = require('../../models/productSchema');
+const Coupon = require('../../models/couponSchema');
+const Offer = require('../../models/offerSchema');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const Order = require('../../models/orderSchema');
 const moment = require('moment');
 const PDFDocument = require('pdfkit');
 const XLSX = require('xlsx');
-// const { default: products } = require('razorpay/dist/types/products');
-
+const Notification = require('../../models/notificationSchema'); 
 
 
 const loadLogin = async(req,res) => {
@@ -15,7 +18,6 @@ const loadLogin = async(req,res) => {
         if(req.session.admin){
             res.redirect('/admin')
         }
-        console.log('Admin login page');
         return res.render('admin-login');
     } catch (error) {
         res.status(500).send('Sever Internal Error');
@@ -50,7 +52,7 @@ const loadDashboard = async(req,res) => {
             const users = await User.find({isAdmin:false});
             const orders = await Order.find().sort({createdOn:-1}).populate('items.productId').populate('userId');
             const products = await Product.find();
-
+            const notifications = await Notification.find({notificationType:'returnRequest'}).populate('orderId').sort({createdOn:-1});
             const topSellingProducts = await Order.aggregate([
                 { $unwind: '$items' },
                 {
@@ -145,18 +147,8 @@ const loadDashboard = async(req,res) => {
                 },
             ]);
             
-            console.log(topSellingBrands);
-            
-            
-            console.log('Admin Dashboard');
-            console.log('Users:', users);
-            console.log('Orders:', orders);
-            console.log('Products:', products);
-            console.log('Top Selling Products:', topSellingProducts);
-            console.log('Top Categories:', topSellingCategories);
-            console.log('Top Brands : ',topSellingBrands)
 
-            res.render('admin-dashboard',{users,orders,products,topSellingProducts,topSellingCategories,topSellingBrands});
+            res.render('admin-dashboard',{users,orders,products,topSellingProducts,topSellingCategories,topSellingBrands,notifications});
         } catch (error) {
             console.error('Error loading dashboard : ', error);
             res.status(500).send('Internal Server Error')
@@ -206,6 +198,8 @@ const salesReport = async(req,res) => {
         const totalOrders = await Order.find({status:'Delivered'}).countDocuments();
         const totalPages = Math.ceil(totalOrders/limit);
         
+        const notifications = await Notification.find({notificationType:'returnRequest'}).populate('orderId').sort({createdOn:-1});
+
         console.log('Sale Report loaded');
         res.render('salesReport',{
             orders,
@@ -214,7 +208,7 @@ const salesReport = async(req,res) => {
             totalOrders:totalOrders,
             totalOrderAmount:totalOrderAmount,
             totalDiscount:totalDiscount,
-            
+            notifications
         });
     } catch (error) {
         console.error('Sales report page loading error',error);
@@ -416,101 +410,306 @@ const downloadEXCEL = async(req,res) => {
     }
 }
 
-
 const getChartData = async (req, res) => {
-    try {
+  try {
       const { filter } = req.query;
-  
+
       // Define date ranges based on filters
       let startDate, endDate;
       const now = new Date();
       switch (filter) {
-        case 'daily':
-          startDate = new Date(now.setHours(0, 0, 0, 0));
-          endDate = new Date(now.setHours(23, 59, 59, 999));
-          break;
-        case 'weekly':
-          startDate = new Date(now.setDate(now.getDate() - 7));
-          endDate = new Date();
-          break;
-        case 'monthly':
-          startDate = new Date(now.getFullYear(), now.getMonth(), 1);
-          endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-          break;
-        case 'yearly':
-          startDate = new Date(now.getFullYear(), 0, 1);
-          endDate = new Date(now.getFullYear(), 11, 31);
-          break;
-        default:
-          return res.status(400).json({ error: 'Invalid filter type' });
+          case 'daily':
+              startDate = new Date(now.setHours(0, 0, 0, 0));
+              endDate = new Date(now.setHours(23, 59, 59, 999));
+              break;
+          case 'weekly':
+              startDate = new Date(now.setDate(now.getDate() - 7));
+              endDate = new Date();
+              break;
+          case 'monthly':
+              startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+              endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+              break;
+          case 'yearly':
+              startDate = new Date(now.getFullYear(), 0, 1);
+              endDate = new Date(now.getFullYear(), 11, 31);
+              break;
+          default:
+              return res.status(400).json({ error: 'Invalid filter type' });
       }
-  
+
       // Query data based on filters
       const userCount = await User.find().countDocuments({
-        createdAt: { $gte: startDate, $lte: endDate },
+        createdOn: { $gte: startDate, $lte: endDate },
       });
       const orderCount = await Order.countDocuments({
-        createdAt: { $gte: startDate, $lte: endDate },
+          createdOn: { $gte: startDate, $lte: endDate },
       });
       const productCount = await Product.countDocuments({
-        createdAt: { $gte: startDate, $lte: endDate },
+          createdOn: { $gte: startDate, $lte: endDate },
       });
-  
+
       // Aggregate revenue and number of orders by category
       const categoryRevenue = await Order.aggregate([
-        { $match: { createdOn: { $gte: startDate, $lte: endDate } } },
-        { $unwind: '$items' },
-        {
-          $lookup: {
-            from: 'products',
-            localField: 'items.productId',
-            foreignField: '_id',
-            as: 'productDetails',
-          },
-        },
-        { $unwind: '$productDetails' },
-        {
-          $group: {
-            _id: '$productDetails.category',
-            totalRevenue: {
-              $sum: {
-                $multiply: ['$items.quantity', '$productDetails.salePrice'],
+          { $match: { createdOn: { $gte: startDate, $lte: endDate } } },
+          { $unwind: '$items' },
+          {
+              $lookup: {
+                  from: 'products',
+                  localField: 'items.productId',
+                  foreignField: '_id',
+                  as: 'productDetails',
               },
-            },
-            totalOrders: { $sum: 1 },
           },
-        },
-        {
-          $lookup: {
-            from: 'categories',
-            localField: '_id',
-            foreignField: '_id',
-            as: 'categoryDetails',
+          { $unwind: '$productDetails' },
+          {
+              $group: {
+                  _id: '$productDetails.category',
+                  totalRevenue: {
+                      $sum: {
+                          $multiply: ['$items.quantity', '$productDetails.salePrice'],
+                      },
+                  },
+                  totalOrders: { $sum: 1 },
+              },
           },
-        },
-        { $unwind: '$categoryDetails' },
-        {
-          $project: {
-            _id: '$categoryDetails.name',
-            totalRevenue: 1,
-            totalOrders: 1,
+          {
+              $lookup: {
+                  from: 'categories',
+                  localField: '_id',
+                  foreignField: '_id',
+                  as: 'categoryDetails',
+              },
           },
-        },
+          { $unwind: '$categoryDetails' },
+          {
+              $project: {
+                  _id: '$categoryDetails.name',
+                  totalRevenue: 1,
+                  totalOrders: 1,
+              },
+          },
       ]);
       
       console.log('Intermediate Category Revenue:', categoryRevenue);
-      
-  
+
       // Respond with the data for charts
       res.json({
-        barChartData: [userCount, orderCount, productCount],
-        doughnutChartData: categoryRevenue,
+          barChartData: [userCount, orderCount, productCount],
+          doughnutChartData: categoryRevenue,
       });
-    } catch (error) {
+  } catch (error) {
       console.error(error);
       res.status(500).json({ error: 'Failed to fetch chart data' });
+  }
+};
+
+const searchAll = async (req, res) => {
+    try {
+      const searchString = req.body.query;
+      const searchType = req.body.type; // Type: users, categories, brands, etc.
+      let page = req.query.page || 1;
+      const limit = 10;
+      let result, count, view;
+      const notifications = await Notification.find({notificationType:'returnRequest'}).populate('orderId').sort({createdOn:-1});
+
+      switch (searchType) {
+        case "users":
+          result = await User.find({
+            isAdmin: false,
+            $or: [
+              { email: { $regex: searchString, $options: "i" } },
+              { name: { $regex: searchString, $options: "i" } },
+            ],
+          })
+            .limit(limit)
+            .skip((page - 1) * limit)
+            .exec();
+  
+          count = await User.find({
+            isAdmin: false,
+            $or: [
+              { email: { $regex: searchString, $options: "i" } },
+              { name: { $regex: searchString, $options: "i" } },
+            ],
+          }).countDocuments();
+          view = "customers";
+          break;
+  
+        case "categories":
+            console.log('SearchString : ',searchString);
+            const category = await Category.find({});
+            console.log("All categories : ",category);
+          result = await Category.find({
+            name: { $regex: searchString, $options: "i" },
+          })
+            .limit(limit)
+            .skip((page - 1) * limit)
+            .exec();
+           console.log('Category : ',result);
+          count = await Category.find({
+            name: { $regex: searchString, $options: "i" },
+          }).countDocuments();
+          view = "category";
+          break;
+  
+        case "brands":
+          result = await Brand.find({
+            brandName: { $regex: searchString, $options: "i" },
+          })
+            .limit(limit)
+            .skip((page - 1) * limit)
+            .exec();
+  
+          count = await Brand.find({
+            brandName: { $regex: searchString, $options: "i" },
+          }).countDocuments();
+          view = "brands";
+          break;
+  
+        case "products":
+          result = await Product.find({
+            productName: { $regex: searchString, $options: "i" },
+          })
+            .limit(limit)
+            .skip((page - 1) * limit)
+            .exec();
+  
+          count = await Product.find({
+            productName: { $regex: searchString, $options: "i" },
+          }).countDocuments();
+          view = "product";
+          break;
+  
+        case "orders":
+          let dateFilter = {};
+          if (searchString && !isNaN(Date.parse(searchString))) {
+            const parsedDate = new Date(searchString);
+            dateFilter = { deliveryDate: parsedDate };
+          }
+          result = await Order.find({
+            $or: [
+              dateFilter,
+              { paymentMethod: { $regex: searchString, $options: "i" } },
+              { paymentStatus: { $regex: searchString, $options: "i" } },
+              { status: { $regex: searchString, $options: "i" } },
+            ],
+          })
+            .limit(limit)
+            .skip((page - 1) * limit)
+            .exec();
+  
+          count = await Order.find({
+            $or: [
+              dateFilter,
+              { paymentMethod: { $regex: searchString, $options: "i" } },
+              { paymentStatus: { $regex: searchString, $options: "i" } },
+              { status: { $regex: searchString, $options: "i" } },
+            ],
+          }).countDocuments();
+          view = "orders";
+          break;
+  
+        case "coupons":
+          result = await Coupon.find({
+            name: { $regex: searchString, $options: "i" },
+          })
+            .limit(limit)
+            .skip((page - 1) * limit)
+            .exec();
+  
+          count = await Coupon.find({
+            name: { $regex: searchString, $options: "i" },
+          }).countDocuments();
+          view = "coupons";
+          break;
+  
+        case "offers":
+          result = await Offer.find({
+            $or: [
+              { offerType: { $regex: searchString, $options: "i" } },
+              { discountType: { $regex: searchString, $options: "i" } },
+            ],
+          })
+            .limit(limit)
+            .skip((page - 1) * limit)
+            .exec();
+  
+          count = await Offer.find({
+            $or: [
+              { offerType: { $regex: searchString, $options: "i" } },
+              { discountType: { $regex: searchString, $options: "i" } },
+            ],
+          }).countDocuments();
+          view = "offer";
+          break;
+  
+        default:
+          return res.status(400).send("Invalid search type");
+      }
+  
+      if (!view) {
+        return res.status(400).send("View not found for the given search type.");
+      }
+      
+      if(searchType === 'users'){
+        res.render(view, {
+            data: result,
+            totalPages: Math.ceil(count / limit),
+            currentPage: page,
+            notifications
+          });
+      }else if(searchType === 'categories'){
+        res.render(view, {
+            cat: result,
+            totalPages: Math.ceil(count / limit),
+            currentPage: page,
+            notifications
+          });
+      }else if(searchType === 'brands'){
+        res.render(view, {
+            data: result,
+            totalPages: Math.ceil(count / limit),
+            currentPage: page,
+            notifications
+          });
+      }else if(searchType === 'products'){
+        res.render(view, {
+            data: result,
+            totalPages: Math.ceil(count / limit),
+            currentPage: page,
+            notifications
+          });
+      }else if(searchType === 'orders'){
+        res.render(view, {
+            orders: result,
+            totalPages: Math.ceil(count / limit),
+            currentPage: page,
+            notifications
+          });
+      }else if(searchType === 'coupons'){
+        res.render(view, {
+            coupons: result,
+            totalPages: Math.ceil(count / limit),
+            currentPage: page,
+            notifications
+          });
+      }else if(searchType === 'offers'){
+        res.render(view, {
+            offers: result,
+            totalPages: Math.ceil(count / limit),
+            currentPage: page,
+            notifications
+          });
+      }
+      
+      console.log(`Searched ${searchType}: `, result);
+    } catch (error) {
+      console.error("Error while performing search: ", error);
+      res.status(500).send("Internal Server Error");
     }
   };
+  
   
 module.exports = {
     loadLogin,
@@ -521,5 +720,6 @@ module.exports = {
     filterSalesReport,
     downloadPDF,
     downloadEXCEL,
-    getChartData
+    getChartData,
+    searchAll
 }

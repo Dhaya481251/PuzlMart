@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 //const paypal = require('paypal');
-
 //controllers
 const userController = require('../controllers/user/userController');
 const productController = require('../controllers/user/productController');
@@ -11,13 +10,10 @@ const cartController = require('../controllers/user/cartController');
 const orderController = require('../controllers/user/orderController');
 const wishlistController = require('../controllers/user/wishlistController');
 const walletController = require('../controllers/user/walletController')
-
 const {userAuth,adminAuth} = require('../middlewares/auth');
-
 const multer = require('multer');
 const storage = require('../helpers/multer');
 const uploads = multer({storage:storage});
-
 //User login
 router.get('/login',userController.loadLogin);
 router.get('/signup',userController.loadSignup);
@@ -33,7 +29,6 @@ router.post('/verifyForgotOtp',userController.verifyForgotOtp);
 router.get('/resetPassword',userController.loadResetPassword);
 router.post('/resendForgotOtp',userController.resendForgotOtp);
 router.post('/resetPassword',userController.resetPassword);
-
 //Google Auth login
 router.get('/auth/google',passport.authenticate('google',{scope:['profile','email']}));
 router.get('/auth/google/callback',passport.authenticate('google',{failureRedirect:'/login'}),(req,res) => {
@@ -47,13 +42,12 @@ router.get('/auth/google/callback',passport.authenticate('google',{failureRedire
     }
    
 });
-
-
 //Product management
 router.get("/products",userAuth,productController.loadProductpage);
 router.get('/productDetails/:id',userAuth,productController.loadProductDetailspage);
 router.get('/filterProductByCategory',userAuth,productController.filterProductByCategory);
 router.post('/search',userAuth,productController.searchProducts);
+router.post('/rateProduct/:productId',userAuth,productController.leaveAReview);
 //User profile management
 router.get('/userProfile',userAuth,profileController.loadUserProfilePage);
 router.get('/userDetails',userAuth,profileController.loadUserDetailsPage);
@@ -68,18 +62,17 @@ router.get('/editAddress',userAuth,profileController.loadEditAddress);
 router.post('/editAddress',userAuth,profileController.editAddress);
 router.get('/deleteAddress',userAuth,profileController.deleteAddress);
 router.get('/referral',userAuth,profileController.loadReferralPage);
-
 //Cart management
 router.get('/cart',userAuth,cartController.loadCart);
 router.get('/addToCart/:id',userAuth,cartController.addToCart);
 router.get('/removeFromCart/:id',userAuth,cartController.removeFromCart);
 router.post('/increaseQuantity/:id',userAuth,cartController.increaseQuantity);
 router.post('/decreaseQuantity/:id',userAuth,cartController.decreaseQuantity);
-
 //Order management
 router.get('/buyNow',userAuth,orderController.loadCheckOutPage);
 router.post('/buy',userAuth,orderController.orderPlaced);
-router.get('/orderConfirmation',userAuth,orderController.orderConfirmation)
+router.get('/orderConfirmation',userAuth,orderController.orderConfirmation);
+router.get('/paymentSuccessfull',userAuth,orderController.paymentSuccessfull);
 router.get('/myOrders',userAuth,orderController.loadMyOrdersPage);
 router.get('/orderDetails/:id',userAuth,orderController.orderDetails);
 router.post('/startPayPalPayment/:id',userAuth,orderController.payFromOrderDetails);
@@ -100,5 +93,4 @@ router.get('/addToWishlist/:id',userAuth,wishlistController.addToWishlist);
 router.get('/removeFromWishlist/:id',userAuth,wishlistController.removeFromWishlist);
 //wallet management
 router.get('/wallet',userAuth,walletController.loadWallet);
-
 module.exports = router;

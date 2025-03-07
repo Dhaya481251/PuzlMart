@@ -1,314 +1,34 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
-
-  <title>Admin Dashboard</title>
-  <meta content="" name="description">
-  <meta content="" name="keywords">
-
-  <!-- Favicons -->
-  <link href="assets/img/favicon.png" rel="icon">
-  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
-
-  <!-- Google Fonts -->
-  <link href="https://fonts.gstatic.com" rel="preconnect">
-  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Train+One&display=swap" rel="stylesheet">
-  <!-- Box Icons -->   
-  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-  
-  <!-- Template Main CSS File -->
-  <link href="/css/admin.css" rel="stylesheet">
-
-  <!-- Sweet alert -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.css">
-  
-  <!-- Bootstrap -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-</head>
-<style>
-    /* Change the background color and text color of the SweetAlert modal */
-    .swal2-popup {
-      background-color: #f8f9fa; /* Light background color */
-      color: #343a40; /* Dark text color */
-      border-radius: 10px;
-    }
-  
-    /* Change the button color */
-    .swal2-confirm {
-      background-color: #28a745; /* Green button */
-      color: white;
-      border: none;
-    }
-  
-    /* Change the button hover color */
-    .swal2-confirm:hover {
-      background-color: #218838; /* Darker green on hover */
-    }
-  
-    /* Change the title text style */
-    .swal2-title {
-      font-family: 'Arial', sans-serif; /* Change font */
-      font-size: 24px;
-      color: #007bff; /* Change title color */
-      text-align: center; /* Center the title */
-    }
-  
-    /* Change the content text style */
-    .swal2-html-container {
-      font-size: 18px;
-      color: #6c757d; /* Grey color for content text */
-      text-align: center; /* Center the content */
-    }
-  
-    /* Center the modal */
-    .swal2-popup {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      flex-direction: column;
-    }
-  
-    /* Modify the modal's position if you want */
-    .swal2-container {
-      position: fixed;
-      top: 50% !important;
-      left: 50% !important;
-      transform: translate(-50%, -50%);
-    }
-  
-    /* Customize the cancel button */
-    .swal2-cancel {
-      background-color: #dc3545; /* Red button */
-      color: white;
-    }
-  
-    /* Change cancel button hover */
-    .swal2-cancel:hover {
-      background-color: #c82333;
-    }
-  </style>
-<body>
-
-  <!-- ======= Header ======= -->
-  <header id="header" class="header fixed-top d-flex align-items-center">
-
-    <div class="d-flex align-items-center justify-content-between">
-      <a href="index.html" class="logo d-flex align-items-center" style="text-decoration: none;">
-        <div style="margin-top: 1rem;">
-          <p class="logo-container" style="font-size: 2rem;border: 1px solid;font-weight: 600;color:#113779;font-family: 'Train One', serif;font-style: normal;border-style: ridge;padding: 0.5rem;border-radius: 5px;">
-            Puzl Mart
-            </p>
-                    </div>
-      <div class="rubik-cube">
-        <div class="face front">
-          <div></div><div></div><div></div>
-          <div></div><div></div><div></div>
-          <div></div><div></div><div></div>
-        </div>
-        <div class="face back">
-          <div></div><div></div><div></div>
-          <div></div><div></div><div></div>
-          <div></div><div></div><div></div>
-        </div>
-        <div class="face right">
-          <div></div><div></div><div></div>
-          <div></div><div></div><div></div>
-          <div></div><div></div><div></div>
-        </div>
-        <div class="face left">
-          <div></div><div></div><div></div>
-          <div></div><div></div><div></div>
-          <div></div><div></div><div></div>
-        </div>
-        <div class="face top">
-          <div></div><div></div><div></div>
-          <div></div><div></div><div></div>
-          <div></div><div></div><div></div>
-        </div>
-        <div class="face bottom">
-          <div></div><div></div><div></div>
-          <div></div><div></div><div></div>
-          <div></div><div></div><div></div>
-        </div>
-      </div>
-      </a>
-      <!-- <i class="bi bi-list toggle-sidebar-btn" id="toggle-sidebar" onclick="openSidebar()"></i> -->
-      <i class='bx bx-list-ul toggle-sidebar-btn' id="toggle-sidebar" ></i>
-    </div><!-- End Logo -->
-
-    <div class="search-bar">
-      <form class="search-form d-flex align-items-center" method="POST" action="/admin/searchCategory">
-        <input type="text" name="query" placeholder="Search" title="Enter search keyword">
-        <button type="submit" title="Search"><i class="bx bx-search"></i></button>
-      </form>
-    </div><!-- End Search Bar -->
-
-    <nav class="header-nav ms-auto">
-      <ul class="d-flex align-items-center">
-
-        <li class="nav-item d-block d-lg-none">
-          <a class="nav-link nav-icon search-bar-toggle " href="#">
-            <i class="bx bx-search"></i>
-          </a>
-        </li><!-- End Search Icon-->
-
-        
-        <li class="nav-item dropdown pe-3">
-
-          <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="">
-            <i class='bx bx-user-circle' style="font-size: 2rem;"></i>
-            <span class="d-none d-md-block ps-2">Admin</span>
-          </a>
-        </li>
-        <li>
-          <a class="dropdown-item d-flex align-items-center" href="/admin/logout">
-            <i class="bi bi-box-arrow-right"></i>
-            <span>Sign Out</span>
-          </a>
-        </li>
-      </ul>
-    </nav><!-- End Icons Navigation -->
-
-  </header><!-- End Header -->
-
-  <!-- ======= Sidebar ======= -->
-  <aside id="sidebar" class="sidebar">
-
-    <ul class="sidebar-nav" id="sidebar-nav">
-
-      <li class="nav-item">
-        <a class="nav-link " href="/admin">
-          <i class="bi bi-grid"></i>
-          <span>Dashboard</span>
-        </a>
-      </li><!-- End Dashboard Nav -->
-
-      <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#inventory-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-menu-button-wide"></i><span>Inventory</span><i class='bx bx-chevron-down ms-auto'></i>
-        </a>
-        <ul id="inventory-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-          <li>
-            <a href="/admin/category">
-              <i class="bi bi-circle"></i><span>Categories</span>
-            </a>
-          </li>
-          <li>
-            <a href="/admin/brands">
-              <i class="bi bi-circle"></i><span>Brands</span>
-            </a>
-          </li>
-          <li>
-            <a href="/admin/products">
-              <i class="bi bi-circle"></i><span>Products</span>
-            </a>
-          </li>
-          
-        </ul>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#orders-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-menu-button-wide"></i><span>Orders</span><i class='bx bx-chevron-down ms-auto'></i>
-        </a>
-        <ul id="orders-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-          <li>
-            <a href="/admin/orders">
-              <i class="bi bi-circle"></i><span>Orders List</span>
-            </a>
-          </li>
-        </ul>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#users-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-menu-button-wide"></i><span>Users</span><i class='bx bx-chevron-down ms-auto'></i>
-        </a>
-        <ul id="users-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-          <li>
-            <a href="/admin/users">
-              <i class="bi bi-circle"></i><span>Users List</span>
-            </a>
-          </li>
-          <li>
-            <a href="/admin/referrals">
-              <i class="bi bi-circle"></i><span>Referral</span>
-            </a>
-          </li>
-        </ul>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#offersAndCoupons-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-menu-button-wide"></i><span>Offers and Coupons</span><i class='bx bx-chevron-down ms-auto'></i>
-        </a>
-        <ul id="offersAndCoupons-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-          <li>
-            <a href="/admin/offer">
-              <i class="bi bi-circle"></i><span>Offer</span>
-            </a>
-          </li>
-          <li>
-            <a href="/admin/coupons">
-              <i class="bi bi-circle"></i><span>Coupon</span>
-            </a>
-          </li>
-        </ul>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#stockAndSale-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-menu-button-wide"></i><span>Stock and Sales Report</span><i class='bx bx-chevron-down ms-auto'></i>
-        </a>
-        <ul id="stockAndSale-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-          <li>
-            <a href="/admin/stock">
-              <i class="bi bi-circle"></i><span>Stock</span>
-            </a>
-          </li>
-          <li>
-            <a href="/admin/salesReport">
-              <i class="bi bi-circle"></i><span>Sales Report</span>
-            </a>
-          </li>
-        </ul>
-      </li>
-    </ul>
-
-  </aside>
+<%-include('../../views/partials/admin/header')%>
 <main id="main" class="main">
 
   <div class="pagetitle">
     <h1>Categories</h1>
     <nav>
       <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="/admin">Home</a></li>
-        <li class="breadcrumb-item">Dashboard</li>
+        <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
+
         <li class="breadcrumb-item active"><a href="/admin/category">Categories</a></li>
       </ol>
     </nav>
-  </div><!-- End Page Title -->
+  </div>
 
   <section class="section">
     <div class="row">
       <div class="col-lg-12">
-
         <div class="card">
           <div class="card-body">
             <h5 class="card-title">Categories</h5>
             <div>
-              <a href="/admin/addCategory" class="btn btn-primary" style="text-decoration: none;">Add New Category</a>
+              <a href="/admin/addCategory" class="btn btn-primary" style="border: none;text-decoration: none;background: #e7ab3c;">Add New Category</a>
             </div>
             <% if(cat.length > 0){ %>
-            <table class="table datatable">
+            <table class="table">
               <thead>
                 <tr>
                   <th>Image</th>
                   <th>Category Name</th>
                   <th>Description</th>
-                  <th>Offer Percentage</th>
+                  <th>Offer Percentage / Offer Price</th>
                   <th>Offer</th>
                   <th>Status</th>
                   <th>List/Unlist</th>
@@ -324,24 +44,28 @@
                   <td><%=category.name%></td>
                   <td><%=category.description%></td>
                   <td>
+                  <% if(category.categoryOffer){ %>
                     <% if (category.categoryOffer?.discountType === 'Percentage') { %>
                       <%= (category.categoryOffer.value)%>% 
-                  <% }else{ %>
+                    <% }else{ %>
                       <%= (category.categoryOffer?.value) %>
+                    <% } %>
+                  <% }else{ %>
+                    <p style="color:red">No Offers</p>
                   <% } %>
                   </td>
                   <td>
                       <% if(category.categoryOffer){ %>
-                          <button class="btn btn-info btn-sm"><a href="#" style="text-decoration: none;" class="text-white" onclick="removeOffer('<%=category._id%>')">Remove</a></button>
+                          <button class="btn btn-danger btn-sm"><a href="#" style="text-decoration: none;" class="text-white" onclick="removeOffer('<%=category._id%>')">Remove Offer</a></button>
                       <% }else{ %>
-                          <button class="btn btn-info btn-sm"><a href="/admin/addCategoryOffer?id=<%=category._id%>" style="text-decoration: none;" class="text-white" >Add Offer</a></button>
+                          <button class="btn btn-sm" style="border: none;background: #e7ab3c;"><a href="/admin/addCategoryOffer?id=<%=category._id%>" style="text-decoration: none;" class="text-white" >Add Offer</a></button>
                       <% } %>
                   </td>
                   <td>
                       <% if(category.isListed){ %>
-                          <span class="badge rounded-pill alert-success" style="width: 60px;">Listed</span>
+                          <span class="badge rounded-pill alert-success" style="background-color: green;">Listed</span>
                       <% }else{ %>
-                          <span class="badge rounded-pill alert-danger" style="width: 60px;">Unlisted</span>
+                          <span class="badge rounded-pill alert-danger" style="background-color: red;">Unlisted</span>
                       <% } %>
                   </td>
                   <td>
@@ -364,7 +88,6 @@
               <h3>No category</h3>
               </div>
             <% } %>
-
           </div>
           <div class="container mt-3">
             <nav aria-label="Page navigation">
@@ -378,60 +101,13 @@
             </nav>
         </div>
         </div>
-
       </div>
     </div>
   </section>
-
 </main>
-<footer id="footer" class="footer">
-  <div class="copyright">
-    &copy; Copyright <strong><span>Puzl Mart</span></strong>. All Rights Reserved
-  </div>
-</footer><!-- End Footer -->
-
-<a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-
-
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+<!-- Sweet alert and bootstrap links -->
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const toggleButton = document.querySelector(".toggle-sidebar-btn");
-    const body = document.body;
-  
-    if (toggleButton) {
-      toggleButton.addEventListener("click", function () {
-        body.classList.toggle("toggle-sidebar");
-      });
-    }
-
-    const toggleLinks = document.querySelectorAll(".nav-link[data-bs-toggle='collapse']");
-
-    toggleLinks.forEach((link) => {
-      link.addEventListener("click", function () {
-        const chevronIcon = this.querySelector(".bx");
-
-
-          if (this.classList.contains("show")) {
-            setTimeout(() => {
-            chevronIcon.classList.remove("bx-chevron-up");
-            chevronIcon.classList.add("bx-chevron-down");
-          }, 100); 
-          } else {
-            setTimeout(() => {
-            chevronIcon.classList.remove("bx-chevron-down");
-            chevronIcon.classList.add("bx-chevron-up");
-          }, 100); 
-          }
-         
-      });
-    });
-});
-    async function addOffer(categoryId) {
+  async function addOffer(categoryId) {
     const { value: amount } = await Swal.fire({
         title: 'Offer in percentage',
         input: 'number',
@@ -440,12 +116,10 @@
         inputAttributes: { min: 1, max: 100 },
         customClass: { container: 'my-custom-class' }
     });
-
     if (!amount || amount < 1 || amount > 100) {
         Swal.fire('Invalid Percentage', 'Please enter a value between 1 and 100', 'error');
         return;
     }
-
     $.ajax({
         url: "/admin/addCategoryOffer",
         method: 'POST',
@@ -464,8 +138,6 @@
         }
     });
 }
-
-
     function removeOffer(categoryId){
         
             Swal.fire({
@@ -498,7 +170,6 @@
             })
         
     }
-
 function confirmDelete(categoryId) {
     const confirmation = Swal.fire({
       title: 'Are you sure?',
@@ -531,212 +202,5 @@ function confirmDelete(categoryId) {
       }
     });
   }
-// async function removeCategory(categoryId) {
-//     try {
-//         const response = await fetch(`/admin/removeCategory/${categoryId}`, {
-//             method: 'DELETE',
-//             headers: {
-//                 'Content-Type': 'application/json',
-                
-//             }
-//         });
-
-//         if (response.ok) {
-//             const data = await response.json();
-//             console.log(data.message);
-            
-//             document.getElementById(`category-${categoryId}`).remove(); 
-//         } else {
-//             const errorData = await response.json();
-//             console.error(errorData.message);
-//         }
-//     } catch (error) {
-//         console.error('Error deleting category:', error);
-//     }
-// }
-  
 </script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
-</body>
-
-</html>
-
-  <!--<div class="container my-3 d-flex justify-content-end">
-    <button class="add-category-btn px-2 py-2" style="background-color: #04625f;border:none;border-radius: 5px;"><a class="text-white" style="text-decoration: none;" href="/admin/addCategory">Add New Category</a></button>
-  </div>
-  <div class="container">
-    <table class="table table-hover table-bordered category-table" style="box-shadow: 1px 1px 8px black;">
-      <thead style="background-color: #04625f;color:white">
-        <tr>
-          <th scope="col">Image</th>
-          <th scope="col">Category Name</th>
-          <th scope="col">Description</th>
-          <th scope="col">Offer Price</th>
-          <th scope="col">Offer</th>
-          <th scope="col">Status</th>
-          <th scope="col">List / Unlist</th>
-          <th scope="col" class="text-start">Action</th>
-        </tr>
-      </thead>
-      <tbody style="background-color: #f0ffff;color:#04625f">
-        <%cat.reverse().forEach((category,index)=>{%>
-        <tr id="category-<%=category._id%>">
-          <td class="text-start" style="width:20%"><img src="<%=category.categoryImage%>" alt="<%=category.name%>" style="width:100%"></td>
-          <td class="text-start" style="width:20%"><%=category.name%></td>
-          <td class="text-start"style="width:20%"><%=category.description%></td>
-          <td style="width:20%">
-            <% if(category.categoryOffer){ %>
-              <%= (category.categoryOffer.value).toFixed(2) %>%
-            <% }else{%>
-              0%
-            <% } %>
-          </td>
-          <td class="text-start" style="width:20%">
-            <% if(category.categoryOffer){ %>
-            <button class="btn btn-info btn-sm"><a href="#" style="text-decoration: none;" class="text-white" onclick="removeOffer('<%=category._id%>')">Remove</a></button>
-            <% }else{ %>
-            <button class="btn btn-info btn-sm"><a href="#" style="text-decoration: none;" class="text-white" onclick="addOffer('<%=category._id%>')">Add Offer</a></button>
-            <% } %>
-          </td>
-          <td class="text-start" style="width:20%">
-            <% if(category.isListed){ %>
-            <span class="badge rounded-pill alert-success" style="width: 60px;">Listed</span>
-            <% }else{ %>
-            <span class="badge rounded-pill alert-danger" style="width: 60px;">Unlisted</span>
-            <% } %>
-          </td>
-          <td class="text-start" style="width:20%">
-            <% if(category.isListed){ %>
-            <button class="btn btn-danger btn-sm"><a href="/admin/listCategory?id=<%=category._id%>" class="text-white" style="text-decoration: none;">Unlist</a></button>
-            <% }else{ %>
-            <button class="btn btn-success btn-sm"><a href="/admin/unlistCategory?id=<%=category._id%>" class="text-white" style="text-decoration: none;">List</a></button>
-            <% } %>
-          </td>
-          <td style="width:20%">
-            <button class="btn btn-primary btn-sm"><a href="/admin/editCategory?id=<%=category._id%>" class="text-white" style="text-decoration: none;">Edit</a></button>
-            <button class="btn btn-danger btn-sm" onclick="removeCategory('<%=category._id%>')">Remove</button>
-          </td>
-        </tr>
-      <%})%>
-      </tbody>
-    </table>
-  </div>
-  <div class="container mt-3">
-    <nav aria-label="Page navigation">
-        <ul class="pagination justify-content-center mb-20" style="margin-right: 200px;">
-            <% for(let i=1 ; i<=totalPages ; i++){ %>
-                <li class="page-item <%=(i===currentPage)? 'active' : ''%>">
-                    <a class="page-link" href="?page=<%=i%>"><%= i %></a>
-                </li>
-            <% } %>
-        </ul>
-    </nav>
-</div>
-
-
-  
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-
-  <script>
-    async function addOffer(categoryId) {
-        const {value:amount} = await Swal.fire({
-            title:'Offer in percentage',
-            input:'number',
-            inputLabel:'percentage',
-            inputPlaceholder:'%',
-            inputAttributes:{
-                min:1,max:100
-            },
-            customClass:{
-               container:'my-custom-class'
-            }
-        });
-        if(!amount || amount<1 || amount>100){
-            Swal.fire('Invalid Percentage','Please enter a value between 1 and 100','error');
-        }
-        $.ajax({
-            url:"/admin/addCategoryOffer",
-            method:'post',
-            data:{
-                percentage:amount,
-                categoryId:categoryId
-            },
-            success:(response) => {
-                if(response.status===true){
-                    location.reload();
-                    Swal.fire('Offer added','The offer has been added','success');
-                }else{
-                    alert('failed');
-                }
-            }
-        })
-    }
-
-    function removeOffer(categoryId){
-        
-            Swal.fire({
-                title:'Remove Offer',
-                text:'Are you sure? You want to remove this offer?',
-                icon:'warning',
-                showCancelButton:'true',
-                confirmButtonColor:'#3085d6',
-                cancelButtonColor:'d33',
-                confirmButtonText:'Yes, remove it',
-                
-            }).then((result) => {
-                if(result.isConfirmed){
-                    $.ajax({
-                        url: '/admin/removeCategoryOffer',
-                        type: 'POST',
-                        contentType: 'application/json',
-                        data: JSON.stringify({ categoryId: categoryId }),
-                        success: function (response) {
-                        console.log('Offer removed:', response);
-                        Swal.fire('Success', response.message, 'success');
-                        location.reload();
-                        },
-                        error: function (error) {
-                        console.error('Error removing offer:', error.responseText || error.statusText);
-                        Swal.fire('Error', 'Could not remove offer.', 'error');
-                        },
-                    });
-                }
-            })
-        
-    }
-
-    
-    
-async function removeCategory(categoryId) {
-    try {
-        const response = await fetch(`/admin/removeCategory/${categoryId}`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-                
-            }
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            console.log(data.message);
-            
-            document.getElementById(`category-${categoryId}`).remove(); 
-        } else {
-            const errorData = await response.json();
-            console.error(errorData.message);
-        }
-    } catch (error) {
-        console.error('Error deleting category:', error);
-    }
-}
-    
-  </script>
-
-</body>
-</html> -->
+<%-include('../../views/partials/admin/footer')%>

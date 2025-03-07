@@ -7,6 +7,8 @@ const Cart = require('../../models/cartSchema')
 const Order = require('../../models/orderSchema');
 const Coupon = require('../../models/couponSchema');
 const Wishlist = require('../../models/wishlistSchema');
+const Notification = require('../../models/notificationSchema');
+const Review = require('../../models/reviewSchema');
 const mongoose = require('mongoose');
 const env = require('dotenv').config();
 const payment = require('../../config/paymentRoute');
@@ -22,7 +24,7 @@ const loadCheckOutPage = async (req, res) => {
         const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');
         const category = await Category.find({isListed:true})
         if (cart && cart.items) {
-            cart.items = cart.items.filter(item => !item.productId.isBlocked); // Remove items with null productId
+            cart.items = cart.items.filter(item => !item.productId.isBlocked); 
         }
         if(cart.items.length<0){
             res.redirect('/');
@@ -38,7 +40,7 @@ const loadCheckOutPage = async (req, res) => {
             return acc + ((item.productId?.regularPrice || 0) - (item.productId?.salePrice || 0)) * item.quantity;
         }, 0)).toFixed(2);
         
-        // Apply coupon if active
+        
         if (coupons && new Date() <= coupons.expireOn) {
             if (coupons.discountType === 'Percentage') {
                 const couponDiscount = finalAmount * (coupons.discount / 100);
@@ -167,8 +169,6 @@ const orderPlaced = async (req, res) => {
         orderData.addressDetails = orderAddress;
         orderData.couponApplied = coupon && new Date() <= coupon.expireOn;
 
-        console.log(`orderData.items.salePrice : ${cart.items.salePrice}`);
-        console.log(`orderData.items.regularPrice : ${cart.items.regularPrice}`);
         for (const item of cart.items) {
             const product = await Product.findById(item.productId);
             if (product) {
@@ -185,8 +185,8 @@ const orderPlaced = async (req, res) => {
 
         if (selectedPayment === 'PayPal') {
             try {
-                const url = await payment.createOrder(userId, couponDiscount,orderData._id);
-                 orderData.paymentStatus = 'Paid'
+                const url = await payment.createOrder(userId, couponDiscount);
+                orderData.paypalOrderId =new URL(url).searchParams.get('token');
                 await orderData.save();
                 cart.items = [];
                 await cart.save();
@@ -194,22 +194,39 @@ const orderPlaced = async (req, res) => {
                 return res.redirect(url);
             } catch (error) {
                 console.error('PayPal order creation failed:', error);
-                orderData.paymentStatus = 'Pending'; // Keep it pending if PayPal creation fails
+                orderData.paymentStatus = 'Pending';// Keep it pending if PayPal creation fails
                 await orderData.save();
                 return res.status(500).send('Failed to create PayPal order, status updated to payment pending');
             }
         } else if (selectedPayment === 'COD') {
             const order = new Order(orderData);
-            order.paymentStatus = 'Not paid';
+           order.paymentStatus = 'Not paid';
             await order.save();
             cart.items = [];
             await cart.save();
             return res.render('orderConfirmation', { cart, wishlist, category });
+        } else if(selectedPayment === 'Wallet'){
+           const order = new Order(orderData);
+           const user = await User.findById(userId);
+
+           user.wallet.balance = user.wallet.balance - order.finalAmount || 0;
+           const newTransaction = {
+            transactionsType:'debit',
+            amount:order.finalAmount,
+            reason:'Order Payment',
+            date: new Date()
+           }
+           user.wallet.transactions.push(newTransaction);
+           await user.save();
+           order.paymentStatus = 'Paid';
+           await order.save();
+           cart.items = [];
+           await cart.save();
+           return res.render('orderConfirmation',{cart,wishlist,category});
         } else {
             return res.status(400).send('Invalid payment method');
         }
     } catch (error) {
-        console.error('Order placed error:', error);
         res.status(500).send('Internal Server Error');
     }
 };
@@ -219,11 +236,28 @@ const orderConfirmation = async (req, res) => {
     try {
         const userId = req.session.user;
         const id = req.params.id;
-        const order = await Order.findById(id);
         const cart = await Cart.findOne({ userId }).populate('items.productId');
         const wishlist = await Wishlist.findOne({ userId }).populate('products.productsId');
         const category = await Category.find({ isListed: true });
-        res.render('orderConfirmation', { order, cart, wishlist, category });
+        payment.capturePayment(req.query.token);
+        res.render(`orderConfirmation`,{cart,wishlist,category:category});
+    } catch (error) {
+        res.status(500).send('Internal Server Error');
+    }
+};
+
+const paymentSuccessfull = async (req, res) => {
+    try {
+        const userId = req.session.user;
+
+        const cart = await Cart.findOne({ userId }).populate('items.productId');
+        const wishlist = await Wishlist.findOne({ userId }).populate('products.productsId');
+        const category = await Category.find({ isListed: true });
+
+            await startPayPal.capturePayment(req.query.token);
+
+        res.render(`paymentSuccessfull`,{cart,wishlist,category:category});
+
     } catch (error) {
         console.error('Error while loading orderConfirmation page : ', error);
         res.status(500).send('Internal Server Error');
@@ -241,17 +275,23 @@ const loadMyOrdersPage = async (req, res) => {
         const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');
         console.log('User ID from session:', userId);
         const category = await Category.find({isListed:true});
+        const page = parseInt(req.query.page) || 1; 
+        const limit = 10;
+        const skip = (page - 1) * limit;
         const orders = await Order.find({userId})
         .populate('items.productId')
         .populate('userId')
-        .sort({createdOn:-1});
+        .sort({createdOn:-1})
+        .skip(skip)
+        .limit(limit);
 
-        console.log('Fetched Orders:', orders);
-        console.log('Address : ',orders.address);
-        
-        res.render('myOrders', { orders ,user,cart,wishlist,category:category});
+        const totalOrders = await Order.countDocuments({userId});
+        const totalPages = Math.ceil(totalOrders/limit);
+
+
+        res.render('myOrders', { orders ,user,cart,wishlist,category:category,totalOrders:totalOrders,currentPage:page,totalPages:totalPages});
     } catch (error) {
-        console.error('Error while loading my orders:', error);
+        
         res.status(500).send('Internal server error');
     }
 };
@@ -263,8 +303,12 @@ const orderDetails = async(req,res) => {
         const id = req.params.id;
         const order = await Order.findById({_id:id})
         .populate('items.productId')
+        .populate('items.reviews')
         .populate('userId');
+        const notifications = await Notification.find({orderId:order._id});
+        const reviews = await Review.find({userId:userId});
 
+        console.log('Notifications:', notifications);
         if(!order){
         return  res.status(404).send('Order not found');
         }
@@ -272,7 +316,8 @@ const orderDetails = async(req,res) => {
         const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');
         console.log('Order : ',order);
         const category = await Category.find({isListed:true});
-        res.render('orderDetails',{orders:order,cart,wishlist,category:category});
+
+        res.render('orderDetails',{orders:order,cart,wishlist,category:category,notifications:notifications,reviews});
     }catch(error){
         console.error('error while loading order details',error);
         res.status(500).send('Internal server error');
@@ -282,15 +327,17 @@ const orderDetails = async(req,res) => {
 const payFromOrderDetails = async (req, res) => {
     try {
         const id = req.params.id;
+
         const userId = req.session.user;
+        const approvalUrl = await startPayPal.createOrder(userId,id);
         const order = await Order.findById({_id:id});
-        
+
         if (!order) {
             return res.status(404).send('Order not found');
         }
 
-        const approvalUrl = await startPayPal.createOrder(userId,id);
-        order.paymentStatus = 'Paid';
+        order.paypalOrderId =new URL(approvalUrl).searchParams.get('token');
+
         await order.save();
 
         return res.redirect(approvalUrl);
@@ -315,11 +362,17 @@ const rateProduct = async(req,res) => {
 
         console.log('Order ID : ',orderId);
         console.log('Product ID : ',productId);
+        const newReview = new Review({
+            productId,
+            userId,
+            review,
+            rating
+        })
+        await newReview.save();
         const order = await Order.findOneAndUpdate(
             {_id:orderId,'items.productId':productId},
             {$set:{
-                'items.$.rating':rating,
-                'items.$.review':review
+                'items.$.reviews':newReview._id
             }},{new:true}
         )
         if(!order){
@@ -327,34 +380,27 @@ const rateProduct = async(req,res) => {
         }
 
         const product = await Product.findByIdAndUpdate(
-            productId,{
-                $push:{
-                    reviews:{
-                        userId,
-                        review,
-                        rating
-                    }
+            productId,
+            {
+                $set:{
+                    reviews:newReview._id
                 }
             }
+            ,{new:true}
         );
 
-        await product.save();
+
 
         if(product){
             const currentAverageRating = product.averageRating || 0;
             const currentTotalReviews = product.totalReviews || 0;
-
             const totalRating = currentAverageRating * currentTotalReviews + parseFloat(rating);
             const newTotalReviews = currentTotalReviews + 1;
-
             product.averageRating = totalRating / newTotalReviews;
             product.totalReviews = newTotalReviews;
-
             await product.save();
-
         }
        
-
         res.status(200).json({message:'Rating and review added successfully',type:'success'});
     } catch (error) {
         console.error('rating and review added error',error);
@@ -384,7 +430,6 @@ const addAddress = async(req,res) => {
         const category = await Category.find({isListed:true});
         const userData = await User.findOne({_id:userId});
         const {addressType,name,city,landMark,state,pincode,phone,altPhone} = req.body;
-
         const userAddress = await Address.findOne({userId:userData._id});
         if(!userAddress){
             const newAddress = new Address({
@@ -398,7 +443,9 @@ const addAddress = async(req,res) => {
         }
         req.session.cart = cart;
         req.session.wishlist = wishlist;
+
         res.redirect(302,'/buyNow');
+
     } catch (error) {
         console.error('Error adding address',error);
         res.status(500).send('Internal server error');
@@ -416,15 +463,12 @@ const loadEditAddress = async(req,res) => {
         if(!currentAddress){
             return res.status(404).send('Address not found');
         }
-
         const addressData = currentAddress.address.find((item) => {
             return item._id.toString()===addressId.toString();
         })
-
         if(!addressData){
             return res.status(404).send('Address not found');
         }
-
         res.render('orderEditAddress',{address:addressData,user:user,cart,wishlist,category:category});
     } catch (error) {
         console.error('editpage error',error);
@@ -445,7 +489,6 @@ const editAddress = async(req,res) => {
         if(!findAddress){
             res.status(404).send('Address not found');
         }
-
         await Address.updateOne(
             {'address._id':addressId},
             {$set:{
@@ -462,9 +505,11 @@ const editAddress = async(req,res) => {
                 }
             }}
         )
+
         req.session.cart = cart;
         req.session.wishlist = wishlist;
         res.redirect(302,'/buyNow');
+
     } catch (error) {
         console.error('editing error',error);
         res.status(500).send('Internal server error');
@@ -489,11 +534,9 @@ const cancelOrder = async(req,res) => {
         if(!order){
             return res.status(404).send('Order not found');
         }
-
         if(order.status!=='Pending'){
             return res.status(400).json({message:'Order cannot be cancelled.',type:'error'})
         }
-
         order.status ="Cancelled";
         if(order.paymentMethod==='PayPal'){
             order.paymentStatus='Paid';
@@ -502,12 +545,10 @@ const cancelOrder = async(req,res) => {
         }
         
         await order.save();
-
         
         if(order.paymentStatus === 'Paid'){
             const userId = req.session.user;
             const user = await User.findById(userId);
-
             user.wallet.balance = user.wallet.balance + order.finalAmount || 0;
             const newTransaction = {
                 transactionsType : 'credit',
@@ -546,41 +587,22 @@ const returnOrder = async(req,res) => {
         if(!order){
             return res.status(404).send('Order not found');
         }
-
         
         if(order.status!=='Delivered'){
             return res.status(400).json({message:'Order cannot be returned.',type:'error'})
         }
 
-        order.status ="Returned";
-        if(order.paymentMethod==='PayPal'){
-            order.paymentStatus='Paid';
-        }else{
-            order.paymentStatus = 'Not paid';
-        }
-        
-        await order.save();
+        const notification = new Notification({
+            userId:order.userId,
+            orderId:order._id,
+            NotificationMesssage:`Return Request for order ${order._id}`,
+            notificationType:'returnRequest'
+        });
 
-        
-        if(order.paymentStatus === 'Paid'){
-            const userId = req.session.user;
-            const user = await User.findById(userId);
+        await notification.save();
 
-            user.wallet.balance = user.wallet.balance + order.finalAmount || 0;
-            const newTransaction = {
-                transactionsType : 'credit',
-                amount : order.finalAmount,
-                reason : 'Order return refund',
-                date : new Date()
-            };
-            user.wallet.transactions.push(newTransaction);
-            await user.save()
-            console.log('order is returned');
-            res.status(200).json({message:'Order returned and refund credited in wallet successfully',type:'success'});
-        }else{
-        console.log('order is returned');
-        res.status(200).json({message:'Order returned successfully',type:'success'});
-        }
+        res.status(200).json({message:'Return request sent to admin',type:'success'});
+
     }catch(error){
         console.log('order returning error',error);
         res.status(500).json({message:'Internal server error',type:'error'});
@@ -598,7 +620,6 @@ const applyCoupon = async(req,res) => {
         if(!coupon){
             return res.status(404).json({message:'Coupon not found'});
         }
-
         const currentDate = new Date();
         if(currentDate > coupon.expireOn){
             return res.status(400).json({message:'Coupon has expired'});
@@ -616,7 +637,7 @@ const applyCoupon = async(req,res) => {
           }
         const deliveryCharge = 20
         const cartTotal = cart.items.reduce((total,item) => total + item.productId.salePrice*item.quantity,0);
-        
+
         const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');
         const category = await Category.find({isListed:true});
         if(coupon.minimumPrice && cartTotal < coupon.minimumPrice){
@@ -633,14 +654,13 @@ const applyCoupon = async(req,res) => {
 
         const finalAmount = cartTotal+deliveryCharge - discountAmount;
         user.coupons.push(coupon._id);
-        
+
         coupon.usedCount += 1 ;
         await user.save();
         await coupon.save();
         req.session.couponCode = couponCode
         
         res.status(200).json({message:'Coupon added successfully',couponDetails:{name:coupon.name,type:coupon.discountType,discount:coupon.discount,discountAmount:discountAmount,finalAmount:finalAmount}});
-
     }catch (error) {
         console.error('Error adding coupons : ',error);
         res.status(500).json({error:'Internal Serve Error'});
@@ -651,18 +671,14 @@ const removeCoupon = async(req,res) => {
     try {
         const userId = req.session.user;
         const user = await User.findById(userId);
-
         if(!user){
             return res.status(404).json({message:'User not found'});
         }
-
         const couponCode = req.session.couponCode;
         const coupon = await Coupon.findOne({code:couponCode});
-
         if(!coupon){
             return res.status(404).json({message:'Coupon not found'});
         }
-
         user.coupons = user.coupons.filter(c => c.toString()!==coupon._id.toString());
         await user.save();
         
@@ -670,7 +686,6 @@ const removeCoupon = async(req,res) => {
         if (cart && cart.items) {
             cart.items = cart.items.filter(item => item.productId); // Remove items with null productId
           }
-
         const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');
         const category = await Category.find({isListed:true});
         const cartTotal = cart.items.reduce((total, item) => 
@@ -679,7 +694,6 @@ const removeCoupon = async(req,res) => {
         const originalDiscount = cart.items.reduce((acc, item) => 
             acc + (item.productId.regularPrice - item.productId.salePrice) * item.quantity, 0
         );
-
         req.session.couponCode = null;
         res.status(200).json({message:'Coupon removed successfully',updatedPrices:{total:cartTotal,discount:originalDiscount,final:cartTotal}});
     } catch (error) {
@@ -707,11 +721,7 @@ const downloadInvoice = async(req,res) => {
 
         const doc = new PDFDocument({autoFirstPage:false});
         doc.addPage();
-        // res.setHeader('Content-Type','application/pdf');
-        // res.setHeader('Content-Disposition',`attachment;filename="invoice - ${order.orderId}"`);
 
-       //doc.pipe(res);
-        
         doc.fontSize(20).text('INVOICE',{align:'center'});
         doc.moveDown(1.5);
 
@@ -721,7 +731,7 @@ const downloadInvoice = async(req,res) => {
         .moveUp()
         .text(`Invoice ID : INV-${order._id}`,320,130,{align:'right'})
         .text(`Invoice Date : ${new Date(order.invoiceDate).toLocaleDateString()}`,{align:'right'});
-        
+
         doc.moveDown();
 
         doc.moveTo(50,doc.y).lineTo(550,doc.y).stroke();
@@ -750,7 +760,7 @@ const downloadInvoice = async(req,res) => {
         const columnwidths = [150,70,70,70,70];
         const startX = 50;
         const rowHeight = 20;
-        let tableY = doc.y + 20;
+        let tableY = doc.y + 40;
 
         const tableHeaders = [
             'Product Name',
@@ -775,19 +785,19 @@ const downloadInvoice = async(req,res) => {
            .stroke();
 
            tableY += rowHeight;
-           
+
         let subtotal = 0;
-        
+
         if(order.status === 'Returned' || order.status === 'Return Request'){
             return;
         }
-        
+
         order.items.forEach(item => {
             const itemSubTotal = (item.salePrice || 0)*item.quantity;
             subtotal +=itemSubTotal;
 
             const row = [
-                item.productId.name || 'Unknown Product',
+                item.productId.productName || 'Unknown Product',
                 item.quantity || 0,
                 `Rs ${item.salePrice || 0}`,
                 `Rs ${(item.regularPrice || 0) - (item.salePrice || 0)}`,
@@ -807,22 +817,22 @@ const downloadInvoice = async(req,res) => {
       tableY += rowHeight;
     });
 
-    
+
     tableY += 10;
     doc.moveTo(50, tableY).lineTo(550, tableY).stroke();
     tableY += 20;
 
-    
+
     doc.fontSize(10).font('Helvetica-Bold');
     doc.text('Subtotal:', 350, tableY);
     doc.text(`Rs ${subtotal.toFixed(2)}`, 450, tableY);
 
     tableY += 20;
-    doc.text('Shipping:', 350, tableY);
-    // doc.text(`Rs ${order.shippingCost.toFixed(2)}`, 450, tableY);
+    doc.text('Delivery Charge:', 350, tableY);
+    doc.text(`Rs ${order.deliveryCharge.toFixed(2)}`, 450, tableY);
 
     tableY += 20;
-    const total = subtotal /*+ order.shippingCost*/;
+    const total = subtotal + order.deliveryCharge;
     doc.fontSize(12).font('Helvetica-Bold');
     doc.text('Total:', 350, tableY);
     doc.text(`Rs ${total.toFixed(2)}`, 450, tableY);
@@ -830,7 +840,7 @@ const downloadInvoice = async(req,res) => {
     // Finalize the PDF
     doc.end();
     doc.pipe(res);
-        
+
     } catch (error) {
         console.error('Error generating invoice : ',error);
         res.status(500).send('Internal Server Error');
@@ -841,6 +851,7 @@ module.exports = {
     loadCheckOutPage,
     orderPlaced,
     orderConfirmation,
+    paymentSuccessfull,
     loadMyOrdersPage,
     orderDetails,
     payFromOrderDetails,

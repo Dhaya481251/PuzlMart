@@ -1,6 +1,11 @@
 <%- include("../../views/partials/user/header") %>
+<nav class="breadcrumbs mt-3 mb-3 container">
+    <a href="/userProfile" class="breadcrumbs-txt" style="text-decoration: none;">My Account</a>&gt;
+    <a href="/userAddress" class="breadcrumbs-txt" style="text-decoration: none;">My Address</a>&gt;
+    <a href="/editAddress?id=<%= address._id.toLocaleString() %>" class="breadcrumbs-txt" style="text-decoration: none;">Edit Address</a>
+</nav>
 <div class="container mt-4">
-   <h3 class="mt-3" style="color: #046963; margin-bottom:70px">Edit User Address</h3>
+   <h3 class="mt-3" style="color: #e7ab3c; margin-bottom:70px">Edit User Address</h3>
    <form id="addressForm" method="POST" action="/editAddress?id=<%= address._id.toLocaleString() %>" class="border-0 p-3">
        <div class="row mb-50">
            <div class="form-group col-md-4">
@@ -43,16 +48,12 @@
        <button type="submit" id="submitButton" class="btn btn-primary">Submit</button>
    </form>
 </div>
-
-
 <script>
    document.getElementById('submitButton').addEventListener('click', function (event) {
        if (!validateForm()) {
            event.preventDefault();
        }
    });
-
-
    function validateForm() {
        let isValid = true;
        const requiredFields = ["addressType", "name", "city", "landMark", "state", "pincode", "phone", "altPhone"];
@@ -67,8 +68,6 @@
                isValid = false;
            }
        });
-
-
        return isValid;
    }
 </script>

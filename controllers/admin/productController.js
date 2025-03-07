@@ -4,7 +4,7 @@ const Brand = require("../../models/brandSchema");
 const User = require('../../models/userSchema');
 const Offer = require('../../models/offerSchema');
 const Order = require('../../models/orderSchema');
-
+const Notification = require('../../models/notificationSchema');
 const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
@@ -38,7 +38,7 @@ const getProducts = async(req,res) => {
         const category = await Category.find({isListed:true});
         const brand = await Brand.find({isBlocked:false});
         const offer = await Offer.find({offerType:'Product'});
-
+        const notifications = await Notification.find({notificationType:'returnRequest'}).populate('orderId').sort({createdOn:-1});
         if(category&& brand){
             res.render('product',{
                 data:productData,
@@ -47,7 +47,8 @@ const getProducts = async(req,res) => {
                 totalPages:Math.ceil(count/limit),
                 cat:category,
                 brand:brand,
-                offer:offer
+                offer:offer,
+                notifications
             })
         }else{
             res.status(404).send('Page not found');
@@ -62,7 +63,8 @@ const getProductAddPage = async(req,res) => {
         const category = await Category.find({isListed:true});
         const brand = await Brand.find({isBlocked:false});
         const products = await Product.find();
-        res.render('add-product',{cat:category,brand:brand,product:products})
+        const notifications = await Notification.find({notificationType:'returnRequest'}).populate('orderId').sort({createdOn:-1});
+        res.render('add-product',{cat:category,brand:brand,product:products,notifications});
     } catch (error) {
         res.status(500).send('Internal Server Error');
     }
@@ -70,11 +72,8 @@ const getProductAddPage = async(req,res) => {
 
 const addProducts = async(req,res) => {
     try {
-        console.log('add products post request');
+        
         const products = req.body;
-        console.log('product data : ',products);
-        console.log('brand : ',products.brand);
-        console.log('category : ',products.category);
         
         const productExists = await Product.findOne({
             productName: products.productName
@@ -109,7 +108,6 @@ const addProducts = async(req,res) => {
                 createdOn:new Date(),
                 quantity:products.quantity,
                 productImage:images,
-                status:'Available',
                 relatedProducts:products.relatedProducts || []
             });
 
@@ -119,7 +117,6 @@ const addProducts = async(req,res) => {
             return res.status(400).json({message:'Product already exist. Please try with another name.',type:'error'});
         }
     } catch (error) {
-        console.error('Error saving products : ',error);
         return res.status(500).send('Internal Server Error');
     }
 }
@@ -131,7 +128,8 @@ const loadAddProductOffer = async (req,res) => {
         if(product.isBlocked === true){
             return res.status(400).json({type:'error',message:'Product is blocked, so add product offer to this product is not possible'})
         }
-        res.render('addProductOffer',{product});
+        const notifications = await Notification.find({notificationType:'returnRequest'}).populate('orderId').sort({createdOn:-1});
+        res.render('addProductOffer',{product,notifications});
     } catch (error) {
         console.error('Error while loading add product offer page : ',error);
         res.status(500).send('Internal Server Error')
@@ -224,13 +222,7 @@ const removeProductOffer = async (req, res) => {
                 discount = parseFloat(findProduct.productOffer.value);
             }
 
-            console.log('Calculated discount:', discount);
-
-            // Update the salePrice
             findProduct.salePrice = (parseFloat(findProduct.salePrice) + discount).toFixed(2);
-            console.log('Updated salePrice:', findProduct.salePrice);
-
-            // Store offer ID before nullifying
             const offerId = findProduct.productOffer._id;
 
             findProduct.productOffer.value = 0;
@@ -238,7 +230,6 @@ const removeProductOffer = async (req, res) => {
             await findProduct.save();
 
             const removedOffer = await Offer.findByIdAndDelete(offerId);
-            console.log('Offer removed:', removedOffer);
 
             return res.status(200).json({ status: true, message: 'Offer removed successfully.', removedOffer });
         } else {
@@ -246,7 +237,6 @@ const removeProductOffer = async (req, res) => {
         }
 
     } catch (error) {
-        console.error('Product offer removing error:', error);
         return res.status(500).send('Internal Server Error');
     }
 };
@@ -280,12 +270,13 @@ const getEditProduct = async(req,res) => {
         const category =await Category.find({});
         const brand = await Brand.find({});
         const products = await Product.find({});
-        
+        const notifications = await Notification.find({notificationType:'returnRequest'}).populate('orderId').sort({createdOn:-1});
         res.render('edit-product',{
             product:product,
             cat:category,
             brand:brand,
-            products:products
+            products:products,
+            notifications
         })
     } catch (error) {
         res.status(500).send('Internal Server Error')
@@ -297,7 +288,7 @@ const editProduct = async (req, res) => {
       const id = req.params.id;
       const data = req.body;
   
-      // Ensure relatedProducts are treated as an array
+      
       const relatedProducts = Array.isArray(data.relatedProducts)
         ? data.relatedProducts
         : data.relatedProducts
@@ -324,12 +315,11 @@ const editProduct = async (req, res) => {
           .json({ error: "Product with this name already exists. Please try with another name." });
       }
   
-      // Filter relatedProducts to include only valid ObjectId strings
+      
       const validRelatedProducts = relatedProducts.filter((item) =>
         /^[0-9a-fA-F]{24}$/.test(item)
       );
   
-      // Combine existing and new relatedProducts
       const existingRelatedProducts = product.relatedProducts || [];
       const updatedRelatedProducts = [...new Set([...existingRelatedProducts, ...validRelatedProducts])];
   
@@ -340,7 +330,7 @@ const editProduct = async (req, res) => {
         });
       }
   
-      // Define fields to update
+      
       const updateFields = {
         productName: data.productName,
         description: data.description,
@@ -352,10 +342,15 @@ const editProduct = async (req, res) => {
         relatedProducts: updatedRelatedProducts,
       };
   
-      // Handle images if uploaded
-      if (images.length > 0) {
-        updateFields.images = images;
-      }
+      if(updateFields.quantity > 0){
+        updateFields.status = 'Available';
+    }else if(updateFields.quantity === 0){
+        updateFields.status = 'Out of stock';
+    }
+
+    if (images.length > 0 && images.length<=4) {
+        updateFields.productImage = [...product.productImage, ...images];
+    }
   
       await Product.findByIdAndUpdate(id, updateFields, { new: true });
       res.redirect(302,"/admin/products");
@@ -366,42 +361,45 @@ const editProduct = async (req, res) => {
   };
   
 
-const deleteImage = async(req,res) => {
+  const deleteImage = async (req, res) => {
     try {
-        const {imageNameToServer,productIdToServer} = req.body;
-        const product = await Product.findByIdAndUpdate(productIdToServer,{$pull:{productImage:imageNameToServer}});
-        const imagePath = path.join('public','uploads','re-image',imageNameToServer);
+        const { imageNameToServer, productIdToServer } = req.body;
+        const product = await Product.findById(productIdToServer);
 
-        if(fs.existsSync(imagePath)){
-            await fs.unlinkSync(imagePath);
-            console.log(`Image ${imageNameToServer} deleted successfully`);
-        }else{
-            console.log(`Image ${imageNameToServer} not found`);
+        if (!product) {
+            return res.status(404).json({ error: "Product not found" });
         }
-        res.send({status:true});
+
+        product.productImage = product.productImage.filter(
+            (image) => image !== imageNameToServer
+        );
+
+        await product.save();
+        res.json({ status: true });
     } catch (error) {
-        res.status(500).send('Internal Server Error');
+        console.error("Error deleting image:", error);
+        res.status(500).json({ status: false });
     }
-}
+};
 
 const removeProduct = async (req, res) => {
     try {
         const id = req.query.id;
-        console.log(`Removing product with ID: ${id}`);
+        
         if(!id){
             return res.status(400).send('Product ID is not provided');
         }
         const result = await Product.deleteOne({_id:id});
 
         if (result.deletedCount === 0) {
-            console.log('Product not found');
+            
             return res.status(404).send('Product not found' );
         }
 
-        console.log('Product deleted successfully');
+        
         return res.status(200).send('Product deleted successfully');
     } catch (error) {
-        console.error('Error removing product : ', error);
+        
         return res.status(500).json({ status: false, message: 'Internal Server Error' });
     }
 };
@@ -427,38 +425,7 @@ const unFeaturedProduct = async(req,res) => {
     }
 }
 
-const searchProduct = async (req, res) => {
-  try {
-    const searchString = req.body.query;
-    let page =1;
-    if(req.query.page){
-      page = req.query.page;
-    }
-    const limit = 3;
 
-    const products = await Product.find({
-        productName:{$regex:searchString,$options:"i"},
-    })
-    .limit(limit*1)
-    .skip((page-1)*limit)
-    .exec();
-
-    const count = await Product.find({
-      productName:{$regex:searchString,$options:"i"},
-      
-    }).countDocuments();
-    
-    res.render("product", {
-        data:products,
-        totalPages: Math.ceil(count / limit),
-        currentPage: page,
-      });
-    console.log('Searched Products : ',products);
-  } catch (error) {
-    console.log('Error while searching product : ', error);
-    res.status(500).send('Internal Server Error');
-  }
-};
 
 module.exports = {
     getProducts,
@@ -474,6 +441,6 @@ module.exports = {
     removeProduct,
     featuredProduct,
     unFeaturedProduct,
-    searchProduct,
+    
     loadAddProductOffer
 }

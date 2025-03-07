@@ -8,20 +8,23 @@
 
     <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css?family=Muli:300,400,500,600,700,800,900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Train+One&display=swap" rel="stylesheet">
 
     <!-- Css Styles -->
-    <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css">
-    <link rel="stylesheet" href="css/font-awesome.min.css" type="text/css">
-    <link rel="stylesheet" href="css/themify-icons.css" type="text/css">
-    <link rel="stylesheet" href="css/elegant-icons.css" type="text/css">
-    <link rel="stylesheet" href="css/owl.carousel.min.css" type="text/css">
-    <link rel="stylesheet" href="css/nice-select.css" type="text/css">
-    <link rel="stylesheet" href="css/jquery-ui.min.css" type="text/css">
-    <link rel="stylesheet" href="css/slicknav.min.css" type="text/css">
-    <link rel="stylesheet" href="css/style.css" type="text/css">
+    <link rel="stylesheet" href="/css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="/css/font-awesome.min.css" type="text/css">
+    <link rel="stylesheet" href="/css/themify-icons.css" type="text/css">
+    <link rel="stylesheet" href="/css/elegant-icons.css" type="text/css">
+    <link rel="stylesheet" href="/css/owl.carousel.min.css" type="text/css">
+    <link rel="stylesheet" href="/css/nice-select.css" type="text/css">
+    <link rel="stylesheet" href="/css/jquery-ui.min.css" type="text/css">
+    <link rel="stylesheet" href="/css/slicknav.min.css" type="text/css">
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
     <link rel="stylesheet" href="/css/product.css">
+    <link rel="stylesheet" href="/css/home.css">
       <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <script>
     function imageZoom(imgID, resultID) {
@@ -71,24 +74,22 @@
  
     </script>
 </head>
-
 <body>
     <!-- Page Preloder -->
     
-
     <!-- Header Section Begin -->
     <header class="header-section">
-        
+
         <div class="container">
             <div class="inner-header">
+
                 <div class="row" style="align-items: center;">
                     <div class="col-lg-2 col-md-2">
-                        <div class="logo" style="display: flex;border: 2px solid #e7ab3c;width: 7.5rem;padding:0.5rem;border-radius: 5px; box-shadow: 1px 0px 12px 3px #0000006b;">
-                            <p class="logo-container" style="font-size: 2rem;;font-weight: 600;color:#e7ab3c;font-family: 'Train One', serif;font-style: normal;border-radius: 5px;">
+                        <div class="logo" style="display: flex;border: 2px solid #e7ab3c;width: 7.5rem;padding:0.5rem;height:4.5rem;border-radius: 5px; box-shadow: 1px 0px 12px 3px #0000006b;">
+                            <p class="logo-container" style="font-size: 1.7rem;;font-weight: 600;color:#e7ab3c;font-family: 'Train One', serif;font-style: normal;border-radius: 5px;">
                               Puzl
                               Mart
                             </p>
-                            
                             <div class="rubik-cube">
                                 <div class="face front">
                                   <div></div><div></div><div></div>
@@ -125,10 +126,10 @@
                     </div>
                     <div class="col-lg-7 col-md-7">
                         <div class="advanced-search">
-                            
+
                             <div class="input-group">
                                 <form action="/search" method="POST" class="form-inline search">
-                                <input name="query" type="search" placeholder="What do you need?">
+                                <input name="query" type="search" placeholder="What do you need?" style="width:32rem">
                                 <button type="submit"><i class="ti-search"></i></button>
                                 </form>
                             </div>
@@ -136,11 +137,60 @@
                     </div>
                     <div class="col-lg-3 text-right col-md-3">
                         <ul class="nav-right">
-                          <li class="heart-icon">
-                            <a href="/wishlist">
+
+                          <li class="cart-icon">
+                            <a href="#">
                                 <i class="icon_heart_alt"></i>
                             </a>
-                        </li>
+                            <div class="cart-hover">
+                                <div class="select-items">
+                                    <table>
+                                        <tbody>
+                                            <% if(wishlist && wishlist.products && wishlist.products.length > 0){ %>
+                                            <% wishlist.products.forEach((product) => { %>
+                                            
+                                            <tr>
+                                                <td class="si-pic">
+                                                    <a href="/productDetails/<%=product.productsId._id%>" style="text-decoration: none;">
+                                                        <img src="/uploads/re-image/<%=product.productsId.productImage[0]%>" style="width: 99%;" alt="Item" class="img-fluid cart-img">
+                                                    </a>
+                                                </td>
+                                                <td class="si-text">
+                                                    <div class="product-selected">
+                                                        <p>Rs <%=product.productsId.salePrice%></p>
+                                                        <h6><%=product.productsId.productName%></h6>
+                                                    </div>
+                                                </td>
+                                                <td class="si-close">
+                                                    <div style="display:flex; gap:0.5rem">
+                                                    <div>
+                                                    <a href="/addToCart/<%= product.productsId._id %>" data-id="<%=product.productsId._id%>" class="cart-btn" style="background-color: #e7ab3c;color:#f0ffff; border-radius: 10px;"><button class="btn"><i class="fa fa-shopping-cart mr-1"></i></button></a>
+                                                    </div>
+                                                    <div>
+                                                    <a href="" data-id="<%= product.productsId._id %>" class="btn btn-danger btn-sm wishlist-remove"  style="text-decoration: none;">
+                                                        <i class="ti-close"></i>
+                                                    </a>
+                                                    </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <% }) %>
+                                          <% }else{ %>
+                                                  
+                                            <h4 colspan="4">Your Wishlist is empty</h4>
+                                                  
+                                          <% } %>
+
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                              <div class="select-button">
+                                  <a href="/wishlist" class="primary-btn view-card">VIEW WISHLIST</a>
+
+                              </div>
+                            </div>
+                          </li>
                             <li class="cart-icon">
                                 <a href="#">
                                     <i class="icon_bag_alt"></i>
@@ -152,6 +202,7 @@
                                                 <% if(cart && cart.items && cart.items.length > 0){ %>
                                                 <% cart.items.forEach(item => { %>
                                                 <% if(item.productId.isBlocked === false) { %>
+                                                
                                                 <tr>
                                                     <td class="si-pic">
                                                         <a href="/productDetails/<%=item.productId._id%>" style="text-decoration: none;">
@@ -166,6 +217,7 @@
                                                     </td>
                                                     <td class="si-close">
                                                         <a href="/removeFromCart/<%=item.productId._id%>" class="btn btn-danger cart-remove"><i class="ti-close"></i></a>
+                                                        
                                                     </td>
                                                 </tr>
                                                 
@@ -212,8 +264,8 @@
                                 <% }) %>
                             </ul>
                         </li>
-                        <li><a href="">About us</a></li>
-                        <li><a href="">Contact us</a></li>
+                        <li><a href="#footer-section">About us</a></li>
+                        <li><a href="#footer-section">Contact us</a></li>
                         <li><a href="#">My account</a>
                             <ul class="dropdown">
                                 <% if (user ) { %>
@@ -227,183 +279,7 @@
                         </li>
                     </ul>
                 </nav>
-                <div id="mobile-menu-wrap"></div>
+
             </div>
         </div>
     </header>
-    <!-- <title>Puzl Mart Home</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/css/home.css">
-    <link rel="stylesheet" href="/css/product.css">
-    
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-   <script>
-   function imageZoom(imgID, resultID) {
-  let img = document.getElementById(imgID);
-  let result = document.getElementById(resultID);
-  let lens = document.createElement("DIV");
-  lens.setAttribute("class", "img-zoom-lens");
-  img.parentElement.insertBefore(lens, img);
-
-  let cx = result.offsetWidth / lens.offsetWidth;
-  let cy = result.offsetHeight / lens.offsetHeight;
-
-  result.style.backgroundImage = `url('${img.src}')`;
-  result.style.backgroundSize = `${img.width * cx}px ${img.height * cy}px`;
-
-  lens.addEventListener("mousemove", moveLens);
-  img.addEventListener("mousemove", moveLens);
-  lens.addEventListener("touchmove", moveLens);
-  img.addEventListener("touchmove", moveLens);
-
-  function moveLens(e) {
-    e.preventDefault();
-    let pos = getCursorPos(e);
-    let x = pos.x - lens.offsetWidth / 2;
-    let y = pos.y - lens.offsetHeight / 2;
-
-    if (x > img.width - lens.offsetWidth) x = img.width - lens.offsetWidth;
-    if (x < 0) x = 0;
-    if (y > img.height - lens.offsetHeight) y = img.height - lens.offsetHeight;
-    if (y < 0) y = 0;
-
-    lens.style.left = `${x}px`;
-    lens.style.top = `${y}px`;
-    result.style.backgroundPosition = `-${x * cx}px -${y * cy}px`;
-  }
-
-  function getCursorPos(e) {
-    e = e || window.event;
-    let a = img.getBoundingClientRect();
-    let x = e.pageX - a.left;
-    let y = e.pageY - a.top;
-    x -= window.pageXOffset;
-    y -= window.pageYOffset;
-    return { x: x, y: y };
-  }
-}
-
-   </script>
-</head>
-<body>
-     Navbar Section 
-  <header>
-    <nav class="navbar navbar-expand-lg navbar-dark">
-      <div class="container-fluid">
-        <div class="logo" style="display: flex;flex-direction: row;">
-          <div class="logo-text">
-              <img src="/images/PuzlMart.svg" alt="">
-          </div>
-          <div class="rubik-cube">
-            <div class="face front">
-              <div></div><div></div><div></div>
-              <div></div><div></div><div></div>
-              <div></div><div></div><div></div>
-            </div>
-            <div class="face back">
-              <div></div><div></div><div></div>
-              <div></div><div></div><div></div>
-              <div></div><div></div><div></div>
-            </div>
-            <div class="face right">
-              <div></div><div></div><div></div>
-              <div></div><div></div><div></div>
-              <div></div><div></div><div></div>
-            </div>
-            <div class="face left">
-              <div></div><div></div><div></div>
-              <div></div><div></div><div></div>
-              <div></div><div></div><div></div>
-            </div>
-            <div class="face top">
-              <div></div><div></div><div></div>
-              <div></div><div></div><div></div>
-              <div></div><div></div><div></div>
-            </div>
-            <div class="face bottom">
-              <div></div><div></div><div></div>
-              <div></div><div></div><div></div>
-              <div></div><div></div><div></div>
-            </div>
-          </div>
-        </div>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav" style="margin-left: 1rem;">
-          <ul class="navbar-nav mr-auto">
-            <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-            <li class="nav-item"><a class="nav-link" href="/products">Products</a></li>
-            <li class="nav-item"><a class="nav-link" href="#">About Us</a></li>
-            <li class="nav-item"><a class="nav-link" href="">Contact Us</a></li>
-          </ul>
-          
-            <form action="/search" method="POST" class="form-inline search">
-              <input class="form-control searchForm mr-sm-2" name="query" type="search" placeholder="Search">
-              <button class="btn btn-outline-success search-btn" type="submit">
-                <img src="/images/Search.svg" alt="">
-              </button>
-            </form>
-          
-          <ul class="navbar-nav ml-auto">
-            <% if (user ) { %>
-                            Logged-in user options
-              <li class="nav-item dropdown">
-                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">My account</a>
-                  <div class="dropdown-menu" style="background:#04625fc9; border:1px solid #f0ffff;border-radius: 10px;">
-                    <a class="dropdown-item mx-3 my-3" style="background:#118d89;color:white;border:0.5px solid #f0ffff;box-shadow:-5px -2px 2px 0px #f0ffff;font-family: monospace;border-radius: 10px;" href="/userProfile"><%=user.name%></a>
-                    <a class="dropdown-item mx-3 my-3" style="background:#118d89;color:white;border:0.5px solid #f0ffff;box-shadow:-5px -2px 2px 0px #f0ffff;font-family: monospace;border-radius: 10px;" href="/logout">Logout</a>
-                  </div>
-              </li>
-            <% } else { %>
-                            Guest options
-              <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
-            <% } %>
-                                <i class='bx bx-shopping-bag' id="cart-icon" data-quantity="0" onclick="openCart()"></i>
-                  <div class="cart" style="display: none;">
-                    <h2 class="cart-title">Your cart</h2>
-                    <div class="cart-content">
-                      <div class="cart-box">
-                        <% if(cart && cart.items && cart.items.length > 0){ %>
-                          <% cart.items.forEach(item => { %>
-                            <% if(item.productId) { %>
-                              <a href="/productDetails/<%=item.productId._id%>" style="text-decoration: none;">
-                                <img src="/uploads/re-image/<%=item.productId.productImage[0]%>" style="width: 99%;" alt="Item" class="img-fluid cart-img">
-                              </a>
-                              <div class="detail-box">
-                                <div class="cart-product-title"><%=item.productId.productName%></div>
-                                <div class="cart-price" style="text-decoration: line-through;"><%=item.productId.regularPrice%></div>
-                                <div class="cart-price"><%=item.productId.salePrice%></div>
-                                <div style="display: flex;flex-direction: row;">
-                                  <a href="#" data-id="<%=item.productId._id%>" class="btn btn-info decrease-btn" style="text-decoration: none;">-</a>
-                                    <input class="w-25 mx-3 text-center" type="text" value="<%=item.quantity%>">
-                                  <a href="#" data-id="<%=item.productId._id%>" class="btn btn-info increase-btn" style="text-decoration: none;">+</a>
-                                </div>
-                              </div>
-                                <a href="/removeFromCart/<%=item.productId._id%>"><button class="btn btn-danger btn-sm"><i class="bx bx-trash-alt cart-remove"></i></button></a>
-                                  
-                            <% } else { %> 
-                              <p>Product not found</p>  
-                            <% } %>
-                          <% }) %>
-                        <% }else{ %>
-                                
-                          <h4 colspan="4">Your cart is empty</h4>
-                                
-                        <% } %>
-                      </div>
-                    </div>
-                    <div class="total">
-                      <div class="total-title">Total</div>
-                      <div class="total-price">Rs.<%= cart ? cart.items.reduce((acc, item) => acc + item.productId.salePrice * item.quantity, 0) : 0 %></div>
-                    </div>
-                      <a href="/buyNow"><button type="button" class="btn-buy">Pay now</button></a>
-                            
-                      <i class="bx bx-x" id="close-cart" onclick="closeCart()"></i>
-                  </div>
-          </ul>
-        </div>
-      </div>
-    </nav>
-  </header> -->
-

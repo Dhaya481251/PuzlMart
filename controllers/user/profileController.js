@@ -18,7 +18,7 @@ const loadUserProfilePage = async(req,res) => {
         const cart = await Cart.findOne({userId}).populate('items.productId');
         const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');
         const category = await Category.find({isListed:true});
-        res.render('userProfile',{isAuthenticated: req.isAuthenticated(),user:userData,cart,wishlist,category:category});
+        res.render('userProfile',{user:userData,cart,wishlist,category:category});
     } catch (error) {
         res.status(500).send('Internal Server Error');
     }
@@ -32,7 +32,7 @@ const loadUserDetailsPage = async(req,res) => {
         console.log(userId)
         const userData =await User.findById(userId);
         console.log(userData);
-        res.render('userDetails',{isAuthenticated: req.isAuthenticated(),user:userData,cart,wishlist,category:category});
+        res.render('userDetails',{user:userData,cart,wishlist,category:category});
     } catch (error) {
         res.status(500).send('Internal Server Error');
     }
@@ -48,7 +48,9 @@ const editName = async(req,res) => {
         const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');        
         user.name = newName;
         await user.save();
+
         res.redirect(302,'/userDetails');
+
 
     } catch (error) {
         res.status(500).send('Internal server error');
@@ -180,12 +182,13 @@ const loadUserAddressPage = async (req, res) => {
 
 const loadAddAddress = async (req, res) => {
     try {
-        const user = req.session.user;
-        const cart = await Cart.findOne({user}).populate('items.productId');
-        const wishlist = await Wishlist.findOne({user}).populate('products.productsId');
+        const userId = req.session.user;
+        const userData = await User.findById(userId);
+        const cart = await Cart.findOne({userId}).populate('items.productId');
+        const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');
         const category = await Category.find({isListed:true});
-        res.render('addAddressPage',{user:user,cart,wishlist,category:category});
-       
+        res.render('addAddressPage',{user:userData,cart,wishlist,category:category});
+
     } catch (error) {
         console.error(error);
         res.status(500).send('Internal Server Error');

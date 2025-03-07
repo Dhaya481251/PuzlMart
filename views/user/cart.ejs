@@ -1,4 +1,8 @@
 <%- include('../../views/partials/user/header') %>
+<nav class="breadcrumbs mt-3 mb-3 ml-5">
+    <a href="/" class="breadcrumbs-txt" >Home</a>&gt;
+    <a href="/cart" class="breadcrumbs-txt">Cart</a>  
+</nav>
 <section class="shopping-cart spad">
     <div class="container">
         <div class="row">
@@ -68,17 +72,17 @@
                     <div class="col-lg-4">
                         <div class="cart-buttons">
                             <a href="/" class="primary-btn continue-shop">Continue shopping</a>
-                            
+
                         </div>
-                       
+
                     </div>
                     <div class="col-lg-4 offset-lg-4">
                         <div class="proceed-checkout">
                             <% if(cart && cart.items.length > 0){ %>
                             <ul>
                                 <li class="subtotal">Price <span><%=cart ? cart.items.reduce((acc,item) => acc + item.productId.regularPrice*item.quantity,0):0%></span></li>
-                                <li class="discount">Discount <span><%= cart? cart.items.reduce((acc,item) => acc+ (item.productId.regularPrice - item.productId.salePrice)*item.quantity,0):0 %></span></li>
-                                <li class="cart-total">Total <span><%=cart? cart.items.reduce((acc,item) => acc + item.productId.salePrice*item.quantity,0):0 %></span></li>
+                                <li class="discount">Discount <span><%= (cart? cart.items.reduce((acc,item) => acc+ (item.productId.regularPrice - item.productId.salePrice)*item.quantity,0):0).toFixed(2) %></span></li>
+                                <li class="cart-total">Total <span><%= (cart? cart.items.reduce((acc,item) => acc + item.productId.salePrice*item.quantity,0):0).toFixed(2) %></span></li>
                             </ul>
                             <% } %>
                             <a href="/buyNow" class="proceed-btn">PROCEED TO CHECK OUT</a>

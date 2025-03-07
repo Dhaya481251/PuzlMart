@@ -1,4 +1,5 @@
 <%-include('../../views/partials/user/header')%>
+
 <nav class="breadcrumbs mt-3 mb-3 container">
     <a href="/userProfile" class="breadcrumbs-txt" style="text-decoration: none;">My Account</a>&gt;
     <a href="/userAddress" class="breadcrumbs-txt" style="text-decoration: none;">My Address</a>
@@ -6,12 +7,11 @@
 
 <div class="container-fluid" id="div1" style="display: grid;justify-items: center;">
     <div class="col-md-12 my-5" style="width: 50%;">
-           <div class="mx-2 my-2 px-3 py-3 text-center" style="background-color: #e7ab3c;border-radius: 10px;">
-               <a href="/addAddress" ><h1 style="color:black;font-size: x-large;">ADD A NEW ADDRESS</h5></a>
+           <div class="mx-2 my-2 px-3 py-3 text-center address-btn">
+               <a href="/addAddress"  style="text-decoration: none;"><h1 style="color:black;font-size: x-large;">ADD A NEW ADDRESS</h1></a>
            </div>
     </div>
 </div>
-
 <div class="container-fluid" id="div1">
     <div class="col-md-12">
         <div class="px-3 mt-4" style="background-color: #f0ffff;border-radius: 10px; font-family: monospace;">
@@ -45,17 +45,8 @@
                     </div>
                 </div>
                <% }) %>
-               <% }else{ %>
-                <div class="container-fluid" id="div1">
-                    <div class="col-md-12">
-                        <div class="border-info px-3 mt-4" style="border:0.15rem solid; border-top-left-radius: 5px;border-top-right-radius: 5px;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px; font-family: monospace;">
-                           <div class="border-info mx-3 my-3 px-3 py-3">
-                               <h5>No address found</h5>
-                           </div>
-                        </div>
-                    </div>
-                </div>
                <% } %>
+
            </div>
         </div>
     </div>
@@ -67,7 +58,6 @@
     document.querySelectorAll('.deleteAddress').forEach(button => {
         button.addEventListener('click', (event) => {
             event.preventDefault();
-
             const deleteUrl = button.getAttribute('href');
             Swal.fire({
                 title: 'Are you sure?',
@@ -91,5 +81,4 @@
     });
 });
 </script>
-
 <%-include('../../views/partials/user/footer')%>

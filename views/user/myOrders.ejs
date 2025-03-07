@@ -1,5 +1,4 @@
 <%- include('../../views/partials/user/header') %>
-
     <nav class="breadcrumbs mt-3 mb-3 container">
         <a href="/userProfile" class="breadcrumbs-txt" style="text-decoration: none;">My Account</a>&gt;
         <a href="/myOrders" class="breadcrumbs-txt" style="text-decoration: none;">My Orders</a>
@@ -45,6 +44,13 @@
             <div>
                 <p style="color:black"><%= item.productId.productName %></p>
             </div>
+            <% if(order.paymentStatus === "Pending" || order.paymentStatus === 'Not paid'){ %>
+                <div class="payment">
+                    <form action="/startPayPalPayment/<%=order._id%>" method="POST">
+                    <button id="payPalBtn" style="background-color: #e7ab3c;border-radius: 10px;" class="btn" onclick="startPayPal()" ><h5> Pay <%= order.finalAmount %></h5></button>
+                    </form>
+                </div>
+            <% } %>
             </div>
             <% } else { %> 
                 <p>Product not found</p> 
@@ -56,9 +62,20 @@
         
         <%})%>
     </div>
-    
+    <div class="pagination" style="display: flex; justify-content: center;">
+        <% if (currentPage > 1) { %>
+            <a class="btn mx-1 my-1" style="background: #e7ab3c; color:white; text-decoration: none;" href="/myOrders?page=<%= currentPage - 1 %>">&laquo; Prev</a>
+        <% } %>
+        
+        <% for (let i = 1; i <= totalPages; i++) { %>
+            <a class="btn mx-1 my-1" style="background: #e7ab3c; color:white; text-decoration: none;" href="/myOrders?page=<%= i %>" class="<%= i === currentPage ? 'active' : '' %>"><%= i %></a>
+        <% } %>
+        <% if (currentPage < totalPages) { %>
+            <a class="btn mx-1 my-1" style="background: #e7ab3c; color:white; text-decoration: none;" href="/myOrders?page=<%= currentPage + 1 %>">Next &raquo;</a>
+        <% } %>
+    </div>
     <% } else { %>
-        <p>No orders found. Start shopping now!</p>
+        <p class="text-center" style="font-size: 20px;">No orders found. Start shopping now!</p>
     <% } %>
-    
+
 <%- include('../../views/partials/user/footer') %>

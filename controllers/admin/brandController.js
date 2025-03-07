@@ -1,6 +1,6 @@
 const Brand = require('../../models/brandSchema');
 const Product = require('../../models/productSchema');
-
+const Notification = require('../../models/notificationSchema')
 
 const getBrandPage = async(req,res) => {
     try {
@@ -11,12 +11,13 @@ const getBrandPage = async(req,res) => {
         const totalBrands = await Brand.countDocuments();
         const totalPages = Math.ceil(totalBrands/limit);
         const reverseBrand = brandData.reverse();
-
+        const notifications = await Notification.find({notificationType:'returnRequest'}).populate('orderId').sort({createdOn:-1});
         res.render('brands',{
             data:reverseBrand,
             currentPage:page,
             totalPages:totalPages,
-            totalBrands:totalBrands
+            totalBrands:totalBrands,
+            notifications
         })
     } catch (error) {
         res.status(500).send('Internal Server Error');
@@ -81,37 +82,6 @@ const deleteBrand = async (req, res) => {
     }
 };
 
-const searchBrand = async (req, res) => {
-  try {
-    const searchString = req.body.query;
-    let page =1;
-    if(req.query.page){
-      page = req.query.page;
-    }
-    const limit = 3;
-
-    const brands = await Brand.find({
-      brandName:{$regex:searchString,$options:"i"}
-    })
-    .limit(limit*1)
-    .skip((page-1)*limit)
-    .exec();
-
-    const count = await Brand.find({
-      brandName:{$regex:searchString,$options:"i"}
-    }).countDocuments();
-    
-    res.render("brands", {
-        data:brands,
-        totalPages: Math.ceil(count / limit),
-        currentPage: page,
-      });
-    console.log(brands);
-  } catch (error) {
-    console.log('Error while searching user : ', error);
-    res.status(500).send('Internal Server Error');
-  }
-};
 
 module.exports = {
     getBrandPage,
@@ -119,5 +89,4 @@ module.exports = {
     blockBrand,
     unblockBrand,
     deleteBrand,
-    searchBrand
 }

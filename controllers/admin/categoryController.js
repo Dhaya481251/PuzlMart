@@ -1,7 +1,7 @@
 const Category = require('../../models/categorySchema');
 const Product = require('../../models/productSchema');
 const Offer = require('../../models/offerSchema');
-
+const Notification = require('../../models/notificationSchema');
 
 const categoryInfo = async(req,res) => {
     try {
@@ -18,12 +18,14 @@ const categoryInfo = async(req,res) => {
 
         const totalCategories = await Category.countDocuments();
         const totalPages = Math.ceil(totalCategories/limit);
+        const notifications = await Notification.find({notificationType:'returnRequest'}).populate('orderId').sort({createdOn:-1});
 
         res.render('category',{
             cat:categoryData,
             currentPage:page,
             totalPages:totalPages,
-            totalCategories:totalCategories
+            totalCategories:totalCategories,
+            notifications
         });
     } catch (error) {
         console.error(error);
@@ -33,7 +35,8 @@ const categoryInfo = async(req,res) => {
 
 const loadAddCategory = async(req,res) => {
     try {
-        res.render('add-category');
+        const notifications = await Notification.find({notificationType:'returnRequest'}).populate('orderId').sort({createdOn:-1});
+        res.render('add-category',{notifications});
     } catch (error) {
         res.status(500).send('Internal Server Error');
     }
@@ -44,10 +47,6 @@ const addCategory = async (req, res) => {
         console.log(req.body);
         console.log('Uploaded File:', req.file);
         const { name, description } = req.body;
-
-        // if (!name || !description || !req.file) {
-        //     return res.status(400).json({ message: 'All fields are required, including the image.', type: 'error' });
-        // }
 
         const existingCategory = await Category.findOne({ name:name });
         if (existingCategory) {
@@ -80,7 +79,8 @@ const loadAddCategoryOffer = async (req,res) => {
         if(category.isListed === false){
             return res.status(400).json({type:'error',message:'Category is unlisted, so add category offer to this category is not possible'})
         }
-        res.render('addCategoryOffer',{category});
+        const notifications = await Notification.find({notificationType:'returnRequest'}).populate('orderId').sort({createdOn:-1});
+        res.render('addCategoryOffer',{category,notifications});
     } catch (error) {
         console.error('Error while loading add category offer page : ',error);
         res.status(500).send('Internal Server Error')
@@ -158,47 +158,11 @@ const addCategoryOffer = async (req, res) => {
             }
         }
     } catch (error) {
-        console.error('Error in addCategoryOffer: ', error);
+        
         res.status(500).json({ type:'error', message: 'Internal Server Error' });
     }
 };
 
-
-
-// const removeCategoryOffer = async(req,res) => {
-//     try {
-//         const {categoryId} = req.body;
-//         const category = await Category.findById(categoryId).populate('categoryOffer');
-
-//         if(!categoryId){
-//             return res.status(404).json({type:'error',message:'CategoryId not found'})
-//         }
-//         const findProduct = await Product.find({category:category._id});
-
-//         const removedOffer = await Offer.findByIdAndDelete(category.categoryOffer);
-//         if (!category) {
-//             return res.status(404).json({type:'error', message: 'Category not found.' });
-//         }
-//         const percentage = category.categoryOffer;
-//         const products = await Product.find({category:category._id});
-
-//         if(products.length > 0){
-//             for(const product of products){
-//                 product.salePrice += Math.floor(product.regularPrice*(percentage/1000));
-                
-//                 await product.save();
-//             }
-//         }
-
-        
-//         category.categoryOffer = null;
-//         await category.save();
-//         res.status(200).json({ type: 'success', message: 'Offer removed successfully.',removedOffer });
-
-//     } catch (error) {
-//         res.status(500).json({type:'error',message:'Internal Server Error'});
-//     }
-// }
 const removeCategoryOffer = async (req, res) => {
     try {
         const { categoryId } = req.body;
@@ -215,7 +179,7 @@ const removeCategoryOffer = async (req, res) => {
         console.log('Category details:', findCategory);
 
         if (findCategory.categoryOffer) {
-            const products = await Product.find({ category: categoryId });
+            const products = await Product.find({ category: categoryId }).populate('reviews');;
 
             products.forEach(async (product) => {
                 let discount = 0;
@@ -226,17 +190,12 @@ const removeCategoryOffer = async (req, res) => {
                     discount = parseFloat(findCategory.categoryOffer.value);
                 }
 
-                console.log('Calculated discount for product', product._id, ':', discount);
-
-                // Update the salePrice
-                product.salePrice = Math.ceil((parseFloat(product.salePrice) + discount)); // Round up to the nearest integer
-                console.log('Updated salePrice for product', product._id, ':', product.salePrice);
+                product.salePrice = Math.ceil((parseFloat(product.salePrice) + discount)); 
 
                 product.categoryOffer = null;
                 await product.save();
             });
 
-            // Store offer ID before nullifying
             const offerId = findCategory.categoryOffer._id;
 
             findCategory.categoryOffer.value = 0;
@@ -284,7 +243,8 @@ const getEditCategory = async(req,res) => {
         if (!category) {
             return res.status(404).send('Category not found');
         }
-        res.render('edit-category',{category});
+        const notifications = await Notification.find({notificationType:'returnRequest'}).populate('orderId').sort({createdOn:-1});
+        res.render('edit-category',{category,notifications});
     } catch (error) {
         console.error(error);
         res.status(500).send('Internal Server Error')
@@ -343,37 +303,7 @@ const removeCategory = async(req,res) => {
     }
 }
 
-const searchCategory = async (req, res) => {
-  try {
-    const searchString = req.body.query;
-    let page =1;
-    if(req.query.page){
-      page = req.query.page;
-    }
-    const limit = 3;
 
-    const categories = await Category.find({
-      name:{$regex:searchString,$options:"i"}
-    })
-    .limit(limit*1)
-    .skip((page-1)*limit)
-    .exec();
-
-    const count = await Category.find({
-      name:{$regex:searchString,$options:"i"}
-    }).countDocuments();
-    
-    res.render("category", {
-        cat:categories,
-        totalPages: Math.ceil(count / limit),
-        currentPage: page,
-      });
-    console.log(categories);
-  } catch (error) {
-    console.log('Error while searching user : ', error);
-    res.status(500).send('Internal Server Error');
-  }
-};
 
 module.exports = {
     categoryInfo,
@@ -387,5 +317,5 @@ module.exports = {
     getEditCategory,
     editCategory,
     removeCategory,
-    searchCategory
+    
 }

@@ -5,7 +5,7 @@
         <div class="col-lg-7">
             <div class="btn" type="button" id="couponBtn">Apply Coupon</div>
                 <div id="couponDiv" style="display:none;">
-                    
+
                     <div id="couponFormContainer">
                         <input type="text" id="couponCodeInput" name="couponCode">
                         <div type="button" id="applyCouponBtn" class="btn btn-sm" style="border-radius:5px ; background-color: #e7ab3c;">Add Coupon</div>
@@ -43,7 +43,6 @@
                                     <a href="/orderEditAddress?id=<%=address._id%>" style="color: #e7ab3c;">Edit Address</a>
                                 </label>
                             
-
                             
                             </div>
                           
@@ -110,7 +109,7 @@
                         <p><%=item.productId.regularPrice%></p>
                     </div>
                     <% }) %>
-                    
+
                     <hr class="mt-0">
                     <% if(cart && cart.items.length > 0){ %>
                     <div class="d-flex justify-content-between mb-3 pt-1">
@@ -139,25 +138,33 @@
                     <h4 class="font-weight-semi-bold m-0">Payment</h4>
                 </div>
                 <div class="card-body" >
-                    
+
                         <div class="form-check" id="payRadio1">
                             <input class="form-check-input1" type="radio" name="selectedPayment" value="PayPal" id="flexRadioDefault1">
                             <label class="form-check-label" for="flexRadioDefault1">
                               Pay with PayPal
                             </label>
-                            <a href="" style="text-decoration: none;"><button id="payPalBtn" style="display: none;background-color: #e7ab3c;border-radius: 10px;" class="btn" onclick="startPayPal()" ><h5>Continue</h5></button></a>
+                            <a href="" style="text-decoration: none;"><button id="payPalBtn" style="display: none;background-color: #e7ab3c;border-radius: 10px;" class="btn" onclick="startPayPal()" ><h5>Pay Now</h5></button></a>
                         </div>
-                    
-                    
+
+
                         <div class="form-check" id="payRadio2">
                             <input class="form-check-input2" type="radio" name="selectedPayment" value="COD" id="flexRadioDefault2" >
                             <label class="form-check-label" for="flexRadioDefault2">
                               CASH ON DELIVERY
                             </label>
-                            <button type="submit" id="codBtn" class="btn" style="display: none;background-color: #e7ab3c;border-radius: 10px;"><h5>Continue shopping</h5></button>
+                            <button type="submit" id="codBtn" class="btn" style="display: none;background-color: #e7ab3c;border-radius: 10px;"><h5>Continue</h5></button>
                         </div>
-                        <!-- <button id="payPalBtn" class="btn" style="display: none;margin-left: 25rem;background-color: #e7ab3c;border-radius: 10px;" onclick="startPayPal()" ><h5>Pay Now</h5></button> -->
-                        <!-- <button type="submit" id="codBtn" style="display: none;margin-left: 25rem;background-color: #e7ab3c;border-radius: 10px;" class="btn" ><h5>Continue</h5></button> -->
+
+                        <div class="form-check" id="payRadio2">
+                            <input class="form-check-input3" type="radio" name="selectedPayment" value="Wallet" id="flexRadioDefault3" >
+                            <label class="form-check-label" for="flexRadioDefault3">
+                              WALLET
+                            </label>
+                            <p style="display:none" id="walletBalanceAmount" class="wallet-balance">Balance Amount : <%=user.wallet.balance%></p>
+                            <button type="submit" id="walletBtn" class="btn" style="display: none;background-color: #e7ab3c;border-radius: 10px;"><h5>Pay Now</h5></button>
+                        </div>
+                        
                         <div class="error-message" id="payment-error"></div>
                 </div>
             </div>
@@ -165,192 +172,23 @@
         </form>
     </div>
 </div>
-<!-- <div class="container">
-    <div class="row">
-        <div class="col-md-12">
-            <div class="border-info mx-3 my-3 px-3 py-3">
-                <button type="button" id="couponBtn" class="px-2 py-2">Apply Coupon</button>
-                <div id="couponDiv" style="display:none;">
-                    
-                    <div id="couponFormContainer">
-                        <input type="text" id="couponCodeInput" name="couponCode">
-                        <button type="button" id="applyCouponBtn" class="text-white px-2 py-2" style="border-radius:5px ; background-color: #04625f;">Add Coupon</button>
-                        <p id="couponMessage" style='color:red'></p>
-                    </div>
-                </div>
-                <div id="appliedCouponDiv" style="display:none;margin-top:10px;">
-                    <p id="appliedCouponText"></p>
-                    <button type="button" id="removeCouponBtn" class="btn btn-danger">Remove Coupon</button>
-                </div>
-                <button id="showCouponsDiv"class="px-2 py-2" onclick="openCoupons()">Show all Coupons</button>
-                <div class="availableCoupons">
-                    <h2 class="availableCoupons-title">Available Coupons</h2>
-                    <div class="availableCoupons-content">
-                        <div class="availableCoupons-box px-3 py-3" style="display: flex;flex-direction: column;">
-                            <% if (coupons && coupons.length > 0) { %>
-                                <% coupons.forEach(coupon => { %>
-                                    <% if(coupon.isActive && new Date() < coupon.expireOn){ %>
-                                        <div class="px-2 py-2" style="border-radius:5px;background-color: #04625f;width:100%">
-                                        <div class="coupon-box">
-                                            <div class="availableCoupon-title"><%=coupon.name%></div>
-                                            <div class="availableCoupon-discount">
-                                                <% if(coupon.discountType === 'Percentage'){ %>
-                                                    <%=coupon.discount%>% coupon discount (minimum price : <%=coupon.minimumPrice%>)
-                                                 <% }else{ %>
-                                                   Rs<%=coupon.discount%> coupon discount (minimum price : <%=coupon.minimumPrice%>)
-                                                 <% } %>
-                                            </div>
-                                        </div>
-                                        <div class="copyCode">
-                                            <div class="availableCoupon-expired" style="display: flex;flex-direction: column;font-size:2rem;color: white;">
-                                                <div><h4 class="availableCoupon-expired-date" style="font-size: 1rem;">valid till <%=coupon.expireOn.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })%></h4></div>
-                                                <div style="display: flex;flex-direction: row;">
-                                                    <div class="couponCode px-3 py-1" style="display: flex;align-items: center;background-color: white;color:black;font-size: 1rem; border-top-left-radius: 5px;border-bottom-left-radius: 5px;"><%=coupon.code%></div>
-                                                    <div class="btn btn-info copy-btn px-3 py-1" style="display: flex;align-items: center;border-top-right-radius: 5px;border-bottom-right-radius: 5px;" data-code="<%=coupon.code%>">COPY</div>
-                                                </div>
-                                                <p id="copyMessage" style='color:white'></p>
-                                            </div>
-                                        </div>
-                                        </div>
-                                    <% } %>
-                                <% }) %>
-                            <% }else{ %>
-                                <h4 colspan="4">Currently no coupons available</h4>
-                            <% } %>
-                        </div>
-                    </div>
-                    <i class="bx bx-x" id="close-coupon" style="color:black;margin-top:-1rem;margin-right: -0.75rem;" onclick="closeCoupons()"></i>
-                </div>
-                
-            </div>
-          <form method = 'POST' action="/buy" id="placeOrderForm">
-            <div class="card my-3" >
-
-                <div class="card-header text-white" style="background-color: #076a66;">DELIVERY ADDRESS</div>
-                
-                <div class="card-body" >
-                    <% if(userAddress){ %>
-                    <% userAddress.address.forEach((address,index) => { %>
-                    <div class="form-check my-3" style="border: 1px solid #076a66;">
-                        <div class="mx-3 px-3 py-3" id="radioContainer" style="display: flex;flex-direction: column;">
-                            <input class="form-check-input" type="radio" name="selectedAddress" value="<%= address._id %>" id="flexRadioDefault2" <%= index === 0 ? 'checked' : '' %> >
-                            <label class="form-check-label" for="flexRadioDefault2">
-                                <div class="card-header text-center" style="font-family: monospace; font-size: larger; border:1px solid #42ada8">
-                                    <h5 class=""><%=address.addressType%></h5>
-                                </div>
-                                <div class="card-body">
-                                    <address>
-                                        <%=address.name%><br/>
-                                        <%=address.city%><br/>
-                                        <%=address.landMark%><br/>
-                                        <%=address.state%>
-                                    </address>
-                                    <p><%=address.pincode%></p>
-                                    <p><%=address.phone%></p>
-                                    <p><%=address.altPhone%></p>
-                                </div>
-                                <a href="/orderEditAddress?id=<%=address._id%>">Edit</a>
-                            </label>
-                        
-                            <button id="deliverBtn" class="btn text-white w-50" style="display:none;background-color: #076a66;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;"><h5>Deliver Here</h5></button>
-                        
-                        </div>
-                      
-                    </div>
-                    <% }) %>
-                    <% } %>
-                    <div class=" px-3 py-3" style="border: 1px solid #076a66; border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;">
-                    <a href="/orderAddAddress"><h3 class="text-center text-white" style="text-decoration: none; border-bottom-left-radius: 15px; border-bottom-right-radius: 15px;background-color: #42ada8;" >ADD A NEW ADDRESS</h3></a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card" id="orderDiv" >
-                <div class="card-header text-white "style="background-color: #076a66;">ORDER SUMMARY</div>
-                
-                <% cart.items.forEach(item => { %>
-                <div class="card-body mx-3 my-3" style=" display: flex;flex-direction: row; border: 1px solid #076a66;">
-                    <div >
-                        <img class="img-fluid" style="max-width: 125px;"  src="/uploads/re-image/<%=item.productId.productImage[0]%>" alt="">
-                    </div>
-                    <div class="px-3">
-                        <h2><%=item.productId.productName%></h2>
-                        <p><%=item.productId.description%></p>
-                        <h3><%=item.productId.regularPrice%></h3>
-
-                    </div>
-                    
-                </div>
-                <% }) %>
-                <button id="orderBtn"  class="btn text-white w-50 h-25" style="background-color: #076a66;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;"><h5>Continue</h5></button>
-            </div>
-            
-
-            <div class="card" style="display: none;" id="priceDiv">
-                <div class="cardheader text-white " style="background-color: #076a66;">PRICE DETAILS</div>
-                <div class="card-body mx-3 my-3" style="display: flex;flex-direction: column; border: 1px solid #076a66;">
-                    <h3>Total Price</h3>
-                        
-                        <p class="total-price">Price : Rs (<%= cart ? cart.items.length : 0 %> items): <%= cart ? cart.items.reduce((acc, item) => acc + item.productId.regularPrice * item.quantity, 0) : 0 %></p>
-                        <p class="discount-price">Total discount : <%= discount %></p>
-                        <p>Delivery Charge : Free</p>
-                        <p>--------------------------</p>
-                        <p class="final-price">Total: <%= finalAmount %></p>
-                    <button id="priceBtn" class="btn text-white w-50 h-25" style="background-color: #076a66;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;"><h5>Continue</h5></button>
-                </div>
-            </div>
-            
-            
-            <div class="card"  id="payDiv">
-                <div class="card-header text-white " style="background-color: #076a66;">PAYMENT OPTIONS</div>
-                <div class="card-body mx-3 my-3" style=" display: flex;flex-direction: column; border: 1px solid #076a66;">
-                    <div class="form-check" id="payRadio1">
-                        <input class="form-check-input1" type="radio" name="selectedPayment" value="PayPal" id="flexRadioDefault1">
-                        <label class="form-check-label" for="flexRadioDefault1">
-                          Pay with PayPal
-                        </label>
-                        <a href="" style="text-decoration: none;"><button id="payPalBtn" class="btn text-white w-50" onclick="startPayPal()" style="display:none;background-color: #076a66;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;"><h5>Continue</h5></button></a>
-                    </div>
-                    
-                    <div class="form-check" id="payRadio2">
-                        <input class="form-check-input2" type="radio" name="selectedPayment" value="COD" id="flexRadioDefault2" >
-                        <label class="form-check-label" for="flexRadioDefault2">
-                          CASH ON DELIVERY
-                        </label>
-                        <button type="submit" id="codBtn" class="btn text-white w-50" style="display:none;background-color: #076a66;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px;"><h5>Confirm Order</h5></button>
-                    </div>
-                      
-                </div>
-            </div>
-            
-         </form>
-        </div>
-        
-    </div>
-</div> -->
-
 
 <script>
 let availableCoupons = document.querySelector('.availableCoupons');
-
 function openCoupons(){
     availableCoupons.classList.add('active');
 }
-
 function closeCoupons(){
     availableCoupons.classList.remove('active');
 }
 document.getElementById('placeOrderForm').addEventListener('submit', (e) => {
     const selectedAddress = document.querySelector('input[name="selectedAddress"]:checked');
     const selectedPayment = document.querySelector('input[name="selectedPayment"]:checked');
-
     if (!selectedAddress || !selectedPayment) {
         e.preventDefault(); // Prevent form submission
         
     }
 });
-
-
 document.addEventListener('DOMContentLoaded', () => {
     const couponBtn = document.getElementById('couponBtn');
     const couponDiv = document.getElementById('couponDiv');
@@ -389,21 +227,17 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
     
-
     couponBtn.addEventListener('click', () => {
         couponDiv.style.display = 'block';
         couponBtn.style.display = 'none';
     });
-
     applyCouponBtn.addEventListener('click', async () => {
         const couponCode = couponCodeInput.value.trim();
-
         if (!couponCode) {
             couponMessage.textContent = 'Please enter a coupon code';
             couponMessage.style.color = 'red';
             return;
         }
-
         try {
             const response = await fetch('/applyCoupon', {
                 method: 'POST',
@@ -412,18 +246,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({ couponCode })
             });
-
             const data = await response.json();
-
             if (!response.ok) {
                 couponMessage.textContent = data.message;
                 couponMessage.style.color = 'red';
                 return;
             }
-
             couponMessage.textContent = data.message;
             couponMessage.style.color = 'green';
-
             const { name, discountType, discount, discountAmount, finalAmount} = data.couponDetails;
             
             const currentTotal = parseFloat(totalPriceElement.textContent);
@@ -439,18 +269,15 @@ document.addEventListener('DOMContentLoaded', () => {
             // Display applied coupon
             appliedCouponText.textContent = `Coupon applied: ${name} [ ${discount} discount off]`;
             appliedCouponDiv.style.display = 'block';
-
             // Hide the coupon form
             couponDiv.style.display = 'block';
             couponBtn.style.display = 'block';
-
         } catch (err) {
             console.error('Error applying coupon:', err);
             couponMessage.textContent = 'Error applying coupon. Please try again later.';
             couponMessage.style.color = 'red';
         }
     });
-
     removeCouponBtn.addEventListener('click', async() => {
         try {
             const response = await fetch('/removeCoupon', {
@@ -459,32 +286,25 @@ document.addEventListener('DOMContentLoaded', () => {
                     'Content-Type': 'application/json'
                 }
             });
-
             const data = await response.json();
-
             if (!response.ok) {
                 throw new Error(data.message);
             }
-
             
             totalPriceElement.textContent = `${data.updatedPrices.total}`;
             discountPriceElement.textContent = `${data.updatedPrices.discount}`;
             finalPriceElement.textContent = `${data.updatedPrices.final}`;
-
             
             appliedCouponDiv.style.display = 'none';
             couponBtn.style.display = 'block';
             couponCodeInput.value = '';
             couponMessage.textContent = '';
-
         } catch (err) {
             console.error('Error removing coupon:', err);
             couponMessage.textContent = 'Error removing coupon. Please try again.';
             couponMessage.style.color = 'red';
         }
-
     });
-
     const radioContainers = document.querySelectorAll('#radioContainer');
     const deliverBtns = document.querySelectorAll('#deliverBtn');
     const orderDiv = document.getElementById('orderDiv');
@@ -493,33 +313,39 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const payDiv = document.getElementById('payDiv');
     
-
     const radioInput1 = document.querySelector('.form-check-input1');
     const radioInput2 = document.querySelector('.form-check-input2');
-
+    const radioInput3 = document.querySelector('.form-check-input3');
     const upiBtn = document.getElementById('upiBtn');
     const codBtn = document.getElementById('codBtn');
+    const walletBtn = document.getElementById('walletBtn')
     const payPalBtn = document.getElementById('payPalBtn');
+    const walletBalanceAmount = document.getElementById('walletBalanceAmount');
     const paymentError = document.getElementById('payment-error');
     const changePaymentButtons = () => {
         if (radioInput1.checked) {
             payPalBtn.style.display = 'block'; 
             codBtn.style.display = 'none';
+            walletBtn.style.display = 'none'
             paymentError.style.display = 'none';
         } else if (radioInput2.checked) {
             payPalBtn.style.display = 'none';
             codBtn.style.display = 'block';   
+            walletBtn.style.display = 'none'
             paymentError.style.display = 'none' 
+        } else if (radioInput3.checked) {
+            payPalBtn.style.display = 'none';
+            codBtn.style.display = 'none';
+            walletBtn.style.display = 'block';
+            walletBalanceAmount.style.display = 'block';
+            paymentError.style.display = 'none';
         }
     };
-
     radioInput1.addEventListener('change', changePaymentButtons);
     radioInput2.addEventListener('change', changePaymentButtons);
-    
-
+    radioInput3.addEventListener('change', changePaymentButtons);
     
     const form = document.getElementById('placeOrderForm');
-
     
     form.addEventListener('submit', (e) => {
         const selectedAddress = document.querySelector('input[name="selectedAddress"]:checked');
@@ -541,18 +367,23 @@ document.addEventListener('DOMContentLoaded', () => {
             
         }else{
             const finalAmount = parseFloat(document.querySelector('.final-price').innerText.replace(/[^\d.-]/g, ''));
+            const walletBalance = parseFloat(document.querySelector('.wallet-balance').innerText.replace(/[^\d.-]/g, ''));
             if(selectedPayment.value === 'COD' && finalAmount > 1000){
                 paymentError.style.display = 'block';
                 paymentError.style.color = 'red';
                 paymentError.innerText = 'COD is not allowed for orders above Rs 1000';
-                 e.preventDefault();
+                e.preventDefault();
+            }
+            if(selectedPayment.value === 'Wallet' && finalAmount > walletBalance){
+                paymentError.style.display = 'block';
+                paymentError.style.color = 'red';
+                paymentError.innerText = 'Wallt Balance is less than the total amount. Please try again with any other payment method';
+                e.preventDefault();
             }
            
         }
     });
 });
-
-
 </script>
 
 <%- include('../../views/partials/user/footer') %>

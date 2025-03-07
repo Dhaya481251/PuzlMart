@@ -1,11 +1,10 @@
 <%- include('../../views/partials/admin/header') %>
 <main id="main" class="main">
-
     <div class="pagetitle">
       <h1>Add New Coupon</h1>
       <nav>
         <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="/admin">Home</a></li>
+
           <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
           <li class="breadcrumb-item"><a href="/admin/coupons">Coupons</a></li>
           <li class="breadcrumb-item active"><a href="/admin/addCoupon">Add Coupon</a></li>
@@ -20,7 +19,7 @@
   <div class="card">
     <div class="card-body">
       <h5 class="card-title">Add New Coupon</h5>
-  
+
       <form class="row g-3"  onsubmit="validateAndSubmit(event)">
         <div class="col-md-6">
           <div class="form-floating">
@@ -84,61 +83,16 @@
   </div>
   </div>
   </section>
-  
+
   </main>
-  <footer id="footer" class="footer">
-  <div class="copyright">
-  &copy; Copyright <strong><span>Puzl Mart</span></strong>. All Rights Reserved
-  </div>
-  </footer>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
   <script>
-  document.addEventListener("DOMContentLoaded", function () {
-      const toggleButton = document.querySelector(".toggle-sidebar-btn");
-      const body = document.body;
-    
-      if (toggleButton) {
-        toggleButton.addEventListener("click", function () {
-          body.classList.toggle("toggle-sidebar");
-        });
-      }
-  
-      const toggleLinks = document.querySelectorAll(".nav-link[data-bs-toggle='collapse']");
-  
-      toggleLinks.forEach((link) => {
-        link.addEventListener("click", function () {
-          const chevronIcon = this.querySelector(".bx");
-  
-  
-            if (this.classList.contains("show")) {
-              setTimeout(() => {
-              chevronIcon.classList.remove("bx-chevron-up");
-              chevronIcon.classList.add("bx-chevron-down");
-            }, 100); 
-            } else {
-              setTimeout(() => {
-              chevronIcon.classList.remove("bx-chevron-down");
-              chevronIcon.classList.add("bx-chevron-up");
-            }, 100); 
-            }
-           
-        });
-      });
-  });
   
   function validateAndSubmit(event) {
     event.preventDefault();
-
     if (!validateForm()) return;
-
     const form = event.target;
     const formData = Object.fromEntries(new FormData(form));
-
     fetch('/admin/addCoupon', {
         method: 'POST',
         headers: {
@@ -183,8 +137,6 @@
             });
         });
 }
-
-  
   
       function validateForm(){
   
@@ -226,6 +178,7 @@
                 displayErrorMessage('expireOn-error','Expiration date cannot be in the past');
                 isValid = false;
             }
+            
           }
   
           if(!discountType){
@@ -265,166 +218,4 @@
          
       }
   </script>
-  </body>
-  </html>
-<!-- <div class="header" id="addCoupon">
-    <h2 class="text-center">Add New Coupon</h2>
-    <form action="/admin/addCoupon" method="POST" onsubmit="validateAndSubmit(event)">
-        <label class="form-label">Coupon Name</label>
-        <input type="text" class="form-control" name="name" />
-        <div id="name-error" class="error-message"></div>
-        
-        <label class="form-label">Coupon Code</label>
-        <input type="text" class="form-control" name="code" />
-        <div id="code-error" class="error-message"></div>
-    
-        <label class="form-label">Minimum Price</label>
-        <input type="number" class="form-control" name="minimumPrice" />
-        <div id="minimumPrice-error" class="error-message"></div>
-    
-        <label class="form-label">Expires On</label>
-        <input type="date" class="form-control" name="expireOn" />
-        <div id="expireOn-error" class="error-message"></div>
-
-        <label class="form-label" for="">Discount Type</label>
-        <select name="discountType" class="form-control" id="">
-            <option value="Percentage">Percentage</option>
-            <option value="Flat">Flat</option>
-        </select>
-        <div id="discountType-error" class="error-message"></div>
-
-        <label class="form-label" for="">Discount</label>
-        <input type="number" class="form-control" name="discount">
-        <div id="discount-error" class="error-message"></div>
-        
-        <label class="form-label" for="">Usage Limit (Max uses per user):</label>
-        <input type="number" class="form-control" id="usageLimit" name="usageLimit" >
-        <div id="usageLimit-error" class="error-message"></div>
-
-        <button type="submit" class="px-2 py-2 my-2 text-white" style="background-color: #04625f;border-radius: 5px;">Save</button>
-    </form>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-<script>
-function validateAndSubmit(event) {
-    event.preventDefault();
-
-    if (!validateForm()) return;
-
-    const form = event.target;
-    const formData = Object.fromEntries(new FormData(form));
-
-    fetch(form.action, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('HTTP error: ' + response.status);
-            }
-            return response.json();
-        })
-        .then(data => {
-            Swal.fire({
-                icon: data.type,
-                title: data.message,
-                showConfirmButton: true,
-                timer: 1500,
-            }).then(() => {
-                if (data.type === 'success') {
-                    window.location.href = '/admin/coupons';
-                }
-            });
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Something went wrong!',
-                showConfirmButton: true,
-                timer: 1500,
-            });
-        });
-}
-
-
-    function validateForm(){
-
-        clearErrorMessages();
-        const name = document.getElementsByName('name')[0].value;
-        const code = document.getElementsByName('code')[0].value;
-        const minimumPrice = document.getElementsByName('minimumPrice')[0].value;
-        const expireOn = document.getElementsByName('expireOn')[0].value;
-        const discountType = document.getElementsByName('discountType')[0].value;
-        const discount = document.getElementsByName('discount')[0].value;
-        const usageLimit = document.getElementsByName('usageLimit')[0].value;
-        let isValid = true;
-
-        if(name === ""){
-            displayErrorMessage('name-error','Please enter a coupon name');
-            isValid = false;
-        }
-
-        
-        if(code === ""){
-            displayErrorMessage('code-error','Please enter a coupon code');
-            isValid = false;
-        }
-if (!/^\d+(\.\d{1,2})?$/.test(minimumPrice) || parseFloat(minimumPrice) < 0) {
-    displayErrorMessage('minimumPrice-error', 'Please enter a valid non-negative minimum price.');
-    isValid = false;
-}
-
-
-
-
-        if(expireOn === ""){
-            displayErrorMessage('expireOn-error','Please enter a expired date of coupon');
-            isValid = false;
-        }
-
-        if(!discountType){
-        displayErrorMessage('discountType-error','Please select a discount type.');
-        isValid = false;
-    }
-
-    if(!/^\d+(\.\d{1,2})?$/.test(discount) || parseFloat(discount) <= 0){
-        displayErrorMessage('discount-error','Please enter a valid discount');
-        isValid = false;
-    }
-
-    if(!/^\d+(\.\d{1,2})?$/.test(usageLimit) || parseFloat(usageLimit) <= 0){
-        displayErrorMessage('usageLimit-error','Please enter a usageLimit');
-        isValid = false;
-    }
-        
-        return isValid;
-    }
-
-    
-
-    function displayErrorMessage(elementId, message) {
-        var errorElement = document.getElementById(elementId);
-        errorElement.innerText = message;
-        errorElement.style.display = "block";
-    }
-    
-    
-    function clearErrorMessages() {
-        const errorElements = document.getElementsByClassName('error-message');
-        Array.from(errorElements).forEach(element => {
-            element.innerText = '';
-            element.style.display = 'none';
-        });
-       
-    }
-</script>
-
-</body>
-</html> -->
+  <%- include("../../views/partials/admin/footer") %>

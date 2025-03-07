@@ -26,7 +26,6 @@ const productSchema = new Schema({
     },
     salePrice:{
         type:Number,
-        // required:true
     },
     productOffer:{
         type:Schema.Types.ObjectId,
@@ -46,27 +45,10 @@ const productSchema = new Schema({
         type:Number,
         default:null
     },
-    reviews:[
-        {
-            userId:{
-                type:Schema.Types.ObjectId,
-                ref:'User'
-            },
-            review:{
-                type:String
-            },
-            rating:{
-                type:Number,
-                required:true,
-                min:1,
-                max:5
-            },
-            createdAt:{
-                type:Date,
-                default:Date.now
-            }
-        }
-    ],
+    reviews:{
+        type:Schema.Types.ObjectId,
+        ref:'Review'
+    },
     averageRating:{
         type:Number,
         default:0
@@ -94,7 +76,7 @@ const productSchema = new Schema({
     },
     status:{
         type:String,
-        enum:['Available','Out of stock','Discontinued'],
+        enum:['Available','Out of stock'],
         default:'Available'
     },
     featured:{

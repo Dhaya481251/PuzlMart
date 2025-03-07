@@ -1,10 +1,33 @@
 const Order = require('../../models/orderSchema'); 
-
+const User = require('../../models/userSchema');
+const Notification = require('../../models/notificationSchema');
 
 const listOrders = async (req, res) => {
     try {
-        const orders = await Order.find().populate('items.productId').sort({createdOn:-1});
-        res.render('orders',{orders});
+        const page = parseInt(req.query.page) || 1;
+        const limit = 10;
+        const skip = (page-1)*limit;
+
+
+        const orders = await Order.find()
+        .populate('items.productId')
+        .sort({createdOn:-1})
+        .skip(skip)
+        .limit(limit)
+        .exec();
+
+        const totalOrders = await Order.countDocuments();
+        const totalPages = Math.ceil(totalOrders/limit);
+
+        const notifications = await Notification.find({notificationType:'returnRequest'}).populate('orderId').sort({createdOn:-1});
+
+        res.render('orders',{
+            orders,
+            currentPage:page,
+            totalPages:totalPages,
+            totalOrders:totalOrders,
+            notifications
+        });
     } catch (error) {
         console.error('Error fetching orders: ', error);
         res.status(500).send('Internal Server Error');
@@ -68,66 +91,80 @@ const moreDetails = async(req,res) => {
     try{
         
         const id = req.params.id;
-        const order = await Order.findById(id)
-
+        const order = await Order.findById(id).populate('items.productId')
+        const notifications = await Notification.find().populate('orderId').sort({createdOn:-1});
+        
         if(!order){
         return  res.status(404).send('Order not found');
         }
        
         
-        res.render('orderMoreDetails',{orders:order});
+        res.render('orderMoreDetails',{orders:order,notifications:notifications});
     }catch(error){
         console.error('error while loading order details',error);
         res.status(500).send('Internal server error');
     }
 }
 
-const searchOrder = async (req, res) => {
-  try {
-    const searchString = req.body.query;
-    let page =1;
-    if(req.query.page){
-      page = req.query.page;
+const handleReturnRequest = async(req,res) => {
+    try {
+        const id = req.params.id;
+        const {action} = req.body;
+        const order = await Order.findById({_id:id});
+        if(!order){
+            return res.status(404).json({message:'Order not found'});
+        }
+
+        if(action === 'approve'){
+            order.returnStatus = 'Accepted';
+            order.returnProcedureStartDate = new Date();
+            order.status = 'Returned';
+            await order.save();
+
+            const notification = new Notification({
+                userId:order.userId,
+                orderId:order._id,
+                NotificationMessage:'Return request accepted. Return procedure starts today. The product will be collected within 2 days and the amount will be credited to your wallet today.',
+                notificationType:'returnApproval'
+            });
+            await notification.save();
+
+            if(order.paymentStatus === 'Paid'){
+                const user = await User.findById(order.userId);
+                user.wallet.balance = user.wallet.balance + order.finalAmount || 0;
+                const newTransaction = {
+                    transactionsType:'credit',
+                    amount: order.finalAmount,
+                    reason:'Order Return Refund',
+                    date:new Date()
+                }
+                user.wallet.transactions.push(newTransaction);
+                await user.save();
+            }
+            res.status(200).json({ message: 'Return request approved and refund processed', type: 'success' });
+        }else if(action === 'decline'){
+            order.returnStatus = 'Declined';
+            await order.save();
+            const notification = new Notification({
+                userId:order.userId,
+                orderId:order._id,
+                NotificationMessage:'Return request declined.This product cannot be returned for a reason.',
+                notificationType: 'returnDecline'
+            });
+            await notification.save();
+
+            res.status(200).json({ message: 'Return request declined', type: 'success' });
+        }
+    } catch (error) {
+        console.error ('Error while approving or declining return request : ',error);
+        res.status(500).send('Internal Server Error');
     }
-    const limit = 3;
-
-    const orders = await Order.find({
-      $or:[
-        {deliveryDate:{$regex:searchString,$options:"i"}},
-        {paymentMethod:{$regex:searchString,$options:"i"}},
-        {paymentStatus:{$regex:searchString,$options:"i"}},
-        {status:{$regex:searchString,$options:"i"}}
-      ]
-    })
-    .limit(limit*1)
-    .skip((page-1)*limit)
-    .exec();
-
-    const count = await Order.find({
-      $or:[
-        {deliveryDate:{$regex:searchString,$options:"i"}},
-        {paymentMethod:{$regex:searchString,$options:"i"}},
-        {paymentStatus:{$regex:searchString,$options:"i"}},
-        {status:{$regex:searchString,$options:"i"}}
-      ]
-    }).countDocuments();
-    
-    res.render("orders", {
-        data:brands,
-        totalPages: Math.ceil(count / limit),
-        currentPage: page,
-      });
-    console.log(orders);
-  } catch (error) {
-    console.log('Error while searching user : ', error);
-    res.status(500).send('Internal Server Error');
-  }
-};
+}
 
 module.exports = {
     listOrders,
     changeOrderStatus,
     cancelOrder,
     moreDetails,
-    searchOrder
+    handleReturnRequest
 };
