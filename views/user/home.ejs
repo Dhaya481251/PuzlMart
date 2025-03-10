@@ -1,179 +1,176 @@
-
 <%- include("../../views/partials/user/header") %>
-    <!--head image-->
-    <section class="hero-section">
-        <div class="hero-items owl-carousel">
-            <div class="single-hero-items set-bg" data-setbg="images/img1.jpg">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-lg-5">
-                            <span>Puzzles</span>
-                            <h1 class="text-white">Puzzle fun for all ages</h1>
-                            <p class="text-white">Create lasting memories with our puzzles, perfect for family game nights!</p>
-                            <a href="/products" class="primary-btn">Explore Puzzles</a>
-                        </div>
-                    </div>
-                    <div class="off-card">
-                        <h2>Grand <span>Sale</span></h2>
+<section class="hero-section">
+    <div class="hero-items owl-carousel">
+        <div class="single-hero-items set-bg" data-setbg="/images/img1.jpg">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-5">
+                        <span>Puzzles</span>
+                        <h1>Puzzle fun for all ages</h1>
+                        <p>Create lasting memories with our puzzles, perfect for family game nights!</p>
+                        <a href="/products" class="primary-btn">Explore Puzzles</a>
                     </div>
                 </div>
-            </div>
-            <div class="single-hero-items set-bg" data-setbg="images/background1.jpg">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-lg-5">
-                            <span>Puzzles</span>
-                            <h1 class="text-white">Puzzle fun for all ages</h1>
-                            <p class="text-white">Create lasting memories with our puzzles, perfect for family game nights!</p>
-                            <a href="/products" class="primary-btn">Explore Puzzles</a>
-                        </div>
-                    </div>
-                    <div class="off-card">
-                        <h2>Grand <span>Sale</span></h2>
-                    </div>
-                </div>
-            </div>
-            <div class="single-hero-items set-bg" data-setbg="images/background2.jpg">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-lg-5">
-                            <span>Puzzles</span>
-                            <h1 class="text-white">Puzzle fun for all ages</h1>
-                            <p class="text-white">Create lasting memories with our puzzles, perfect for family game nights!</p>
-                            <a href="/products" class="primary-btn">Explore Puzzles</a>
-                        </div>
-                    </div>
-                    <div class="off-card">
-                        <h2>Grand <span>Sale</span></h2>
-                    </div>
-                </div>
-            </div>
-            <div class="single-hero-items set-bg" data-setbg="images/background3.jpg">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-lg-5">
-                            <span>Puzzles</span>
-                            <h1 class="text-white">Puzzle fun for all ages</h1>
-                            <p class="text-white">Create lasting memories with our puzzles, perfect for family game nights!</p>
-                            <a href="/products" class="primary-btn">Explore Puzzles</a>
-                        </div>
-                    </div>
-                    <div class="off-card">
-                        <h2>Grand <span>Sale</span></h2>
-                    </div>
-                </div>
-            </div>
-            <div class="single-hero-items set-bg" data-setbg="images/background4.jpg">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-lg-5">
-                            <span>Puzzles</span>
-                            <h1 class="text-white">Puzzle fun for all ages</h1>
-                            <p class="text-white">Create lasting memories with our puzzles, perfect for family game nights!</p>
-                            <a href="/products" class="primary-btn">Explore Puzzles</a>
-                        </div>
-                    </div>
-                    <div class="off-card">
-                        <h2>Grand <span>Sale</span></h2>
-                    </div>
+                <div class="off-card">
+                    <h2>Grand <span>Sale</span></h2>
                 </div>
             </div>
         </div>
-    </section>
-
-
-    <!-- Featured Puzzles Section -->
-    <section class="women-banner spad">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-lg-3">
-                    <div class="product-large set-bg" data-setbg="images/img1.jpg" style="border-radius: 10px;">
-                        <h2>Featured Puzzles’s</h2>
-                        <a href="/products" style="text-decoration:none">Discover More</a>
+        <div class="single-hero-items set-bg" data-setbg="/images/background1.jpg">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-5">
+                        <span>Puzzles</span>
+                        <h1>Unlock the Fun with Puzzles of Every Kind!</h1>
+                        <p>Explore our wide collection of brain teasers, crosswords, 3D puzzles, and more. Find the perfect challenge for all skill levels and have fun while sharpening your mind.</p>
+                        <a href="/products" class="primary-btn">Explore Puzzles</a>
                     </div>
                 </div>
-                <div class="col-lg-8 offset-lg-1" style="border:1px ridge #e7ab3c;border-radius:10px">
-                    <div class="product-slider owl-carousel" >
-                            <% for(let i=0 ; i<products.length ; i++){ %>
-                        <div class="product-item " style="border:1px ridge #e7ab3c;height:500px;margin-top:2rem;border-radius:10px">
-                            <div class="pi-pic">
-                                <img src="/uploads/re-image/<%=products[i].productImage[0]%>" alt="">
-                                <% if(products[i].status === 'Out of Stock'){ %>
-                                    <div class="sale" style="background-color: red;"><%=products[i].status%></div>
-                                <% }else{ %>
-                                    <div class="sale"><%=products[i].status%></div>
-                                <% } %>
-                                <div class="icon">
-                                    <a href="/addToWishlist/<%= products[i]._id %>" data-id="<%=products[i]._id%>" class="btn wishlist-btn">
-                                    <i class="icon_heart_alt"></i>
-                                    </a>
-                                </div>
-                                <ul>
-                                    <li class="w-icon active">
-                                        <a href="/addToCart/<%=products[i]._id%>" data-id="<%=products[i]._id%>" class="btn cart-btn">
+                <div class="off-card">
+                    <h2>Grand <span>Sale</span></h2>
+                </div>
+            </div>
+        </div>
+        <div class="single-hero-items set-bg" data-setbg="/images/background2.jpg">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-5">
+                        <span>Puzzles</span>
+                        <h1>Challenge Your Mind with the Best Puzzles!</h1>
+                        <p>Challenge Your Mind with the Best Puzzles!</p>
+                        <a href="/products" class="primary-btn">Explore Puzzles</a>
+                    </div>
+                </div>
+                <div class="off-card">
+                    <h2>Grand <span>Sale</span></h2>
+                </div>
+            </div>
+        </div>
+        <div class="single-hero-items set-bg" data-setbg="/images/background3.jpg">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-5">
+                        <span>Puzzles</span>
+                        <h1>Puzzles That Bring Fun and Learning Together!</h1>
+                        <p>Puzzles That Bring Fun and Learning Together!</p>
+                        <a href="/products" class="primary-btn">Explore Puzzles</a>
+                    </div>
+                </div>
+                <div class="off-card">
+                    <h2>Grand <span>Sale</span></h2>
+                </div>
+            </div>
+        </div>
+        <div class="single-hero-items set-bg" data-setbg="/images/background4.jpg">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-5">
+                        <span>Puzzles</span>
+                        <h1>Find Your Next Puzzle Adventure!</h1>
+                        <p>Whether you're into logic puzzles, crosswords, or 3D challenges, we have something for everyone. Start solving and experience the joy of puzzle-solving today!</p>
+                        <a href="/products" class="primary-btn">Explore Puzzles</a>
+                    </div>
+                </div>
+                <div class="off-card">
+                    <h2>Grand <span>Sale</span></h2>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="women-banner spad mt-5">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="product-large set-bg" data-setbg="/images/img1.jpg" style="border-radius: 10px;">
+                    <h2>Featured Puzzles’s</h2>
+                    <a href="/products">Discover More</a>
+                </div>
+            </div>
+            <div class="col-lg-8 offset-lg-1" style="border:1px ridge #e7ab3c;border-radius:10px">
+                
+                <div class="product-slider owl-carousel">
+                    <% for(let i=0 ; i<products.length ; i++){ %>
+                    <div class="product-item" style="border:1px ridge #e7ab3c;height:500px;margin-top:2rem;border-radius:10px">
+                        <div class="pi-pic">
+                            <img src="/uploads/re-image/<%=products[i].productImage[0]%>" alt="">
+                            <% if(products[i].status === 'Out of Stock'){ %>
+                            <div class="sale" style="background-color: red;"><%=products[i].status%></div>
+                            <% }else{ %>
+                                <div class="sale"><%=products[i].status%></div>
+                            <% } %>
+                            <div class="icon">
+                                <a href="/addToWishlist/<%= products[i]._id %>" data-id="<%=products[i]._id%>" class="btn wishlist-btn">
+                                <i class="icon_heart_alt"></i>
+                                </a>
+                            </div>
+                            <ul>
+                                <li class="w-icon active">
+                                    <a href="/addToCart/<%=products[i]._id%>" data-id="<%=products[i]._id%>" class="btn cart-btn">
                                         <i class="icon_bag_alt"></i>
-                                        </a>
-                                    </li>
-                                    <li class="quick-view"><a href="/productDetails/<%=products[i]._id%>">Quick View</a></li>
-                                </ul>
-                            </div>
-                            <div class="pi-text">
-                                <div class="catagory-name"><%=products[i].brand%></div>
-                               
-                                    <h5><%=products[i].productName%></h5>
-                                
-                                <div class="product-price">
-                                    Rs <%=products[i].salePrice%>
-                                    <% if (products[i].productOffer) { %>
-                                        <% if (products[i].productOffer.discountType === 'Percentage') { %>
-                                            <span>Rs <%=products[i].regularPrice%></span>
-                                            <span style="text-decoration: none; color: green;">
-                                                <%= products[i].productOffer.value %> % Off
-                                            </span>
-                                        <% } else { %>
-                                            <span>Rs <%=products[i].regularPrice%></span>
-                                            <span style="text-decoration: none; color: green;">
-                                                Rs <%= products[i].productOffer.value %> Off
-                                            </span>
-                                        <% } %>
-                                    <% } else if (products[i].category.categoryOffer) { %> 
-                                        <% if (products[i].category.categoryOffer.discountType === 'Percentage') { %>
-                                            <span>Rs <%=products[i].regularPrice%></span>
-                                            <span style="text-decoration: none; color: green;">
-                                                <%= products[i].category.categoryOffer.value %> % Off
-                                            </span>
-                                        <% } else { %>
-                                            <span>Rs <%=products[i].regularPrice%></span>
-                                            <span style="text-decoration: none; color: green;">
-                                                Rs <%= products[i].category.categoryOffer.value %> Off
-                                            </span>
-                                        <% } %>
-                                    <% } %>
-                                </div>
+                                    </a>
+                                </li>
+                                <li class="quick-view">
+                                    <a href="/productDetails/<%=products[i]._id%>">Quick View</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="pi-text">
+                            <div class="catagory-name"><%=products[i].brand%></div>
+                            
+                                <h5><%=products[i].productName%></h5>
+                            
+                            <div class="product-price">
+                                Rs <%=products[i].salePrice%>
+                                <% if (products[i].productOffer) { %>
+                                <% if (products[i].productOffer.discountType === 'Percentage') { %>
+                                <span>Rs <%=products[i].regularPrice%></span>
+                                <span style="text-decoration: none; color: green;">
+                                    <%= products[i].productOffer.value %> % Off
+                                </span>
+                                <% } else { %>
+                                    <span>Rs <%=products[i].regularPrice%></span>
+                                    <span style="text-decoration: none; color: green;">
+                                        Rs <%= products[i].productOffer.value %> Off
+                                    </span>
+                                <% } %>
+                                <% } else if (products[i].category.categoryOffer) { %> 
+                                <% if (products[i].category.categoryOffer.discountType === 'Percentage') { %>
+                                    <span>Rs <%=products[i].regularPrice%></span>
+                                    <span style="text-decoration: none; color: green;">
+                                        <%= products[i].category.categoryOffer.value %> % Off
+                                    </span>
+                                <% } else { %>
+                                    <span>Rs <%=products[i].regularPrice%></span>
+                                    <span style="text-decoration: none; color: green;">
+                                        Rs <%= products[i].category.categoryOffer.value %> Off
+                                    </span>
+                                <% } %>
+                                <% } %>
                             </div>
                         </div>
-                        <% } %>
                     </div>
+                    <% } %>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
+<section class="puzzle-categories py-5" style="background-color: #ab98751f;">
 
-    <section class="puzzle-categories py-5 mt-5" style="background-color: #e7ab3c1f;">
 
-
-        <div class="container">
-            <h3 class="text-center cat-txt">Popular Brands of Puzzles</h3>
-            <div class="row text-center mt-5" style="display: flex;align-items: flex-end;justify-content: space-evenly;">
-                <% for(let i=0 ; i<4 ; i++){ %>
-                <div class="col-lg-3 col-md-6 mb-4" style="width:100px">
-                    <div class="category-card" >
-                        <img src="/uploads/re-image/<%=brands[i]?.brandImage%>" alt="<%=brands[i]?.brandName%>" class="img-fluid">
-                        <p class="category-txt"><%=brands[i]?.brandName%></p>
-                    </div>
+    <div class="container">
+        <h3 class="text-center cat-txt">Popular Brands of Puzzles</h3>
+        <div class="row text-center mt-5" style="display: flex;align-items: center;">
+            <% for(let i=0 ; i<4 ; i++){ %>
+            <div class="col-lg-3 col-md-6 mb-4" style="width:100px; display:flex;justify-content: center;">
+                <div class="category-card" style="width:10rem">
+                    <img src="/uploads/re-image/<%=brands[i]?.brandImage%>" alt="<%=brands[i]?.brandName%>" class="img-fluid">
                 </div>
-                <% } %>
             </div>
+            <% } %>
         </div>
-    </section>
+    </div>
+</section>
 <%- include("../../views/partials/user/footer") %>

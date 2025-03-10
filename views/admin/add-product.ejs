@@ -18,7 +18,7 @@
 
 
    </style>
-   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.css">
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
 </head>
 <main id="main" class="main">
 
@@ -121,7 +121,7 @@
                   <div class="row">
                     <div class="card-body align-items-center m-2">
                       <img src="" alt="" id="imgView<%=i%>">
-                      <input class="form-control" type="file" name="images" id="input<%=i%>" accept="image/png, image/jpeg, image/jpg" onchange="'viewImage<%=i%>(event)',viewImage(event, '<%=i%>')" multiple>
+                      <input class="form-control" type="file" name="images" id="input<%=i%>" accept="image/png, image/jpeg, image/jpg" onchange="'viewImage<%=i%>(event)',viewImage(event, '<%=i%>')">
                     </div>
                     <div class="image-cropper d-flex align-items-center" style="display:none; width: 100%; height: 150px;">
                       <img src="" id="croppedImg<%=i%>" alt="" style="width:150px">
@@ -142,46 +142,9 @@
         </div>
       </div>
 </main>
-<footer id="footer" class="footer">
-<div class="copyright">
-&copy; Copyright <strong><span>Puzl Mart</span></strong>. All Rights Reserved
-</div>
-</footer>
-   <script src="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.js"></script>
-   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
    <script>
-document.addEventListener("DOMContentLoaded", function () {
-    const toggleButton = document.querySelector(".toggle-sidebar-btn");
-    const body = document.body;
-  
-    if (toggleButton) {
-      toggleButton.addEventListener("click", function () {
-        body.classList.toggle("toggle-sidebar");
-      });
-    }
-
-    const toggleLinks = document.querySelectorAll(".nav-link[data-bs-toggle='collapse']");
-
-    toggleLinks.forEach((link) => {
-      link.addEventListener("click", function () {
-        const chevronIcon = this.querySelector(".bx");
-
-
-          if (this.classList.contains("show")) {
-            setTimeout(() => {
-            chevronIcon.classList.remove("bx-chevron-up");
-            chevronIcon.classList.add("bx-chevron-down");
-          }, 100); 
-          } else {
-            setTimeout(() => {
-            chevronIcon.classList.remove("bx-chevron-down");
-            chevronIcon.classList.add("bx-chevron-up");
-          }, 100); 
-          }
-         
-      });
-    });
-});
 
 function validateAndSubmit(event) {
     event.preventDefault();
@@ -341,8 +304,14 @@ function clearErrorMessages() {
             let image = document.getElementById('imgView'+index);
             image.src = dataURL;
             image.style.width = '1000px';
-            image.style.height = '500px'
-            let cropper = new Cropper(image,{
+            image.style.height = '500px';
+            console.log('Image element:', image);
+console.log('Image source:', image.src);
+
+            console.log('Cropper.js loaded:', typeof Cropper !== 'undefined');
+
+            console.log('cropper intialized',index);
+            let cropper = new window.Cropper(image,{
                 aspectRatio:1,
                 viewMode:1,
                 guides:true,
@@ -353,12 +322,15 @@ function clearErrorMessages() {
 
             let cropperContainer = document.querySelector('#croppedImg' + index).parentNode;
             cropperContainer.style.display = 'block';
+            console.log('Cropper container display:', cropperContainer.style.display);
+
             cropperContainer.style.margin = '2rem';
             cropperContainer.style.width = '1000px';
             cropperContainer.style.height = '500px';
 
             let saveButton = document.querySelector('#saveButton'+index);
             saveButton.addEventListener('click',async function(){
+              console.log('Save button clicked', index);
                 let croppedCanvas = cropper.getCroppedCanvas();
                 let croppedImage = document.getElementById('croppedImg'+index);
                 croppedImage.src = croppedCanvas.toDataURL('image/jpeg',1.0);
@@ -367,13 +339,15 @@ function clearErrorMessages() {
                 let fileName = `cropped-img-${timestamp}-${index}.png`;
 
                 await croppedCanvas.toBlob(blob => {
+                  console.log('Blob created:', blob);
                     let input = document.getElementById('input'+index);
                     let imgFile = new File([blob],fileName,blob);
                     const fileList = new DataTransfer();
                     fileList.items.add(imgFile);
                     input.files = fileList.files;
                 });
-         
+                console.log(cropperContainer, saveButton);
+
                 cropperContainer.style.display = 'none';
                 image.style.display = 'none';
                 cropper.destroy();
@@ -456,5 +430,4 @@ function clearErrorMessages() {
             })
            }
        </script>
-</body>
-</html>
+<%-include('../../views/partials/admin/footer')%>
