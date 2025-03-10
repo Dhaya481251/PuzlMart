@@ -115,7 +115,12 @@ const activeCoupon = async (req,res) => {
 const inactiveCoupon = async (req,res) => {
     try {
         let id = req.query.id;
+        let coupon = await Coupon.findById(id);
         await Coupon.updateOne({_id:id},{$set:{isActive:false}});
+        if(coupon.expireOn){
+            coupon.isActive = false;
+            await coupon.save();
+        }
         res.redirect('/admin/coupons');
     } catch (error) {
         res.status(500).send('Internal Server Error');

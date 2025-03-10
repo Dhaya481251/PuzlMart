@@ -235,12 +235,13 @@ const orderPlaced = async (req, res) => {
 const orderConfirmation = async (req, res) => {
     try {
         const userId = req.session.user;
+        const user = await User.findById(userId);
         const id = req.params.id;
         const cart = await Cart.findOne({ userId }).populate('items.productId');
         const wishlist = await Wishlist.findOne({ userId }).populate('products.productsId');
         const category = await Category.find({ isListed: true });
         payment.capturePayment(req.query.token);
-        res.render(`orderConfirmation`,{cart,wishlist,category:category});
+        res.render(`orderConfirmation`,{user:user,cart,wishlist,category:category});
     } catch (error) {
         res.status(500).send('Internal Server Error');
     }
@@ -249,14 +250,14 @@ const orderConfirmation = async (req, res) => {
 const paymentSuccessfull = async (req, res) => {
     try {
         const userId = req.session.user;
-
+        const user = await User.findById(userId);
         const cart = await Cart.findOne({ userId }).populate('items.productId');
         const wishlist = await Wishlist.findOne({ userId }).populate('products.productsId');
         const category = await Category.find({ isListed: true });
 
             await startPayPal.capturePayment(req.query.token);
 
-        res.render(`paymentSuccessfull`,{cart,wishlist,category:category});
+        res.render(`paymentSuccessfull`,{user,cart,wishlist,category:category});
 
     } catch (error) {
         console.error('Error while loading orderConfirmation page : ', error);
@@ -300,6 +301,7 @@ const loadMyOrdersPage = async (req, res) => {
 const orderDetails = async(req,res) => {
     try{
         const userId = req.session.user;
+        const user = await User.findById(userId);
         const id = req.params.id;
         const order = await Order.findById({_id:id})
         .populate('items.productId')
@@ -317,7 +319,7 @@ const orderDetails = async(req,res) => {
         console.log('Order : ',order);
         const category = await Category.find({isListed:true});
 
-        res.render('orderDetails',{orders:order,cart,wishlist,category:category,notifications:notifications,reviews});
+        res.render('orderDetails',{user,orders:order,cart,wishlist,category:category,notifications:notifications,reviews});
     }catch(error){
         console.error('error while loading order details',error);
         res.status(500).send('Internal server error');
@@ -329,6 +331,7 @@ const payFromOrderDetails = async (req, res) => {
         const id = req.params.id;
 
         const userId = req.session.user;
+        
         const approvalUrl = await startPayPal.createOrder(userId,id);
         const order = await Order.findById({_id:id});
 
@@ -410,9 +413,10 @@ const rateProduct = async(req,res) => {
 
 const loadAddAddress = async (req, res) => {
     try {
-        const user = req.session.user;
-        const cart = await Cart.findOne({user}).populate('items.productId');
-        const wishlist = await Wishlist.findOne({user}).populate('products.productsId');
+        const userId = req.session.user;
+        const user = await User.findById(userId);
+        const cart = await Cart.findOne({userId}).populate('items.productId');
+        const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');
         const category = await Category.find({isListed:true});
         res.render('orderAddAddress',{user:user,cart,wishlist,category:category});
        
@@ -455,9 +459,10 @@ const addAddress = async(req,res) => {
 const loadEditAddress = async(req,res) => {
     try {
         const addressId = req.query.id;
-        const user = req.session.user;
-        const cart = await Cart.findOne({user}).populate('items.productId');
-        const wishlist = await Wishlist.findOne({user}).populate('products.productsId');
+        const userId = req.session.user;
+        const user = await User.findById(userId);
+        const cart = await Cart.findOne({userId}).populate('items.productId');
+        const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');
         const category = await Category.find({isListed:true});
         const currentAddress = await Address.findOne({'address._id':addressId});
         if(!currentAddress){

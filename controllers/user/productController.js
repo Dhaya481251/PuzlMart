@@ -22,7 +22,7 @@ const loadProductpage = async(req,res) => {
         const cart = await Cart.findOne({ userId }).populate('items.productId');
         const wishlist = await Wishlist.findOne({userId}).populate('products.productsId');
         if (cart && cart.items) {
-            cart.items = cart.items.filter(item => item.productId); // Remove items with null productId
+            cart.items = cart.items.filter(item => item.productId); 
           }
 
         const category = await Category.find({isListed:true}).populate('categoryOffer');
@@ -64,7 +64,6 @@ const loadProductpage = async(req,res) => {
         const categoriesWithIds = category.map(category => ({_id:category._id,name:category.name}));
        
        res.render('products',{
-        isAuthenticated: req.isAuthenticated(),
         user:userData,
         products:productData,
         category:categoriesWithIds,
