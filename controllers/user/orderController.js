@@ -21,18 +21,10 @@ const loadCheckOutPage = async (req, res) => {
     const userId = req.session.user;
     const userData = await User.findById(userId);
     const cart = await Cart.findOne({ userId }).populate("items.productId");
-    const wishlist = await Wishlist.findOne({ userId }).populate(
-      "products.productsId"
-    );
+    const wishlist = await Wishlist.findOne({ userId }).populate("products.productsId");
     const category = await Category.find({ isListed: true });
 
-    if (cart && cart.items) {
-      cart.items = cart.items.filter(
-        (item) => item.productId && !item.productId.isBlocked
-      );
-    }
-
-    if (!cart || cart.items.length === 0) {
+    if (!cart || !cart.items || cart.items.length === 0) {
       return res.redirect(302, "/products");
     }
 
@@ -40,53 +32,54 @@ const loadCheckOutPage = async (req, res) => {
       address: [],
     };
     const coupons = await Coupon.find({ isActive: true });
-    let deliveryCharge = 20;
 
-    let finalAmount =
-      cart.items.reduce((total, item) => {
-        return total + (item.productId.salePrice || 0) * item.quantity;
-      }, 0) + deliveryCharge;
+    let deliveryCharge = 20; // Fixed delivery charge
+    const cartTotal = cart.items.reduce((total, item) => {
+      return total + (item.productId.salePrice || 0) * item.quantity;
+    }, 0);
 
-    let discount = cart.items
-      .reduce((acc, item) => {
-        return (
-          acc +
-          ((item.productId.regularPrice || 0) -
-            (item.productId.salePrice || 0)) *
-            item.quantity
-        );
-      }, 0)
-      .toFixed(2);
+    // Base discount logic for the cart
+    let discount = cart.items.reduce((acc, item) => {
+      return (
+        acc +
+        ((item.productId.regularPrice || 0) -
+          (item.productId.salePrice || 0)) *
+          item.quantity
+      );
+    }, 0);
 
-    const coupon = await Coupon.findOne({ code: req.session.couponCode });
-    if (coupon && new Date() <= coupon.expireOn) {
-      let couponDiscount = 0;
-      if (coupon.discountType === "Percentage") {
-        couponDiscount = finalAmount * (coupon.discount / 100);
-      } else {
-        couponDiscount = coupon.discount;
+    // If a coupon is applied
+    const couponCode = req.session.couponCode;
+    let couponDiscount = 0;
+    if (couponCode) {
+      const coupon = await Coupon.findOne({ code: couponCode });
+      if (coupon && new Date() <= coupon.expireOn) {
+        if (coupon.discountType === "Percentage") {
+          couponDiscount = cartTotal * (coupon.discount / 100);
+        } else {
+          couponDiscount = coupon.discount;
+        }
+        discount += couponDiscount;
       }
-      finalAmount = Math.max(0, finalAmount - couponDiscount);
-      discount = (parseFloat(discount) + couponDiscount).toFixed(2);
-
-      userData.coupons.isActive = true;
-      await userData.save();
     }
 
+    
+    const finalAmount = Math.max(0, cartTotal - couponDiscount + deliveryCharge);
+
     res.render("orderPaymentPage", {
-      isAuthenticated: req.isAuthenticated(),
       user: userData,
       cart,
       userAddress: addressData,
       coupons,
-      finalAmount,
-      discount,
+      finalAmount: parseFloat(finalAmount.toFixed(2)), 
+      discount: parseFloat(discount.toFixed(2)),
       deliveryCharge,
       wishlist,
       category,
-      coupon,
+      coupon: couponCode ? await Coupon.findOne({ code: couponCode }) : null,
     });
   } catch (error) {
+    console.error("Error in loadCheckOutPage:", error);
     res.status(500).send("Internal Server Error");
   }
 };

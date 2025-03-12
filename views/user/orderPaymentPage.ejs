@@ -207,7 +207,7 @@
             <% cart.items.forEach(item => { %>
             <div class="d-flex justify-content-between">
               <p><%=item.productId.productName%> x <%=item.quantity%></p>
-              <p><%=item.productId.regularPrice%></p>
+              <p><%=item.productId.salePrice%></p>
             </div>
             <% }) %>
 
@@ -217,7 +217,7 @@
               <h6 class="font-weight-medium">Price</h6>
               <h6 class="font-weight-medium total-price">
                 <%=cart ? cart.items.reduce((acc,item) => acc +
-                item.productId.regularPrice*item.quantity,0):0%>
+                item.productId.salePrice*item.quantity,0):0%>
               </h6>
             </div>
             <div class="d-flex justify-content-between">

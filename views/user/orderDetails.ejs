@@ -260,17 +260,15 @@
       <p>Price Details</p>
       <hr />
       <ul style="list-style: none">
-        <% orders.items.forEach(item => { %>
-        <li>List Price : <%= item.regularPrice * item.quantity%></li>
-        <li>Selling Price : Rs <%= item.salePrice * item.quantity%></li>
+        <% if(orders.items){ %>
+        <li>List Price : <%=orders ? orders.items.reduce((acc,item) => acc + item.salePrice*item.quantity,0):0 %></li>
+        <% } %>
         <li>
-          Discount : - Rs <%= (item.regularPrice - item.salePrice)*item.quantity
-          %>
+          Discount : - Rs <%=orders.discount.toFixed(2)%>
         </li>
-        <% }) %>
         <li>Delivery charge : Rs <%=orders.deliveryCharge%></li>
         <hr />
-        <li>Total Amount : <%= orders.finalAmount%></li>
+        <li>Total Amount : <%= orders.finalAmount %></li>
       </ul>
       <hr />
       <p>Payment Method: <%= orders.paymentMethod %></p>
