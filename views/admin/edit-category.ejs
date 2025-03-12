@@ -4,9 +4,10 @@
     <h1>Edit Category</h1>
     <nav>
       <ol class="breadcrumb">
-
         <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
-        <li class="breadcrumb-item"><a href="/admin/category">Categories</a></li>
+        <li class="breadcrumb-item">
+          <a href="/admin/category">Categories</a>
+        </li>
         <li class="breadcrumb-item active">Edit Category</li>
       </ol>
     </nav>
@@ -15,160 +16,200 @@
   <section class="section">
     <div class="row">
       <div class="col-lg-12">
-<div class="card">
-  <div class="card-body">
-    <h5 class="card-title">Edit Category</h5>
-    <form class="row g-3" onsubmit="return handleFormSubmit(event)" enctype="multipart/form-data">
-      <div class="col-md-12">
-        <div class="form-floating">
-            <input type="hidden" name="existingCategoryImage" value="<%= category.categoryImage %>" />
-            <img src="<%= category.categoryImage %>" alt="Category Image" id="previewImage" style="max-width: 200px;border-radius: 15px;margin: 1rem;box-shadow: 0px 2px 10px 0px #00000096;"/>
-          <div class="col-sm-10">
-            <label for="">Change Category Image</label>
-          </div>
-          <div class="col-sm-10">
-            <input class="form-control" type="file" name="CategoryImage" id="categoryImage" placeholder="CategoryImage">
-          </div>
-          <div id="image-error" class="error-message"></div>
-        </div>
-      </div>
-      <div class="col-md-6">
-        <div class="form-floating">
-          <input type="text" class="form-control" placeholder="Category Name" name="name" value="<%= category.name %>">
-          <label for="floatingName">Category Name</label>
-          <div id="name-error" class="error-message"></div>
-        </div>
-      </div>
-      
-      <div class="col-12">
-        <div class="form-floating">
-          <textarea class="form-control" name="description" placeholder="Category Description" id="descriptionId" style="height: 100px;"><%= category.description %></textarea>
-          <label for="floatingTextarea">Category Description</label>
-          <div id="description-error" class="error-message"></div>
-        </div>
-      </div>
-      <div class="text-center">
-        <button type="submit" class="btn btn-primary">Update Category</button>
-      </div>
-    </form>
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Edit Category</h5>
+            <form
+              class="row g-3"
+              onsubmit="return handleFormSubmit(event)"
+              enctype="multipart/form-data"
+            >
+              <div class="col-md-12">
+                <div class="form-floating">
+                  <input
+                    type="hidden"
+                    name="existingCategoryImage"
+                    value="<%= category.categoryImage %>"
+                  />
+                  <img
+                    src="<%= category.categoryImage %>"
+                    alt="Category Image"
+                    id="previewImage"
+                    style="
+                      max-width: 200px;
+                      border-radius: 15px;
+                      margin: 1rem;
+                      box-shadow: 0px 2px 10px 0px #00000096;
+                    "
+                  />
+                  <div class="col-sm-10">
+                    <label for="">Change Category Image</label>
+                  </div>
+                  <div class="col-sm-10">
+                    <input
+                      class="form-control"
+                      type="file"
+                      name="CategoryImage"
+                      id="categoryImage"
+                      placeholder="CategoryImage"
+                    />
+                  </div>
+                  <div id="image-error" class="error-message"></div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-floating">
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Category Name"
+                    name="name"
+                    value="<%= category.name %>"
+                  />
+                  <label for="floatingName">Category Name</label>
+                  <div id="name-error" class="error-message"></div>
+                </div>
+              </div>
 
-  </div>
-</div>
-</div>
-</div>
-</section>
-
+              <div class="col-12">
+                <div class="form-floating">
+                  <textarea
+                    class="form-control"
+                    name="description"
+                    placeholder="Category Description"
+                    id="descriptionId"
+                    style="height: 100px"
+                  >
+<%= category.description %></textarea
+                  >
+                  <label for="floatingTextarea">Category Description</label>
+                  <div id="description-error" class="error-message"></div>
+                </div>
+              </div>
+              <div class="text-center">
+                <button type="submit" class="btn btn-primary">
+                  Update Category
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 </main>
-
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-document.getElementById('categoryImage').addEventListener('change', function(event) {
+  document
+    .getElementById("categoryImage")
+    .addEventListener("change", function (event) {
       const reader = new FileReader();
-      reader.onload = function(e) {
-        const previewImage = document.getElementById('previewImage');
-      previewImage.src = e.target.result;
-      previewImage.style.maxWidth = '200px';
-      previewImage.style.borderRadius = '15px';
-      previewImage.style.margin = '1rem';
-      previewImage.style.boxShadow = '0px 2px 10px 0px #00000096';
+      reader.onload = function (e) {
+        const previewImage = document.getElementById("previewImage");
+        previewImage.src = e.target.result;
+        previewImage.style.maxWidth = "200px";
+        previewImage.style.borderRadius = "15px";
+        previewImage.style.margin = "1rem";
+        previewImage.style.boxShadow = "0px 2px 10px 0px #00000096";
       };
       reader.readAsDataURL(event.target.files[0]);
     });
-    
+
   function handleFormSubmit(event) {
-  event.preventDefault();
-  if (!validateForm()) {
-    return;
-  }
-  const form = event.target;
-  const formData = new FormData(form);
-  
-  fetch('/admin/editCategory/<%= category._id %>', {
-    method: 'POST',
-    body: formData,
-  })
-  .then((response) => {
-    if(!response.ok){
-        return response.json().then(data => {
-          throw new Error(data.message || `HTTP error : ${response.status}`);
-        });
-        
-      }
-      return response.json();
-  })
-  .then(data => {
-    Swal.fire({
-      icon: data.type,
-      title: data.message,
-      showConfirmButton:true,
-      timer:1500
-    }).then(() => {
-        if(data.type==='success'){
-          window.location.href = '/admin/category';
-        }else{
-          Swal.fire({
-        icon: 'error',
-        title: data.message,
-        showConfirmButton:true,
-        timer:1500
-      })
+    event.preventDefault();
+    if (!validateForm()) {
+      return;
     }
-    });
-    
-  })
-  .catch(error => {
-    console.error("Error during form submission:", error);
-    Swal.fire({
-        icon: 'error',
-        title: error.message || 'Something wen wrong!',
-        showConfirmButton:true,
-        timer:1500
-    });
-  });
+    const form = event.target;
+    const formData = new FormData(form);
+
+    fetch("/admin/editCategory/<%= category._id %>", {
+      method: "POST",
+      body: formData,
+    })
+      .then((response) => {
+        if (!response.ok) {
+          return response.json().then((data) => {
+            throw new Error(data.message || `HTTP error : ${response.status}`);
+          });
+        }
+        return response.json();
+      })
+      .then((data) => {
+        Swal.fire({
+          icon: data.type,
+          title: data.message,
+          showConfirmButton: true,
+          timer: 1500,
+        }).then(() => {
+          if (data.type === "success") {
+            window.location.href = "/admin/category";
+          } else {
+            Swal.fire({
+              icon: "error",
+              title: data.message,
+              showConfirmButton: true,
+              timer: 1500,
+            });
+          }
+        });
+      })
+      .catch((error) => {
+        console.error("Error during form submission:", error);
+        Swal.fire({
+          icon: "error",
+          title: error.message || "Something wen wrong!",
+          showConfirmButton: true,
+          timer: 1500,
+        });
+      });
   }
   function validateForm() {
     clearErrorMessages();
-      const name = document.getElementsByName('name')[0].value.trim();
-      const description = document.getElementById('descriptionId').value.trim();
-      const image = document.getElementById('categoryImage').files[0];
-      let isValid = true;
-      if (name === '') {
-        displayErrorMessage('name-error', 'Please enter a category name');
-        isValid = false;
-      } else if (!/^[a-zA-Z0-9\s]+$/.test(name)) {
-        displayErrorMessage('name-error', 'Category name should contain only alphanumeric characters');
-        isValid = false;
-      }
-      if (description === '') {
-        displayErrorMessage('description-error', 'Please enter a description');
-        isValid = false;
-      }
-      
-      if (!image && document.getElementById('categoryImage').value) {
-        displayErrorMessage('image-error', 'Please add an image');
-        isValid = false;
-      }
-      
-      return isValid;
+    const name = document.getElementsByName("name")[0].value.trim();
+    const description = document.getElementById("descriptionId").value.trim();
+    const image = document.getElementById("categoryImage").files[0];
+    let isValid = true;
+    if (name === "") {
+      displayErrorMessage("name-error", "Please enter a category name");
+      isValid = false;
+    } else if (!/^[a-zA-Z0-9\s]+$/.test(name)) {
+      displayErrorMessage(
+        "name-error",
+        "Category name should contain only alphanumeric characters"
+      );
+      isValid = false;
     }
-    
-    function displayErrorMessage(elementId, message) {
-      var errorElement = document.getElementById(elementId);
-      errorElement.innerText = message;
-      errorElement.style.display = 'block';
+    if (description === "") {
+      displayErrorMessage("description-error", "Please enter a description");
+      isValid = false;
     }
-    
-    function clearErrorMessages() {
-      const errorElements = document.getElementsByClassName('error-message');
-      Array.from(errorElements).forEach((element) => {
-        element.innerText = '';
-        element.style.color = 'red';
-        element.style.display = 'none';
-      });
+
+    if (!image && document.getElementById("categoryImage").value) {
+      displayErrorMessage("image-error", "Please add an image");
+      isValid = false;
     }
+
+    return isValid;
+  }
+
+  function displayErrorMessage(elementId, message) {
+    var errorElement = document.getElementById(elementId);
+    errorElement.innerText = message;
+    errorElement.style.display = "block";
+  }
+
+  function clearErrorMessages() {
+    const errorElements = document.getElementsByClassName("error-message");
+    Array.from(errorElements).forEach((element) => {
+      element.innerText = "";
+      element.style.color = "red";
+      element.style.display = "none";
+    });
+  }
 </script>
 <%- include("../../views/partials/admin/footer") %>

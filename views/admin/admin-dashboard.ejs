@@ -8,16 +8,16 @@
         <li class="breadcrumb-item active">Dashboard</li>
       </ol>
     </nav>
-  </div><!-- End Page Title -->
+  </div>
 
     <section class="section dashboard">
       <div class="row">
 
-        <!-- Left side columns -->
+        
         <div class="col-lg-12">
           <div class="row">
 
-            <!-- Sales Card -->
+            
             <div class="col-xxl-4 col-md-6">
               <div class="card info-card sales-card">
 
@@ -36,9 +36,9 @@
                 </div>
 
               </div>
-            </div><!-- End Sales Card -->
+            </div>
 
-            <!-- Revenue Card -->
+            
             <div class="col-xxl-4 col-md-6">
               <div class="card info-card revenue-card">
 
@@ -56,9 +56,9 @@
                 </div>
 
               </div>
-            </div><!-- End Revenue Card -->
+            </div>
 
-            <!-- Customers Card -->
+            
             <div class="col-xxl-4 col-xl-12">
 
               <div class="card info-card customers-card">
@@ -78,9 +78,8 @@
                 </div>
               </div>
 
-            </div><!-- End Customers Card -->
-
-            <!-- Reports -->
+            </div>
+            
             <div class="col-12">
               <div class="card">
 
@@ -107,9 +106,9 @@
                 </div>
 
               </div>
-            </div><!-- End Reports -->
+            </div>
 
-                        <!-- Top Selling -->
+                        
             <div class="col-12">
               <div class="card top-selling overflow-auto">
 
@@ -140,7 +139,7 @@
                 </div>
 
               </div>
-            </div><!-- End Top Selling -->
+            </div>
             <div class="col-12">
               <div class="card top-selling overflow-auto">
 
@@ -202,9 +201,8 @@
               </div>
             </div>
           </div>
-        </div><!-- End Left side columns -->
-
-        <!-- Right side columns -->
+        </div>
+        
 
 </main>
 <script>
@@ -214,19 +212,19 @@ async function fetchChartData(filter = 'monthly') {
    try {
         const response = await fetch(`/admin/getChartData?filter=${filter}`);
         const data = await response.json();
-        // Data for Bar Chart (Users, Orders, Products)
+        
         const barChartData = data.barChartData;
-        // Data for Doughnut Chart (Revenue and Number of Orders by Categories)
+        
         const doughnutChartData = data.doughnutChartData;
-        // Destroy previous bar chart if it exists
+        
         if (barChartInstance) {
             barChartInstance.destroy();
         }
-        // Destroy previous doughnut chart if it exists
+        
         if (doughnutChartInstance) {
             doughnutChartInstance.destroy();
         }
-        // Create the Bar Chart
+        
         const barCtx = document.getElementById("barChart").getContext("2d");
         barChartInstance = new Chart(barCtx, {
             type: 'bar',
@@ -247,7 +245,7 @@ async function fetchChartData(filter = 'monthly') {
                 
             }
         });
-        // Doughnut Chart
+        
         const doughnutCtx = document.getElementById("doughnutChart").getContext("2d");
 doughnutChartInstance = new Chart(doughnutCtx, {
     type: 'doughnut',
@@ -281,7 +279,7 @@ console.log(data.doughnutChartData);
         console.error('Error fetching chart data:', error);
     }
 }
-// Initial chart load
+
 document.addEventListener('DOMContentLoaded', () => {
     fetchChartData('monthly');
 });

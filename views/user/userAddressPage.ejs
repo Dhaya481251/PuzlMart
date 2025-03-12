@@ -1,84 +1,135 @@
 <%-include('../../views/partials/user/header')%>
 
 <nav class="breadcrumbs mt-3 mb-3 container">
-    <a href="/userProfile" class="breadcrumbs-txt" style="text-decoration: none;">My Account</a>&gt;
-    <a href="/userAddress" class="breadcrumbs-txt" style="text-decoration: none;">My Address</a>
+  <a href="/userProfile" class="breadcrumbs-txt" style="text-decoration: none"
+    >My Account</a
+  >&gt;
+  <a href="/userAddress" class="breadcrumbs-txt" style="text-decoration: none"
+    >My Address</a
+  >
 </nav>
 
-<div class="container-fluid" id="div1" style="display: grid;justify-items: center;">
-    <div class="col-md-12 my-5" style="width: 50%;">
-           <div class="mx-2 my-2 px-3 py-3 text-center address-btn">
-               <a href="/addAddress"  style="text-decoration: none;"><h1 style="color:black;font-size: x-large;">ADD A NEW ADDRESS</h1></a>
-           </div>
+<div
+  class="container-fluid"
+  id="div1"
+  style="display: grid; justify-items: center"
+>
+  <div class="col-md-12 my-5" style="width: 50%">
+    <div class="mx-2 my-2 px-3 py-3 text-center address-btn">
+      <a href="/addAddress" style="text-decoration: none"
+        ><h1 style="color: black; font-size: x-large">ADD A NEW ADDRESS</h1></a
+      >
     </div>
+  </div>
 </div>
 <div class="container-fluid" id="div1">
-    <div class="col-md-12">
-        <div class="px-3 mt-4" style="background-color: #f0ffff;border-radius: 10px; font-family: monospace;">
-           <div class="mx-3 my-3 px-3 py-3">
-               <% if(userAddress){ %>
-                <% userAddress.address.forEach((address) => { %>
-                <div class="container-fluid" id="div1">
-                    <div class="col-md-12">
-                        <div class="px-3 mt-4" style="background-color: #e7ab3c;border-radius: 10px; font-family: monospace;">
-                           <div class="border-info mx-3 my-3 px-3 py-3">
-                               <div class="card-header text-center" style="background-color: white;border-radius: 10px;width: 25%;display: flex;justify-content:space-around;">
-                                <h5 class="mb-0" style="color: black;"><%=address.addressType%></h5>
-                               </div>
-                               <div class="card-body text-white" style="font-size: 1.15rem;">
-                                <address>
-                                    <%=address.name%><br/>
-                                    <%=address.city%><br/>
-                                    <%=address.landMark%><br/>
-                                    <%=address.state%>
-                                </address>
-                                <p><%=address.pincode%></p>
-                                <p><%=address.phone%></p>
-                                <p><%=address.altPhone%></p>
-                                <div class="d-flex justify-content-between">
-                                    <a href="/editAddress?id=<%=address._id%>" class="btn px-2 py-1" style="background-color: white;color:#e7ab3c;border-radius: 5px;font-size: 1.15rem;font-weight: 600;width:10%">Edit</a>
-                                    <a href="/deleteAddress?id=<%=address._id%>" class="btn px-2 py-1 deleteAddress" style="background-color:#cf0808;color:white;border-radius: 5px;font-size: 1.15rem;font-weight: 600;width: 10%;" >Delete</a>
-                                </div>
-                               </div>
-                           </div>
-                        </div>
-                    </div>
+  <div class="col-md-12">
+    <div
+      class="px-3 mt-4"
+      style="
+        background-color: #f0ffff;
+        border-radius: 10px;
+        font-family: monospace;
+      "
+    >
+      <div class="mx-3 my-3 px-3 py-3">
+        <% if(userAddress){ %> <% userAddress.address.forEach((address) => { %>
+        <div class="container-fluid" id="div1">
+          <div class="col-md-12">
+            <div
+              class="px-3 mt-4"
+              style="
+                background-color: #e7ab3c;
+                border-radius: 10px;
+                font-family: monospace;
+              "
+            >
+              <div class="border-info mx-3 my-3 px-3 py-3">
+                <div
+                  class="card-header text-center"
+                  style="
+                    background-color: white;
+                    border-radius: 10px;
+                    width: 25%;
+                    display: flex;
+                    justify-content: space-around;
+                  "
+                >
+                  <h5 class="mb-0" style="color: black">
+                    <%=address.addressType%>
+                  </h5>
                 </div>
-               <% }) %>
-               <% } %>
-
-           </div>
+                <div class="card-body text-white" style="font-size: 1.15rem">
+                  <address>
+                    <%=address.name%><br />
+                    <%=address.city%><br />
+                    <%=address.landMark%><br />
+                    <%=address.state%>
+                  </address>
+                  <p><%=address.pincode%></p>
+                  <p><%=address.phone%></p>
+                  <p><%=address.altPhone%></p>
+                  <div class="d-flex justify-content-between">
+                    <a
+                      href="/editAddress?id=<%=address._id%>"
+                      class="btn px-2 py-1"
+                      style="
+                        background-color: white;
+                        color: #e7ab3c;
+                        border-radius: 5px;
+                        font-size: 1.15rem;
+                        font-weight: 600;
+                        width: 10%;
+                      "
+                      >Edit</a
+                    >
+                    <a
+                      href="/deleteAddress?id=<%=address._id%>"
+                      class="btn px-2 py-1 deleteAddress"
+                      style="
+                        background-color: #cf0808;
+                        color: white;
+                        border-radius: 5px;
+                        font-size: 1.15rem;
+                        font-weight: 600;
+                        width: 10%;
+                      "
+                      >Delete</a
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+        <% }) %> <% } %>
+      </div>
     </div>
+  </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', (event) => {
-        
-    document.querySelectorAll('.deleteAddress').forEach(button => {
-        button.addEventListener('click', (event) => {
-            event.preventDefault();
-            const deleteUrl = button.getAttribute('href');
-            Swal.fire({
-                title: 'Are you sure?',
-                text: 'Are you sure that you want to delete this address?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, delete it!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = deleteUrl;
-                    Swal.fire(
-                        'Deleted!',
-                        'Your address has been deleted.',
-                        'success'
-                    );
-                }
-            });
+  document.addEventListener("DOMContentLoaded", (event) => {
+    document.querySelectorAll(".deleteAddress").forEach((button) => {
+      button.addEventListener("click", (event) => {
+        event.preventDefault();
+        const deleteUrl = button.getAttribute("href");
+        Swal.fire({
+          title: "Are you sure?",
+          text: "Are you sure that you want to delete this address?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Yes, delete it!",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.href = deleteUrl;
+            Swal.fire("Deleted!", "Your address has been deleted.", "success");
+          }
         });
+      });
     });
-});
+  });
 </script>
 <%-include('../../views/partials/user/footer')%>

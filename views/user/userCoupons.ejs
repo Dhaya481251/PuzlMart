@@ -1,124 +1,171 @@
 <%-include('../../views/partials/user/header')%>
 <nav class="breadcrumbs mt-3 mb-3 container">
-    <a href="/userProfile" class="breadcrumbs-txt" style="text-decoration: none;">My Profile</a>&gt;
-    <a href="/coupons" class="breadcrumbs-txt" style="text-decoration: none;">My Coupons</a>
+  <a href="/userProfile" class="breadcrumbs-txt" style="text-decoration: none"
+    >My Profile</a
+  >&gt;
+  <a href="/coupons" class="breadcrumbs-txt" style="text-decoration: none"
+    >My Coupons</a
+  >
 </nav>
 
 <div class="container-fluid">
-    <div class="col-md-12">
-        <div class="border-info px-3 mt-4" style="border:0.15rem solid; border-top-left-radius: 5px;border-top-right-radius: 5px;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px; font-family: monospace;">
-           <div class="border-info mx-3 my-3 px-3 py-3">
-            <h5>Available Coupons</h5>
-               <% if(coupons && coupons.length>0){ %>
-                <% coupons.forEach(coupon => {%>
-                <div class="container-fluid" id="div1">
-                    <div class="col-md-12">
-                        <div class="border-info px-3 mt-4" style="border:0.15rem solid; border-top-left-radius: 5px;border-top-right-radius: 5px;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px; font-family: monospace;">
-                           <div class="border-info mx-3 my-3 px-3 py-3">
-                               
-                               <div class="card-body">
-                                <p>Coupon title : <%=coupon.name%></p>
-                                <p>Coupon code : <%=coupon.code%></p>
-                                <p>Discount : <%=coupon.discount%></p>
-                                <p>Expires On : <%=coupon.expireOn.toDateString()%></p>
-                                <a href="/removeCoupon/<%=coupon._id%>" class="btn btn-danger"></a>
-                               </div>
-                           </div>
-                        </div>
-                    </div>
+  <div class="col-md-12">
+    <div
+      class="border-info px-3 mt-4"
+      style="
+        border: 0.15rem solid;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+        border-bottom-left-radius: 15px;
+        border-bottom-right-radius: 15px;
+        font-family: monospace;
+      "
+    >
+      <div class="border-info mx-3 my-3 px-3 py-3">
+        <h5>Available Coupons</h5>
+        <% if(coupons && coupons.length>0){ %> <% coupons.forEach(coupon => {%>
+        <div class="container-fluid" id="div1">
+          <div class="col-md-12">
+            <div
+              class="border-info px-3 mt-4"
+              style="
+                border: 0.15rem solid;
+                border-top-left-radius: 5px;
+                border-top-right-radius: 5px;
+                border-bottom-left-radius: 15px;
+                border-bottom-right-radius: 15px;
+                font-family: monospace;
+              "
+            >
+              <div class="border-info mx-3 my-3 px-3 py-3">
+                <div class="card-body">
+                  <p>Coupon title : <%=coupon.name%></p>
+                  <p>Coupon code : <%=coupon.code%></p>
+                  <p>Discount : <%=coupon.discount%></p>
+                  <p>Expires On : <%=coupon.expireOn.toDateString()%></p>
+                  <a
+                    href="/removeCoupon/<%=coupon._id%>"
+                    class="btn btn-danger"
+                  ></a>
                 </div>
-                <% }) %>
-               <% }else{ %>
-                <div class="container-fluid" id="div1">
-                    <div class="col-md-12">
-                        <div class="border-info px-3 mt-4" style="border:0.15rem solid; border-top-left-radius: 5px;border-top-right-radius: 5px;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px; font-family: monospace;">
-                           <div class="border-info mx-3 my-3 px-3 py-3">
-                               <h5>No Coupons Available</h5>
-                           </div>
-                        </div>
-                    </div>
-                </div>
-               <% } %>
-           </div>
+              </div>
+            </div>
+          </div>
         </div>
+        <% }) %> <% }else{ %>
+        <div class="container-fluid" id="div1">
+          <div class="col-md-12">
+            <div
+              class="border-info px-3 mt-4"
+              style="
+                border: 0.15rem solid;
+                border-top-left-radius: 5px;
+                border-top-right-radius: 5px;
+                border-bottom-left-radius: 15px;
+                border-bottom-right-radius: 15px;
+                font-family: monospace;
+              "
+            >
+              <div class="border-info mx-3 my-3 px-3 py-3">
+                <h5>No Coupons Available</h5>
+              </div>
+            </div>
+          </div>
+        </div>
+        <% } %>
+      </div>
     </div>
+  </div>
 </div>
 
 <div class="container-fluid">
-    <div class="col-md-12">
-        <div class="border-info px-3 mt-4" style="border:0.15rem solid; border-top-left-radius: 5px;border-top-right-radius: 5px;border-bottom-left-radius: 15px;border-bottom-right-radius: 15px; font-family: monospace;">
-           <div class="border-info mx-3 my-3 px-3 py-3">
-               <button id="couponBtn">Add Coupon</button>
-               <div id="couponDiv" style="display:none;">
-               
-                <form action="/addCoupon" method="POST">
-                    <input type="text" name="couponCode">
-                    <button type="submit">Add Coupon</button>
-                    <p id="couponMessage" style='color:red'></p>
-                </form>
-                
-                </div>
-           </div>
+  <div class="col-md-12">
+    <div
+      class="border-info px-3 mt-4"
+      style="
+        border: 0.15rem solid;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+        border-bottom-left-radius: 15px;
+        border-bottom-right-radius: 15px;
+        font-family: monospace;
+      "
+    >
+      <div class="border-info mx-3 my-3 px-3 py-3">
+        <button id="couponBtn">Add Coupon</button>
+        <div id="couponDiv" style="display: none">
+          <form action="/addCoupon" method="POST">
+            <input type="text" name="couponCode" />
+            <button type="submit">Add Coupon</button>
+            <p id="couponMessage" style="color: red"></p>
+          </form>
         </div>
+      </div>
     </div>
+  </div>
 </div>
 
-
 <script>
-    const couponBtn = document.getElementById('couponBtn');
-    couponBtn.addEventListener('click',() => {
-        couponDiv.style.display = 'block';
-        couponBtn.style.display = 'none';
-    })
+  const couponBtn = document.getElementById("couponBtn");
+  couponBtn.addEventListener("click", () => {
+    couponDiv.style.display = "block";
+    couponBtn.style.display = "none";
+  });
 
-    document.addEventListener('DOMContentLoaded', () => {
-    const couponForm = document.querySelector('#couponDiv form');
-    const couponMessage = document.getElementById('couponMessage');
-    const couponList = document.querySelector('#div1');
+  document.addEventListener("DOMContentLoaded", () => {
+    const couponForm = document.querySelector("#couponDiv form");
+    const couponMessage = document.getElementById("couponMessage");
+    const couponList = document.querySelector("#div1");
 
-    couponForm.addEventListener('submit', async function (event) {
-        event.preventDefault();
-        const formData = new FormData(couponForm);
-        const couponCode = formData.get('couponCode');
+    couponForm.addEventListener("submit", async function (event) {
+      event.preventDefault();
+      const formData = new FormData(couponForm);
+      const couponCode = formData.get("couponCode");
 
-        try {
-            const response = await fetch('/addCoupon', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ couponCode }),
-            });
+      try {
+        const response = await fetch("/addCoupon", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ couponCode }),
+        });
 
-            const data = await response.json();
+        const data = await response.json();
 
-            if (!response.ok) {
-                couponMessage.textContent = data.message;
-                return;
-            }
-
-            couponMessage.textContent = data.message;
-
-            // Add new coupon dynamically
-            const newCoupon = document.createElement('div');
-            newCoupon.className = "border-info px-3 mt-4";
-            newCoupon.style = "border:0.15rem solid; border-radius: 15px; font-family: monospace;";
-            newCoupon.innerHTML = `
-                <div class="card-body">
-                    <p>Coupon Name: ${data.coupons[data.coupons.length - 1].name}</p>
-                    <p>Discount: ${data.coupons[data.coupons.length - 1].discount} (${data.coupons[data.coupons.length - 1].discountType})</p>
-                    <p>Expires On: ${new Date(data.coupons[data.coupons.length - 1].expireOn).toDateString()}</p>
-                </div>`;
-            couponList.appendChild(newCoupon);
-
-            
-                couponMessage.textContent = '';
-            
-        } catch (error) {
-            console.error('Error adding coupon:', error);
+        if (!response.ok) {
+          couponMessage.textContent = data.message;
+          return;
         }
-    });
-});
 
+        couponMessage.textContent = data.message;
+
+        // Add new coupon dynamically
+        const newCoupon = document.createElement("div");
+        newCoupon.className = "border-info px-3 mt-4";
+        newCoupon.style =
+          "border:0.15rem solid; border-radius: 15px; font-family: monospace;";
+        newCoupon.innerHTML = `
+                <div class="card-body">
+                    <p>Coupon Name: ${
+                      data.coupons[data.coupons.length - 1].name
+                    }</p>
+                    <p>Discount: ${
+                      data.coupons[data.coupons.length - 1].discount
+                    } (${
+          data.coupons[data.coupons.length - 1].discountType
+        })</p>
+                    <p>Expires On: ${new Date(
+                      data.coupons[data.coupons.length - 1].expireOn
+                    ).toDateString()}</p>
+                </div>`;
+        couponList.appendChild(newCoupon);
+
+        couponMessage.textContent = "";
+      } catch (error) {
+        console.error("Error adding coupon:", error);
+      }
+    });
+  });
 </script>
 <%-include('../../views/partials/user/footer')%>

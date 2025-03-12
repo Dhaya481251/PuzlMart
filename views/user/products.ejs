@@ -131,7 +131,7 @@
                 <div class="product-item " style="border:1px ridge #e7ab3c;height:420px;width:250px;margin-top:2rem;border-radius:10px">
                     <div class="pi-pic" style="border-radius: 5px;">
                         <img src="/uploads/re-image/<%=products[i].productImage[0]%>" alt="">
-                        <% if(products[i].status === 'Out of Stock'){ %>
+                        <% if(products[i].quantity<=0){ %>
                             <div class="sale" style="background-color: red;"><%=products[i].status%></div>
                         <% }else{ %>
                             <div class="sale"><%=products[i].status%></div>

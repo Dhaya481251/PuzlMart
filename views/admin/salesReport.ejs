@@ -1,118 +1,148 @@
 <%- include("../../views/partials/admin/header") %>
 <main id="main" class="main">
-    <div class="pagetitle">
-      <h1>Sales Report</h1>
-      <nav>
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="/admin">Home</a></li>
-          <li class="breadcrumb-item">Dashboard</li>
-          <li class="breadcrumb-item active"><a href="/admin/salesReport">Sales Report</a></li>
-        </ol>
-      </nav>
-    </div><!-- End Page Title -->
-    <section class="section">
-      <div class="row">
-        <div class="col-lg-12">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Sales Report</h5>
-              <div style="display: flex;justify-content: space-between;align-items: center;">
-                <div style="display: flex;">
-                <div style="margin-right: 2rem;">
-                    <a href="/admin/downloadPDF" class="btn text-white" style="background-color: #760702;">Download PDF</a>
+  <div class="pagetitle">
+    <h1>Sales Report</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/admin">Home</a></li>
+        <li class="breadcrumb-item">Dashboard</li>
+        <li class="breadcrumb-item active">
+          <a href="/admin/salesReport">Sales Report</a>
+        </li>
+      </ol>
+    </nav>
+  </div>
+  
+  <section class="section">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Sales Report</h5>
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+              "
+            >
+              <div style="display: flex">
+                <div style="margin-right: 2rem">
+                  <a
+                    href="/admin/downloadPDF"
+                    class="btn text-white"
+                    style="background-color: #760702"
+                    >Download PDF</a
+                  >
                 </div>
                 <div>
-                    <a href="/admin/downloadExcel" class="btn btn-primary">Download Excel</a>
+                  <a href="/admin/downloadExcel" class="btn btn-primary"
+                    >Download Excel</a
+                  >
                 </div>
-                </div>
-                <div>
-                    <form action="/admin/filterSalesReport" method="POST">
-                        
-                        <select name="filter" id="filter">
-                            <option value="1 Day" >1 Day</option>
-                            <option value="1 Week">1 Week</option>
-                            <option value="1 Month">1 Month</option>
-                            <option value="1 Year">1 Year</option>
-                            <option value="Custom date">Custom Date</option>
-                        </select>
-                        <div id="custom-dates" style="display:none;">
-                            <label for="startDate">Start Date</label>
-                            <input type="date" name="startDate" id="startDate" class="form-control">
-                            <label for="endDate">End Date</label>
-                            <input type="date" name="endDate" id="endDate" class="form-control">
-                        </div>
-                        <button type="submit" class="btn btn-success" >Generate report</button>
-                    </form>
-                </div>
-            </div>
-              <% if(orders.length > 0){ %>
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th>Product Name</th>
-                    <th>Regular Price</th>
-                    <th>Sales Price</th>
-                    <th>Quantity</th>
-                    <th>Discount</th>
-                    <th>Total Amount</th>
-                    <th>Order Status</th>
-                    <th>Payment Method</th>
-                    <th>Payment Status</th>
-                    <th>Delivery Date</th>
-                  </tr>
-                </thead>
-                <tbody>
-                    <% orders.forEach(order => { %>
-                    <% order.items.forEach(item => { %>
-                  <tr id="">
-                    <td><%= item.productId?.productName %></td>
-                    <td><%= item.productId?.regularPrice %></td>
-                    <td><%= item.productId?.salePrice %></td>
-                    <td><%= item.quantity %></td>
-                    <td><%= order.discount %></td>
-                    <td><%= order.finalAmount %></td>
-                    <td><%= order.status %></td>
-                    <td><%= order.paymentMethod %></td>
-                    <td><%= order.paymentStatus %></td>
-                    <td><%= order.deliveryDate %></td>
-                  </tr>
-                <% }) %>
-                <% }) %>
-                </tbody>
-              </table>
-              <div style="border: 1px solid;padding:1rem;margin:5rem">
-                <h5>Report Summary</h5>
-                <p>Total Sales : <%=totalOrders%> </p>
-                <p>Total Order Amount : <%=totalOrderAmount%> </p>
-                <p>Total Discount : <%=totalDiscount%> </p>
               </div>
-              <% } %>
+              <div>
+                <form action="/admin/filterSalesReport" method="POST">
+                  <select name="filter" id="filter">
+                    <option value="1 Day">1 Day</option>
+                    <option value="1 Week">1 Week</option>
+                    <option value="1 Month">1 Month</option>
+                    <option value="1 Year">1 Year</option>
+                    <option value="Custom date">Custom Date</option>
+                  </select>
+                  <div id="custom-dates" style="display: none">
+                    <label for="startDate">Start Date</label>
+                    <input
+                      type="date"
+                      name="startDate"
+                      id="startDate"
+                      class="form-control"
+                    />
+                    <label for="endDate">End Date</label>
+                    <input
+                      type="date"
+                      name="endDate"
+                      id="endDate"
+                      class="form-control"
+                    />
+                  </div>
+                  <button type="submit" class="btn btn-success">
+                    Generate report
+                  </button>
+                </form>
+              </div>
             </div>
-            <div class="container mt-3">
-                <nav aria-label="Page navigation">
-                    <ul class="pagination justify-content-center mb-20" style="margin-right: 200px;">
-                        <% for(let i=1 ; i<=totalPages ; i++){ %>
-                            <li class="page-item <%=(i===currentPage)? 'active' : ''%>">
-                                <a class="page-link" href="?page=<%=i%>"><%= i %></a>
-                            </li>
-                        <% } %>
-                    </ul>
-                </nav>
+            <% if(orders.length > 0){ %>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Product Name</th>
+                  <th>Regular Price</th>
+                  <th>Sales Price</th>
+                  <th>Quantity</th>
+                  <th>Discount</th>
+                  <th>Total Amount</th>
+                  <th>Order Status</th>
+                  <th>Payment Method</th>
+                  <th>Payment Status</th>
+                  <th>Delivery Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% orders.forEach(order => { %> <% order.items.forEach(item => {
+                %>
+                <tr id="">
+                  <td><%= item.productId?.productName %></td>
+
+                  <td><%= item.productId?.regularPrice %></td>
+                  <td><%= item.productId?.salePrice %></td>
+
+                  <td><%= item.quantity %></td>
+                  <td><%= order.discount %></td>
+                  <td><%= order.finalAmount %></td>
+                  <td><%= order.status %></td>
+                  <td><%= order.paymentMethod %></td>
+                  <td><%= order.paymentStatus %></td>
+                  <td><%= order.deliveryDate.toLocaleDateString() %></td>
+                </tr>
+                <% }) %> <% }) %>
+              </tbody>
+            </table>
+            <div style="border: 1px solid; padding: 1rem; margin: 5rem">
+              <h5>Report Summary</h5>
+              <p>Total Sales : <%=totalOrders%></p>
+              <p>Total Order Amount : <%=totalOrderAmount%></p>
+              <p>Total Discount : <%=totalDiscount%></p>
             </div>
+            <% } %>
+          </div>
+          <div class="container mt-3">
+            <nav aria-label="Page navigation">
+              <ul
+                class="pagination justify-content-center mb-20"
+                style="margin-right: 200px"
+              >
+                <% for(let i=1 ; i<=totalPages ; i++){ %>
+                <li class="page-item <%=(i===currentPage)? 'active' : ''%>">
+                  <a class="page-link" href="?page=<%=i%>"><%= i %></a>
+                </li>
+                <% } %>
+              </ul>
+            </nav>
           </div>
         </div>
       </div>
-    </section>
-  </main>
- 
+    </div>
+  </section>
+</main>
 <script>
-document.getElementById('filter').addEventListener('change', function() {
-    var customDatesSection = document.getElementById('custom-dates');
-    if (this.value === 'Custom date') {
-        customDatesSection.style.display = 'block';
+  document.getElementById("filter").addEventListener("change", function () {
+    var customDatesSection = document.getElementById("custom-dates");
+    if (this.value === "Custom date") {
+      customDatesSection.style.display = "block";
     } else {
-        customDatesSection.style.display = 'none';
+      customDatesSection.style.display = "none";
     }
-});
+  });
 </script>
 <%-include('../../views/partials/admin/footer')%>

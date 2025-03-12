@@ -5,12 +5,14 @@
     <h1>Brands</h1>
     <nav>
       <ol class="breadcrumb">
-
         <li class="breadcrumb-item">Dashboard</li>
-        <li class="breadcrumb-item active"><a href="/admin/brands">Brands</a></li>
+        <li class="breadcrumb-item active">
+          <a href="/admin/brands">Brands</a>
+        </li>
       </ol>
     </nav>
-  </div> <!-- End Page Title -->
+  </div>
+
   <section class="section">
     <div class="row">
       <div class="col-lg-12">
@@ -18,7 +20,13 @@
           <div class="card-body">
             <h5 class="card-title">Brands</h5>
             <div>
-              <a href="#brandForm" class="btn btn-primary" style="border: none;text-decoration: none;background: #e7ab3c;" id="addBrand">Add New Brand</a>
+              <a
+                href="#brandForm"
+                class="btn btn-primary"
+                style="border: none; text-decoration: none; background: #e7ab3c"
+                id="addBrand"
+                >Add New Brand</a
+              >
             </div>
             <% if(data.length > 0){ %>
             <table class="table">
@@ -32,46 +40,81 @@
                 </tr>
               </thead>
               <tbody>
-              <% data.reverse().forEach((brand,index) =>{ %>
+                <% data.reverse().forEach((brand,index) =>{ %>
                 <tr>
-                  <td style="width: 10%;"><img src="/uploads/re-image/<%=brand.brandImage%>" alt="<%=brand.brandName%>" style="width:100%;border-radius: 5px;box-shadow: 0px 1px 8px #00000096;"></td>
+                  <td style="width: 10%">
+                    <img
+                      src="/uploads/re-image/<%=brand.brandImage%>"
+                      alt="<%=brand.brandName%>"
+                      style="
+                        width: 100%;
+                        border-radius: 5px;
+                        box-shadow: 0px 1px 8px #00000096;
+                      "
+                    />
+                  </td>
                   <td><%=brand.brandName%></td>
                   <td>
-                      <% if(brand.isBlocked){ %>
-                          <span class="badge rounded-pill alert-danger" style="background-color: red;">Blocked</span>
-                      <% }else{ %>
-                          <span class="badge rounded-pill alert-success" style="background-color: green;">Unblocked</span>
-                      <% } %>
+                    <% if(brand.isBlocked){ %>
+                    <span
+                      class="badge rounded-pill alert-danger"
+                      style="background-color: red"
+                      >Blocked</span
+                    >
+                    <% }else{ %>
+                    <span
+                      class="badge rounded-pill alert-success"
+                      style="background-color: green"
+                      >Unblocked</span
+                    >
+                    <% } %>
                   </td>
                   <td>
-                      <% if(brand.isBlocked===false){ %>
-                          <button class="btn btn-danger" onclick="confirmBlock('<%=brand._id%>')">
-                            Block
-                          </button>
-                      <% }else{ %>
-                          <button class="btn btn-success" onclick="confirmUnblock('<%=brand._id%>')">
-                            Unblock
-                          </button>
-                      <% } %>
+                    <% if(brand.isBlocked===false){ %>
+                    <button
+                      class="btn btn-danger"
+                      onclick="confirmBlock('<%=brand._id%>')"
+                    >
+                      Block
+                    </button>
+                    <% }else{ %>
+                    <button
+                      class="btn btn-success"
+                      onclick="confirmUnblock('<%=brand._id%>')"
+                    >
+                      Unblock
+                    </button>
+                    <% } %>
                   </td>
-                  <td><button class="btn btn-danger" onclick="return confirmDelete('<%=brand._id%>')">Delete</button></td>
+                  <td>
+                    <button
+                      class="btn btn-danger"
+                      onclick="return confirmDelete('<%=brand._id%>')"
+                    >
+                      Delete
+                    </button>
+                  </td>
                 </tr>
-              <% }) %>
+                <% }) %>
               </tbody>
             </table>
             <% }else{ %>
-              <h3>No brand is added</h3>
+            <h3>No brand is added</h3>
             <% } %>
           </div>
         </div>
       </div>
     </div>
   </section>
-  <div class="card" id="brandForm" style="display: none;">
+  <div class="card" id="brandForm" style="display: none">
     <div class="card-body">
       <h5 class="card-title">Add New Brand</h5>
 
-      <form class="row g-3" onsubmit="handleFormSubmit(event)" enctype="multipart/form-data">
+      <form
+        class="row g-3"
+        onsubmit="handleFormSubmit(event)"
+        enctype="multipart/form-data"
+      >
         <div class="col-md-12">
           <div class="form-floating">
             <img id="previewImage" src="" alt="" />
@@ -79,14 +122,26 @@
               <label for="">Choose Brand Image</label>
             </div>
             <div class="col-sm-10">
-              <input class="form-control" type="file" name="image" id="brandImage" placeholder="Brand Image">
+              <input
+                class="form-control"
+                type="file"
+                name="image"
+                id="brandImage"
+                placeholder="Brand Image"
+              />
             </div>
             <div id="image-error" class="error-message"></div>
           </div>
         </div>
         <div class="col-md-10">
           <div class="form-floating">
-            <input type="text" class="form-control" id="name" placeholder="Brand Name" name="name">
+            <input
+              type="text"
+              class="form-control"
+              id="name"
+              placeholder="Brand Name"
+              name="name"
+            />
             <label for="floatingName">Brand Name</label>
             <div id="name-error" class="error-message"></div>
           </div>
@@ -95,27 +150,26 @@
           <button type="submit" class="btn btn-primary">Add Brand</button>
         </div>
       </form>
-
     </div>
   </div>
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.js"></script>
 <script>
-  const addBrand = document.getElementById('addBrand');
-  const brandForm = document.getElementById('brandForm');
-  addBrand.addEventListener('click',() => {
-    brandForm.style.display = 'block'
-  })
+  const addBrand = document.getElementById("addBrand");
+  const brandForm = document.getElementById("brandForm");
+  addBrand.addEventListener("click", () => {
+    brandForm.style.display = "block";
+  });
   function confirmBlock(brandId) {
     Swal.fire({
-      title: 'Are you sure?',
-      text: 'Do you want to block this brand?',
-      icon: 'warning',
+      title: "Are you sure?",
+      text: "Do you want to block this brand?",
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonText: 'Yes, Block it!',
-      cancelButtonText: 'Cancel',
-      reverseButtons: true
+      confirmButtonText: "Yes, Block it!",
+      cancelButtonText: "Cancel",
+      reverseButtons: true,
     }).then((result) => {
       if (result.isConfirmed) {
         window.location.href = `/admin/blockBrand?id=${brandId}`;
@@ -124,13 +178,13 @@
   }
   function confirmUnblock(brandId) {
     Swal.fire({
-      title: 'Are you sure?',
-      text: 'Do you want to unblock this brand?',
-      icon: 'warning',
+      title: "Are you sure?",
+      text: "Do you want to unblock this brand?",
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonText: 'Yes, Unblock it!',
-      cancelButtonText: 'Cancel',
-      reverseButtons: true
+      confirmButtonText: "Yes, Unblock it!",
+      cancelButtonText: "Cancel",
+      reverseButtons: true,
     }).then((result) => {
       if (result.isConfirmed) {
         window.location.href = `/admin/unblockBrand?id=${brandId}`;
@@ -139,128 +193,143 @@
   }
   function confirmDelete(brandId) {
     const confirmation = Swal.fire({
-      title: 'Are you sure?',
-      text: 'Do you want to delete the brand?',
-      icon: 'warning',
+      title: "Are you sure?",
+      text: "Do you want to delete the brand?",
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonText: 'Yes, Delete it!',
-      cancelButtonText: 'Cancel',
-      reverseButtons: true
+      confirmButtonText: "Yes, Delete it!",
+      cancelButtonText: "Cancel",
+      reverseButtons: true,
     }).then((result) => {
       if (result.isConfirmed) {
         fetch(`/admin/deleteBrand?id=${brandId}`, {
-          method: 'DELETE',
+          method: "DELETE",
           headers: {
-            'Content-Type': 'application/json',
-          }
+            "Content-Type": "application/json",
+          },
         })
-        .then(response => {
-          if (response.ok) {
-            Swal.fire('Deleted', 'The brand has been deleted successfully', 'success')
-            .then(() => location.reload());
-          } else {
-            Swal.fire('Error!', 'Failed to delete the brand. Please try again', 'error');
-          }
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          Swal.fire('Error!', 'An error occurred while trying to delete the brand', 'error');
-        });
+          .then((response) => {
+            if (response.ok) {
+              Swal.fire(
+                "Deleted",
+                "The brand has been deleted successfully",
+                "success"
+              ).then(() => location.reload());
+            } else {
+              Swal.fire(
+                "Error!",
+                "Failed to delete the brand. Please try again",
+                "error"
+              );
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            Swal.fire(
+              "Error!",
+              "An error occurred while trying to delete the brand",
+              "error"
+            );
+          });
       }
     });
   }
-  document.getElementById('brandImage').addEventListener('change', function(event) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      const previewImage = document.getElementById('previewImage');
-      previewImage.src = e.target.result;
-      previewImage.style.width = '15%';
-      previewImage.style.borderRadius = '10px';
-      previewImage.style.margin = '1rem';
-      previewImage.style.boxShadow = '0px 2px 15px 0px #00000096';
-    };
-    reader.readAsDataURL(event.target.files[0]);
-  });
-  function handleFormSubmit(event){
+  document
+    .getElementById("brandImage")
+    .addEventListener("change", function (event) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const previewImage = document.getElementById("previewImage");
+        previewImage.src = e.target.result;
+        previewImage.style.width = "15%";
+        previewImage.style.borderRadius = "10px";
+        previewImage.style.margin = "1rem";
+        previewImage.style.boxShadow = "0px 2px 15px 0px #00000096";
+      };
+      reader.readAsDataURL(event.target.files[0]);
+    });
+  function handleFormSubmit(event) {
     event.preventDefault();
-    if(!validateForm()){
+    if (!validateForm()) {
       return;
     }
     const form = event.target;
     const formData = new FormData(form);
-    fetch('/admin/addBrand', {
-      method: 'POST',
+    fetch("/admin/addBrand", {
+      method: "POST",
       body: formData,
     })
-    .then(response => {
-      if(!response.ok){
-        return response.json().then(data => {
-          throw new Error(data.message || `HTTP error : ${response.status}`);
-        });
-        
-      }
-      return response.json();
-    })
-    .then(data => {
-      Swal.fire({
-        icon: data.type,
-        title: data.message,
-        showConfirmButton:true,
-        timer:1500
-      }).then(()=>{
-         if(data.type === 'success'){
-          window.location.href='/admin/brands';
-        }else {
+      .then((response) => {
+        if (!response.ok) {
+          return response.json().then((data) => {
+            throw new Error(data.message || `HTTP error : ${response.status}`);
+          });
+        }
+        return response.json();
+      })
+      .then((data) => {
         Swal.fire({
-          icon: 'error',
+          icon: data.type,
           title: data.message,
           showConfirmButton: true,
-          timer: 1500
+          timer: 1500,
+        }).then(() => {
+          if (data.type === "success") {
+            window.location.href = "/admin/brands";
+          } else {
+            Swal.fire({
+              icon: "error",
+              title: data.message,
+              showConfirmButton: true,
+              timer: 1500,
+            });
+          }
         });
-      }
-      });
-    })
-    .catch(error => {
-      console.error('Error : ',error);
+      })
+      .catch((error) => {
+        console.error("Error : ", error);
         Swal.fire({
-          icon:'error',
-          title:error.message,
-          showConfirmButton:true,
-          timer:1500
+          icon: "error",
+          title: error.message,
+          showConfirmButton: true,
+          timer: 1500,
         });
-    });
+      });
   }
-  function validateForm(){
+  function validateForm() {
     clearErrorMessages();
-    const name = document.getElementsByName('name')[0].value.trim();
-    const image = document.getElementById('brandImage')
+    const name = document.getElementsByName("name")[0].value.trim();
+    const image = document.getElementById("brandImage");
     let isValid = true;
-    if(name === ''){
-    displayErrorMessage('name-error','Please enter a name');
-    isValid = false;
-  }else if(!/^[a-zA-Z0-9\s]+$/.test(name)){
-    displayErrorMessage('name-error','Brand name should contain only alphanumeric characters');
-    isValid = false;
+    if (name === "") {
+      displayErrorMessage("name-error", "Please enter a name");
+      isValid = false;
+    } else if (!/^[a-zA-Z0-9\s]+$/.test(name)) {
+      displayErrorMessage(
+        "name-error",
+        "Brand name should contain only alphanumeric characters"
+      );
+      isValid = false;
+    }
+
+    if (image.files.length === 0) {
+      displayErrorMessage("image-error", "Please add an image");
+      isValid = false;
+    }
+    return isValid;
   }
-  
-  if(image.files.length===0){
-    displayErrorMessage('image-error','Please add an image');
-    isValid = false
-  }
-  return isValid;
-  }
-  function displayErrorMessage(elementId,message){
+  function displayErrorMessage(elementId, message) {
     var errorElement = document.getElementById(elementId);
     errorElement.innerText = message;
-    errorElement.style.display = 'block';
-    errorElement.style.color = 'red';
+    errorElement.style.display = "block";
+    errorElement.style.color = "red";
   }
-  function clearErrorMessages(){
-    const errorElements = document.getElementsByClassName('error-message');
+  function clearErrorMessages() {
+    const errorElements = document.getElementsByClassName("error-message");
     Array.from(errorElements).forEach((element) => {
-      element.innerText = '';
-      element.style.display = 'none';
-    })
+      element.innerText = "";
+      element.style.display = "none";
+    });
   }
 </script>
 

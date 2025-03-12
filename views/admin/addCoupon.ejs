@@ -1,221 +1,237 @@
 <%- include('../../views/partials/admin/header') %>
 <main id="main" class="main">
-    <div class="pagetitle">
-      <h1>Add New Coupon</h1>
-      <nav>
-        <ol class="breadcrumb">
+  <div class="pagetitle">
+    <h1>Add New Coupon</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="/admin/coupons">Coupons</a></li>
+        <li class="breadcrumb-item active">
+          <a href="/admin/addCoupon">Add Coupon</a>
+        </li>
+      </ol>
+    </nav>
+  </div>
 
-          <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
-          <li class="breadcrumb-item"><a href="/admin/coupons">Coupons</a></li>
-          <li class="breadcrumb-item active"><a href="/admin/addCoupon">Add Coupon</a></li>
-        </ol>
-      </nav>
-    </div><!-- End Page Title -->
-  
-    <section class="section">
-      <div class="row">
-        <div class="col-lg-12">
-  
-  <div class="card">
-    <div class="card-body">
-      <h5 class="card-title">Add New Coupon</h5>
+  <section class="section">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Add New Coupon</h5>
 
-      <form class="row g-3"  onsubmit="validateAndSubmit(event)">
-        <div class="col-md-6">
-          <div class="form-floating">
-              <input type="text" class="form-control" name="name" />
-            <label for="floatingName">Coupon Name</label>
-            <div id="name-error" class="error-message"></div>
-          </div>
-        </div>
-        <div class="col-md-6">
-          <div class="form-floating">
-            <input type="text" class="form-control" name="code" />
-            <label for="floatingCode">Coupon Code</label>
-            <div id="code-error" class="error-message"></div>
-          </div>
-        </div>
-        <div class="col-md-6">
-          <div class="form-floating">
-            <input type="text" class="form-control" name="minimumPrice" />
-            <label for="floatingMinimumPrice">Minimum Price</label>
-            <div id="minimumPrice-error" class="error-message"></div>
-          </div>
-        </div>
-        <div class="col-md-6">
-          <div class="form-floating">
-            <input type="date" class="form-control" name="expireOn" />
-            <label for="floatingExpireOn">Expires On</label>
-            <div id="expireOn-error" class="error-message"></div>
-          </div>
-        </div>
-        <div class="col-md-6">
-            <div class="form-floating mb-3">
-                <select name="discountType"  class="form-select" id="floatingSelect" aria-label="Floating label select example">
+            <form class="row g-3" onsubmit="validateAndSubmit(event)">
+              <div class="col-md-6">
+                <div class="form-floating">
+                  <input type="text" class="form-control" name="name" />
+                  <label for="floatingName">Coupon Name</label>
+                  <div id="name-error" class="error-message"></div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-floating">
+                  <input type="text" class="form-control" name="code" />
+                  <label for="floatingCode">Coupon Code</label>
+                  <div id="code-error" class="error-message"></div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-floating">
+                  <input type="text" class="form-control" name="minimumPrice" />
+                  <label for="floatingMinimumPrice">Minimum Price</label>
+                  <div id="minimumPrice-error" class="error-message"></div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-floating">
+                  <input type="date" class="form-control" name="expireOn" />
+                  <label for="floatingExpireOn">Expires On</label>
+                  <div id="expireOn-error" class="error-message"></div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-floating mb-3">
+                  <select
+                    name="discountType"
+                    class="form-select"
+                    id="floatingSelect"
+                    aria-label="Floating label select example"
+                  >
                     <option value="Percentage">Percentage</option>
                     <option value="Flat">Flat</option>
-                </select>
-                <label class="form-label" for="">Discount Type</label>
-                <div id="discountType-error" class="error-message"></div>
-            </div>
-        </div>
-        <div class="col-md-6">
-          <div class="form-floating">
-            <input type="text" class="form-control" name="discount" />
-            <label for="floatingDiscount">Discount</label>
-            <div id="discount-error" class="error-message"></div>
+                  </select>
+                  <label class="form-label" for="">Discount Type</label>
+                  <div id="discountType-error" class="error-message"></div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-floating">
+                  <input type="text" class="form-control" name="discount" />
+                  <label for="floatingDiscount">Discount</label>
+                  <div id="discount-error" class="error-message"></div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-floating">
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="usageLimit"
+                    name="usageLimit"
+                  />
+                  <label for="floatingUsageLimit"
+                    >Usage Limit (Max uses per user)</label
+                  >
+                  <div id="usageLimit-error" class="error-message"></div>
+                </div>
+              </div>
+              <div class="text-center">
+                <button type="submit" class="btn btn-primary">
+                  Create Coupon
+                </button>
+              </div>
+            </form>
           </div>
         </div>
-        <div class="col-md-6">
-          <div class="form-floating">
-              <input type="number" class="form-control" id="usageLimit" name="usageLimit" >
-            <label for="floatingUsageLimit">Usage Limit (Max uses per user)</label>
-            <div id="usageLimit-error" class="error-message"></div>
-          </div>
-        </div>
-        <div class="text-center">
-          <button type="submit" class="btn btn-primary">Create Coupon</button>
-        </div>
-      </form>
-  
+      </div>
     </div>
-  </div>
-  </div>
-  </div>
   </section>
-
-  </main>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script>
-  
+</main>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
   function validateAndSubmit(event) {
     event.preventDefault();
     if (!validateForm()) return;
     const form = event.target;
     const formData = Object.fromEntries(new FormData(form));
-    fetch('/admin/addCoupon', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
+    fetch("/admin/addCoupon", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
     })
-        .then(response => {
-            return response.json().then(data => {
-                if (!response.ok) {
-                    throw new Error(data.message || 'HTTP error: ' + response.status);
-                }
-                return data;
-            });
-        })
-        .then(data => {
-            Swal.fire({
-                icon: data.type,
-                title: data.message,
-                showConfirmButton: true,
-                timer: 1500,
-            }).then(() => {
-                if (data.type === 'success') {
-                    window.location.href = '/admin/coupons';
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: data.message,
-                        showConfirmButton: true,
-                        timer: 1500
-                    });
-                }
-            });
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            Swal.fire({
-                icon: 'error',
-                title: error.message,
-                showConfirmButton: true,
-                timer: 1500,
-            });
+      .then((response) => {
+        return response.json().then((data) => {
+          if (!response.ok) {
+            throw new Error(data.message || "HTTP error: " + response.status);
+          }
+          return data;
         });
-}
-  
-      function validateForm(){
-  
-          clearErrorMessages();
-          const name = document.getElementsByName('name')[0].value;
-          const code = document.getElementsByName('code')[0].value;
-          const minimumPrice = document.getElementsByName('minimumPrice')[0].value;
-          const expireOn = document.getElementsByName('expireOn')[0].value;
-          const discountType = document.getElementsByName('discountType')[0].value;
-          const discount = document.getElementsByName('discount')[0].value;
-          const usageLimit = document.getElementsByName('usageLimit')[0].value;
-          let isValid = true;
-  
-          if(name === ""){
-              displayErrorMessage('name-error','Please enter a coupon name');
-              isValid = false;
+      })
+      .then((data) => {
+        Swal.fire({
+          icon: data.type,
+          title: data.message,
+          showConfirmButton: true,
+          timer: 1500,
+        }).then(() => {
+          if (data.type === "success") {
+            window.location.href = "/admin/coupons";
+          } else {
+            Swal.fire({
+              icon: "error",
+              title: data.message,
+              showConfirmButton: true,
+              timer: 1500,
+            });
           }
-  
-          
-          if(code === ""){
-              displayErrorMessage('code-error','Please enter a coupon code');
-              isValid = false;
-          }
-  if (!/^\d+(\.\d{1,2})?$/.test(minimumPrice) || parseFloat(minimumPrice) < 0) {
-      displayErrorMessage('minimumPrice-error', 'Please enter a valid non-negative minimum price.');
-      isValid = false;
+        });
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        Swal.fire({
+          icon: "error",
+          title: error.message,
+          showConfirmButton: true,
+          timer: 1500,
+        });
+      });
   }
-  
-  
-  
-  
-          if(expireOn === ""){
-              displayErrorMessage('expireOn-error','Please enter a expired date for coupon');
-              isValid = false;
-          }else{
-            const currentDate = new Date();
-            const selectedDate = new Date(expireOn);
-            if(selectedDate < currentDate){
-                displayErrorMessage('expireOn-error','Expiration date cannot be in the past');
-                isValid = false;
-            }
-            
-          }
-  
-          if(!discountType){
-          displayErrorMessage('discountType-error','Please select a discount type.');
-          isValid = false;
+
+  function validateForm() {
+    clearErrorMessages();
+    const name = document.getElementsByName("name")[0].value;
+    const code = document.getElementsByName("code")[0].value;
+    const minimumPrice = document.getElementsByName("minimumPrice")[0].value;
+    const expireOn = document.getElementsByName("expireOn")[0].value;
+    const discountType = document.getElementsByName("discountType")[0].value;
+    const discount = document.getElementsByName("discount")[0].value;
+    const usageLimit = document.getElementsByName("usageLimit")[0].value;
+    let isValid = true;
+
+    if (name === "") {
+      displayErrorMessage("name-error", "Please enter a coupon name");
+      isValid = false;
+    }
+
+    if (code === "") {
+      displayErrorMessage("code-error", "Please enter a coupon code");
+      isValid = false;
+    }
+    if (
+      !/^\d+(\.\d{1,2})?$/.test(minimumPrice) ||
+      parseFloat(minimumPrice) < 0
+    ) {
+      displayErrorMessage(
+        "minimumPrice-error",
+        "Please enter a valid non-negative minimum price."
+      );
+      isValid = false;
+    }
+
+    if (expireOn === "") {
+      displayErrorMessage(
+        "expireOn-error",
+        "Please enter a expired date for coupon"
+      );
+      isValid = false;
+    } else {
+      const currentDate = new Date();
+      const selectedDate = new Date(expireOn);
+      if (selectedDate < currentDate) {
+        displayErrorMessage(
+          "expireOn-error",
+          "Expiration date cannot be in the past"
+        );
+        isValid = false;
       }
-  
-      if(!/^\d+(\.\d{1,2})?$/.test(discount) || parseFloat(discount) <= 0){
-          displayErrorMessage('discount-error','Please enter a valid discount');
-          isValid = false;
-      }
-  
-      if(!/^\d+(\.\d{1,2})?$/.test(usageLimit) || parseFloat(usageLimit) <= 0){
-          displayErrorMessage('usageLimit-error','Please enter a usageLimit');
-          isValid = false;
-      }
-          
-          return isValid;
-      }
-  
-      
-  
-      function displayErrorMessage(elementId, message) {
-          var errorElement = document.getElementById(elementId);
-          errorElement.innerText = message;
-          errorElement.style.display = "block";
-          errorElement.style.color = 'red';
-      }
-      
-      
-      function clearErrorMessages() {
-          const errorElements = document.getElementsByClassName('error-message');
-          Array.from(errorElements).forEach(element => {
-              element.innerText = '';
-              element.style.display = 'none';
-          });
-         
-      }
-  </script>
-  <%- include("../../views/partials/admin/footer") %>
+    }
+
+    if (!discountType) {
+      displayErrorMessage(
+        "discountType-error",
+        "Please select a discount type."
+      );
+      isValid = false;
+    }
+
+    if (!/^\d+(\.\d{1,2})?$/.test(discount) || parseFloat(discount) <= 0) {
+      displayErrorMessage("discount-error", "Please enter a valid discount");
+      isValid = false;
+    }
+
+    if (!/^\d+(\.\d{1,2})?$/.test(usageLimit) || parseFloat(usageLimit) <= 0) {
+      displayErrorMessage("usageLimit-error", "Please enter a usageLimit");
+      isValid = false;
+    }
+
+    return isValid;
+  }
+
+  function displayErrorMessage(elementId, message) {
+    var errorElement = document.getElementById(elementId);
+    errorElement.innerText = message;
+    errorElement.style.display = "block";
+    errorElement.style.color = "red";
+  }
+
+  function clearErrorMessages() {
+    const errorElements = document.getElementsByClassName("error-message");
+    Array.from(errorElements).forEach((element) => {
+      element.innerText = "";
+      element.style.display = "none";
+    });
+  }
+</script>
+<%- include("../../views/partials/admin/footer") %>

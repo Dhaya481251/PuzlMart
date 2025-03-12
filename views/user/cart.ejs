@@ -1,96 +1,136 @@
 <%- include('../../views/partials/user/header') %>
 <nav class="breadcrumbs mt-3 mb-3 ml-5">
-    <a href="/" class="breadcrumbs-txt" >Home</a>&gt;
-    <a href="/cart" class="breadcrumbs-txt">Cart</a>  
+  <a href="/" class="breadcrumbs-txt">Home</a>&gt;
+  <a href="/cart" class="breadcrumbs-txt">Cart</a>
 </nav>
 <section class="shopping-cart spad">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="cart-table">
-                    <% if(cart && cart.items && cart.items.length > 0){ %>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th class="px-2">Image</th>
-                                <th class="p-name px-2">Product Name</th>
-                                <th>Price</th>
-                                <th>Quantity</th>
-                                <th>Total</th>
-                                <th><i class="ti-close"></i></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            
-                            <% cart.items.forEach(item => { %>
-                            <% if(item.productId) { %>
-                            <tr>
-                                <td class="cart-pic first-row px-3">
-                                    <a href="/productDetails/<%=item.productId._id%>" style="text-decoration: none;">
-                                        <img src="/uploads/re-image/<%=item.productId.productImage[0]%>" alt="">
-                                    </a>
-                                </td>
-                                <td class="cart-title first-row px-2">
-                                    <h5><%=item.productId.productName%></h5>
-                                </td>
-                                <td class="p-price first-row">Rs <%=item.productId.salePrice%></td>
-                                <td class="qua-col first-row">
-                                    <div class="quantity">
-                                        <div class="pro-qty" style="display: flex;">
-                                            <a href="#" data-id="<%=item.productId._id%>" class="btn decrease-btn" style="margin-left: -1rem;">
-                                                <span class="dec qty-btn">-</span>
-                                            </a>
-                                            <input type="text" value="<%=item.quantity%>" class="">
-                                            <a href="#" data-id="<%=item.productId._id%>" class="btn increase-btn">
-                                                <span class="inc qty-btn">+</span>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="total-price first-row"><%=item.productId.salePrice*item.quantity%></td>
-                                <td class="close-td first-row">
-                                        <a href="/removeFromCart/<%=item.productId._id%>" class="btn btn-danger btn-sm cart-remove" style="text-decoration: none;">
-                                            <i class="ti-close"></i>
-                                        </a>
-                                </td>
-                            </tr>
-                            
-                            <% } else { %> 
-                                <p>Product not found</p>  
-                              <% } %>
-                            <% }) %>
-                          
-                        </tbody>
-                    </table>
-                    <% }else{ %>
-                                  
-                        <h4 colspan="4">Your cart is empty</h4>
-                              
-                    <% } %>
-                </div>
-                <div class="row">
-                    <div class="col-lg-4">
-                        <div class="cart-buttons">
-                            <a href="/" class="primary-btn continue-shop">Continue shopping</a>
-
-                        </div>
-
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="cart-table">
+          <% if(cart && cart.items && cart.items.length > 0){ %>
+          <table>
+            <thead>
+              <tr>
+                <th class="px-2">Image</th>
+                <th class="p-name px-2">Product Name</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Total</th>
+                <th><i class="ti-close"></i></th>
+              </tr>
+            </thead>
+            <tbody>
+              <% cart.items.forEach(item => { %> <% if(item.productId) { %>
+              <tr>
+                <td class="cart-pic first-row px-3">
+                  <a
+                    href="/productDetails/<%=item.productId._id%>"
+                    style="text-decoration: none"
+                  >
+                    <img
+                      src="/uploads/re-image/<%=item.productId.productImage[0]%>"
+                      alt=""
+                    />
+                  </a>
+                </td>
+                <td class="cart-title first-row px-2">
+                  <h5><%=item.productId.productName%></h5>
+                </td>
+                <td class="p-price first-row">
+                  Rs <%=item.productId.salePrice%>
+                </td>
+                <td class="qua-col first-row">
+                  <div class="quantity">
+                    <div class="pro-qty" style="display: flex">
+                      <a
+                        href="#"
+                        data-id="<%=item.productId._id%>"
+                        class="btn decrease-btn"
+                        style="margin-left: -1rem"
+                      >
+                        <span class="dec qty-btn">-</span>
+                      </a>
+                      <input type="text" value="<%=item.quantity%>" class="" />
+                      <a
+                        href="#"
+                        data-id="<%=item.productId._id%>"
+                        class="btn increase-btn"
+                      >
+                        <span class="inc qty-btn">+</span>
+                      </a>
                     </div>
-                    <div class="col-lg-4 offset-lg-4">
-                        <div class="proceed-checkout">
-                            <% if(cart && cart.items.length > 0){ %>
-                            <ul>
-                                <li class="subtotal">Price <span><%=cart ? cart.items.reduce((acc,item) => acc + item.productId.regularPrice*item.quantity,0):0%></span></li>
-                                <li class="discount">Discount <span><%= (cart? cart.items.reduce((acc,item) => acc+ (item.productId.regularPrice - item.productId.salePrice)*item.quantity,0):0).toFixed(2) %></span></li>
-                                <li class="cart-total">Total <span><%= (cart? cart.items.reduce((acc,item) => acc + item.productId.salePrice*item.quantity,0):0).toFixed(2) %></span></li>
-                            </ul>
-                            <% } %>
-                            <a href="/buyNow" class="proceed-btn">PROCEED TO CHECK OUT</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                  </div>
+                </td>
+                <td class="total-price first-row">
+                  <%=item.productId.salePrice*item.quantity%>
+                </td>
+                <td class="close-td first-row">
+                  <a
+                    href="/removeFromCart/<%=item.productId._id%>"
+                    class="btn btn-danger btn-sm cart-remove"
+                    style="text-decoration: none"
+                  >
+                    <i class="ti-close"></i>
+                  </a>
+                </td>
+              </tr>
+
+              <% } else { %>
+              <p>Product not found</p>
+              <% } %> <% }) %>
+            </tbody>
+          </table>
+          <% }else{ %>
+
+          <h4 colspan="4">Your cart is empty</h4>
+
+          <% } %>
         </div>
+        <div class="row">
+          <div class="col-lg-4">
+            <div class="cart-buttons">
+              <a href="/" class="primary-btn continue-shop"
+                >Continue shopping</a
+              >
+            </div>
+          </div>
+          <div class="col-lg-4 offset-lg-4">
+            <div class="proceed-checkout">
+              <% if(cart && cart.items.length > 0){ %>
+              <ul>
+                <li class="subtotal">
+                  Price
+                  <span
+                    ><%=cart ? cart.items.reduce((acc,item) => acc +
+                    item.productId.regularPrice*item.quantity,0):0%></span
+                  >
+                </li>
+                <li class="discount">
+                  Discount
+                  <span
+                    ><%= (cart? cart.items.reduce((acc,item) => acc+
+                    (item.productId.regularPrice -
+                    item.productId.salePrice)*item.quantity,0):0).toFixed(2)
+                    %></span
+                  >
+                </li>
+                <li class="cart-total">
+                  Total
+                  <span
+                    ><%= (cart? cart.items.reduce((acc,item) => acc +
+                    item.productId.salePrice*item.quantity,0):0).toFixed(2)
+                    %></span
+                  >
+                </li>
+              </ul>
+              <% } %>
+              <a href="/buyNow" class="proceed-btn">PROCEED TO CHECK OUT</a>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 </section>
 <%- include('../../views/partials/user/footer') %>

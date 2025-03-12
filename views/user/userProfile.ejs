@@ -1,63 +1,112 @@
 <%-include('../../views/partials/user/header')%>
 <nav class="breadcrumbs mt-3 mb-3 container">
-    <a href="/" class="breadcrumbs-txt" style="text-decoration: none;">Home</a>&gt;
-    <a href="/userProfile" class="breadcrumbs-txt" style="text-decoration: none;">My Account</a>
+  <a href="/" class="breadcrumbs-txt" style="text-decoration: none">Home</a>&gt;
+  <a href="/userProfile" class="breadcrumbs-txt" style="text-decoration: none"
+    >My Account</a
+  >
 </nav>
 
-<div class="container-fluid" style="margin-top: 3rem;">
-    <div class="col-md-12 " style="background-color: #f8fbe4;">
-        <div class="row row-cols-1 row-cols-md-3 g-4">
-            <a href="/userDetails" style="text-decoration: none;">
-                <div class="col user-profile-card">
-                    <div class="card h-100 mb-3 mt-3" style="border-width: 0.15rem;border:1px solid #e7ab3c;border-radius: 10px;">
-                        <div class="card-body">
-                            <h5 class="card-title " style="font-family:monospace;">Your Details</h5>
-                            <p style="color: black;">Name,email,mobile number</p>
-                        </div>
-                    </div>
-                </div>
-            </a>
-            <a href="/userAddress" style="text-decoration:none">
-                <div class="col user-profile-card">
-                    <div class="card h-100 mb-3 mt-3" style="border-width: 0.15rem;border:1px solid #e7ab3c;border-radius: 10px;">
-                        <div class="card-body">
-                            <h5 class="card-title " style="font-family:monospace;">Your Addresses</h5>
-                            <p style="color: black;">Add,edit and delete addresses for orders</p>
-                        </div>
-                    </div>
-                </div>
-            </a>
-            <a href="/myOrders" style="text-decoration:none">
-            <div class="col user-profile-card">
-                <div class="card h-100 mb-3 mt-3" style="border-width: 0.15rem;border:1px solid #e7ab3c;border-radius: 10px;">
-                    <div class="card-body">
-                        <h5 class="card-title " style="font-family:monospace;">Your Orders</h5>
-                        <p style="color: black;">Track,return,cancel or buy things again</p>
-                    </div>
-                </div>
+<div class="container-fluid" style="margin-top: 3rem">
+  <div class="col-md-12" style="background-color: #f8fbe4">
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+      <a href="/userDetails" style="text-decoration: none">
+        <div class="col user-profile-card">
+          <div
+            class="card h-100 mb-3 mt-3"
+            style="
+              border-width: 0.15rem;
+              border: 1px solid #e7ab3c;
+              border-radius: 10px;
+            "
+          >
+            <div class="card-body">
+              <h5 class="card-title" style="font-family: monospace">
+                Your Details
+              </h5>
+              <p style="color: black">Name,email,mobile number</p>
             </div>
-            </a>
-            <a href="/wallet" style="text-decoration: none;">
-            <div class="col user-profile-card">
-                <div class="card h-100 mb-3" style="border-width: 0.15rem;border:1px solid #e7ab3c;border-radius: 10px;">
-                    <div class="card-body">
-                        <h5 class="card-title " style="font-family:monospace;">Wallet</h5>
-                        <p style="color: black;">Balance and Transaction</p>
-                    </div>
-                </div>
-            </div>
-            </a>
-            <a href="/referral" style="text-decoration: none;">
-                <div class="col user-profile-card">
-                    <div class="card h-100 mb-3" style="border-width: 0.15rem;border:1px solid #e7ab3c;border-radius: 10px;">
-                        <div class="card-body">
-                            <h5 class="card-title " style="font-family:monospace;">Invite a friend</h5>
-                            <p style="color: black;">Invite friends,get rewards</p>
-                        </div>
-                    </div>
-                </div>
-            </a>
+          </div>
         </div>
+      </a>
+      <a href="/userAddress" style="text-decoration: none">
+        <div class="col user-profile-card">
+          <div
+            class="card h-100 mb-3 mt-3"
+            style="
+              border-width: 0.15rem;
+              border: 1px solid #e7ab3c;
+              border-radius: 10px;
+            "
+          >
+            <div class="card-body">
+              <h5 class="card-title" style="font-family: monospace">
+                Your Addresses
+              </h5>
+              <p style="color: black">
+                Add,edit and delete addresses for orders
+              </p>
+            </div>
+          </div>
+        </div>
+      </a>
+      <a href="/myOrders" style="text-decoration: none">
+        <div class="col user-profile-card">
+          <div
+            class="card h-100 mb-3 mt-3"
+            style="
+              border-width: 0.15rem;
+              border: 1px solid #e7ab3c;
+              border-radius: 10px;
+            "
+          >
+            <div class="card-body">
+              <h5 class="card-title" style="font-family: monospace">
+                Your Orders
+              </h5>
+              <p style="color: black">
+                Track,return,cancel or buy things again
+              </p>
+            </div>
+          </div>
+        </div>
+      </a>
+      <a href="/wallet" style="text-decoration: none">
+        <div class="col user-profile-card">
+          <div
+            class="card h-100 mb-3"
+            style="
+              border-width: 0.15rem;
+              border: 1px solid #e7ab3c;
+              border-radius: 10px;
+            "
+          >
+            <div class="card-body">
+              <h5 class="card-title" style="font-family: monospace">Wallet</h5>
+              <p style="color: black">Balance and Transaction</p>
+            </div>
+          </div>
+        </div>
+      </a>
+      <a href="/referral" style="text-decoration: none">
+        <div class="col user-profile-card">
+          <div
+            class="card h-100 mb-3"
+            style="
+              border-width: 0.15rem;
+              border: 1px solid #e7ab3c;
+              border-radius: 10px;
+            "
+          >
+            <div class="card-body">
+              <h5 class="card-title" style="font-family: monospace">
+                Invite a friend
+              </h5>
+              <p style="color: black">Invite friends,get rewards</p>
+            </div>
+          </div>
+        </div>
+      </a>
     </div>
+  </div>
 </div>
 <%-include('../../views/partials/user/footer')%>

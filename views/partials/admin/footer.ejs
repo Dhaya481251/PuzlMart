@@ -3,7 +3,7 @@
     &copy; Copyright <strong><span>Puzl Mart</span></strong>. All Rights Reserved
   </div>
 
-</footer><!-- End Footer -->
+</footer>
 
 <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
@@ -52,18 +52,18 @@
       });
       const result = await response.json();
       
-      // Show SweetAlert2 instead of native alert
+      
       Swal.fire({
           icon: result.type === 'success' ? 'success' : 'error',
           title: result.type === 'success' ? 'Success' : 'Error',
           text: result.message,
           showConfirmButton: true
       });
-      // Optionally, refresh the page or update the UI
+      
   } catch (error) {
       console.error('Error handling return action:', error);
       
-      // Show error message with SweetAlert2
+      
       Swal.fire({
           icon: 'error',
           title: 'Something went wrong!',

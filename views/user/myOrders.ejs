@@ -1,81 +1,134 @@
 <%- include('../../views/partials/user/header') %>
-    <nav class="breadcrumbs mt-3 mb-3 container">
-        <a href="/userProfile" class="breadcrumbs-txt" style="text-decoration: none;">My Account</a>&gt;
-        <a href="/myOrders" class="breadcrumbs-txt" style="text-decoration: none;">My Orders</a>
-    </nav>
-    <% if (orders && orders.length > 0) { %>
-    <div style="display: flex;flex-direction:column;gap: 3rem;border:1px solid #e7ab3c">
-        <% orders.forEach(order => { %>
-        <div style="border: 1px solid #e7ab3c;margin:2rem;padding:2rem;border-radius: 10px;background-color: #e7ab3c80;">
-        
-        <table class="table datatable" style="background-color: #00000070;border-radius: 5px;">
-            <thead style="font-size: 13px;">
-                <tr>
-                    <th style="border-bottom-color: rgb(33 37 41 / 14%);">Delivery Date</th>
-                    <th style="border-bottom-color: rgb(33 37 41 / 14%);">Total</th>
-                    <th style="border-bottom-color: rgb(33 37 41 / 14%);">Ship to</th>
-                    <th style="border-bottom-color: rgb(33 37 41 / 14%);">Order #<%=order.orderId%></th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr style="font-size:13px">
-                    <td><%=order.deliveryDate.toLocaleDateString()%></td>
-                    <td><%=order.finalAmount%></td>
-                    <td><%=order.addressDetails.name%></td>
-                    <td>
-                        <a href="/orderDetails/<%=order._id%>" style="color:#e7ab3c">View order details</a>
-                        <i class="bi bi-grip-vertical"></i>
-                        <form action="/order/invoice/<%=order._id%>" method="GET" style="display: inline;">
-                            <button type="submit" style="background-color: #e7ab3c; color: black;" class="btn">Download Invoice</button>
-                        </form>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <% order.items.forEach(item => { %>
-        <div style="display:flex;flex-direction:column">
-            
-            <% if (item.productId) { %>
-            <div style="display:flex;justify-content: flex-start;align-items: center;gap:6rem">
-            <div>
-                <img src="/uploads/re-image/<%= item.productId.productImage[0]%>" alt="<%= item.productId.productName %>" style="width: 100px; height: 100px;border-radius: 5px;">
-                
-            </div>
-            <div>
-                <p style="color:black"><%= item.productId.productName %></p>
-            </div>
-            <% if(order.paymentStatus === "Pending" || order.paymentStatus === 'Not paid'){ %>
-                <div class="payment">
-                    <form action="/startPayPalPayment/<%=order._id%>" method="POST">
-                    <button id="payPalBtn" style="background-color: #e7ab3c;border-radius: 10px;" class="btn" onclick="startPayPal()" ><h5> Pay <%= order.finalAmount %></h5></button>
-                    </form>
-                </div>
-            <% } %>
-            </div>
-            <% } else { %> 
-                <p>Product not found</p> 
-            <% } %>
-        
-        </div>
-        <% }) %>
-        </div>
-        
-        <%})%>
-    </div>
-    <div class="pagination" style="display: flex; justify-content: center;">
-        <% if (currentPage > 1) { %>
-            <a class="btn mx-1 my-1" style="background: #e7ab3c; color:white; text-decoration: none;" href="/myOrders?page=<%= currentPage - 1 %>">&laquo; Prev</a>
-        <% } %>
-        
-        <% for (let i = 1; i <= totalPages; i++) { %>
-            <a class="btn mx-1 my-1" style="background: #e7ab3c; color:white; text-decoration: none;" href="/myOrders?page=<%= i %>" class="<%= i === currentPage ? 'active' : '' %>"><%= i %></a>
-        <% } %>
-        <% if (currentPage < totalPages) { %>
-            <a class="btn mx-1 my-1" style="background: #e7ab3c; color:white; text-decoration: none;" href="/myOrders?page=<%= currentPage + 1 %>">Next &raquo;</a>
-        <% } %>
-    </div>
-    <% } else { %>
-        <p class="text-center" style="font-size: 20px;">No orders found. Start shopping now!</p>
-    <% } %>
 
-<%- include('../../views/partials/user/footer') %>
+<nav class="breadcrumbs mt-3 mb-3 container">
+  <a href="/userProfile" class="breadcrumbs-txt" style="text-decoration: none"
+    >My Account</a
+  >&gt;
+  <a href="/myOrders" class="breadcrumbs-txt" style="text-decoration: none"
+    >My Orders</a
+  >
+</nav>
+<% if (orders && orders.length > 0) { %>
+
+<div
+  style="
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    border: 1px solid #e7ab3c;
+  "
+>
+  <% orders.forEach(order => { %>
+  <div
+    style="
+      border: 1px solid #e7ab3c;
+      margin: 2rem;
+      padding: 2rem;
+      border-radius: 10px;
+      background-color: #e7ab3c80;
+    "
+  >
+    <table
+      class="table datatable"
+      style="background-color: #00000070; border-radius: 5px"
+    >
+      <thead style="font-size: 13px">
+        <tr>
+          <th style="border-bottom-color: rgb(33 37 41 / 14%)">
+            Delivery Date
+          </th>
+          <th style="border-bottom-color: rgb(33 37 41 / 14%)">Total</th>
+          <th style="border-bottom-color: rgb(33 37 41 / 14%)">Ship to</th>
+          <th style="border-bottom-color: rgb(33 37 41 / 14%)">
+            Order #<%=order.orderId%>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="font-size: 13px">
+          <td><%=order.deliveryDate.toLocaleDateString()%></td>
+          <td><%=order.finalAmount%></td>
+          <td><%=order.addressDetails.name%></td>
+          <td>
+            <a href="/orderDetails/<%=order._id%>" style="color: #e7ab3c"
+              >View order details</a
+            >
+            <i class="bi bi-grip-vertical"></i>
+            <form
+              action="/order/invoice/<%=order._id%>"
+              method="GET"
+              style="display: inline"
+            >
+              <button
+                type="submit"
+                style="background-color: #e7ab3c; color: black"
+                class="btn"
+              >
+                Download Invoice
+              </button>
+            </form>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <% order.items.forEach(item => { %>
+    <div style="display: flex; flex-direction: column">
+      <% if (item.productId) { %>
+      <div
+        style="
+          display: flex;
+          justify-content: flex-start;
+          align-items: center;
+          gap: 6rem;
+        "
+      >
+        <div>
+          <img
+            src="/uploads/re-image/<%= item.productId.productImage[0]%>"
+            alt="<%= item.productId.productName %>"
+            style="width: 100px; height: 100px; border-radius: 5px"
+          />
+        </div>
+        <div>
+          <p style="color: black"><%= item.productId.productName %></p>
+        </div>
+      </div>
+      <% } else { %>
+      <p>Product not found</p>
+      <% } %>
+    </div>
+    <% }) %>
+  </div>
+
+  <%})%>
+</div>
+<div class="pagination" style="display: flex; justify-content: center">
+  <% if (currentPage > 1) { %>
+  <a
+    class="btn mx-1 my-1"
+    style="background: #e7ab3c; color: white; text-decoration: none"
+    href="/myOrders?page=<%= currentPage - 1 %>"
+    >&laquo; Prev</a
+  >
+  <% } %> <% for (let i = 1; i <= totalPages; i++) { %>
+  <a
+    class="btn mx-1 my-1"
+    style="background: #e7ab3c; color: white; text-decoration: none"
+    href="/myOrders?page=<%= i %>"
+    class="<%= i === currentPage ? 'active' : '' %>"
+    ><%= i %></a
+  >
+  <% } %> <% if (currentPage < totalPages) { %>
+  <a
+    class="btn mx-1 my-1"
+    style="background: #e7ab3c; color: white; text-decoration: none"
+    href="/myOrders?page=<%= currentPage + 1 %>"
+    >Next &raquo;</a
+  >
+  <% } %>
+</div>
+<% } else { %>
+<p class="text-center" style="font-size: 20px">
+  No orders found. Start shopping now!
+</p>
+<% } %> <%- include('../../views/partials/user/footer') %>

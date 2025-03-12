@@ -1,67 +1,84 @@
 <%- include('../../views/partials/user/header') %>
 <section class="shopping-cart spad">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="cart-table">
-                  <% if(wishlist && wishlist.products && wishlist.products.length>0){ %>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th class="px-2">Image</th>
-                                <th class="p-name px-2">Product Name</th>
-                                <th>Price</th>
-                                <th>Add to Cart</th>
-                                <th><i class="ti-close"></i></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            
-                          <% wishlist.products.forEach((product) => { %>
-                            <tr>
-                                <td class="cart-pic first-row px-3">
-                                    <a href="/productDetails/<%=product.productsId._id%>" style="text-decoration: none;">
-                                        <img src="/uploads/re-image/<%=product.productsId.productImage[0]%>" alt="">
-                                    </a>
-                                </td>
-                                <td class="cart-title first-row px-2">
-                                    <h5><%=product.productsId.productName%></h5>
-                                </td>
-                                <td class="p-price first-row">Rs <%=product.productsId.salePrice%></td>
-                                <td>
-                                    <a href="/addToCart/<%= product.productsId._id %>" data-id="<%=product.productsId._id%>" class="btn cart-btn" style="background-color: #e7ab3c;color:#f0ffff"><button class="btn  px-3"><i class="fa fa-shopping-cart mr-1"></i> Add To Cart</button></a>
-                                </td>
-                                <td class="close-td first-row">
-                                        <a href="" data-id="<%= product.productsId._id %>" class="btn btn-danger btn-sm wishlist-remove"  style="text-decoration: none;">
-                                            <i class="ti-close"></i>
-                                        </a>
-                                </td>
-                            </tr>
-                            
-                            
-                            <% }) %>
-                          
-                        </tbody>
-                    </table>
-                    <% }else{ %>
-                                  
-                        <h4 colspan="4">No items found in Wishlist</h4>
-                              
-                    <% } %>
-                </div>
-                <div class="row">
-                    <div class="col-lg-4">
-                        <div class="cart-buttons">
-                            <a href="/" class="primary-btn continue-shop">Continue shopping</a>
-                            
-                        </div>
-                       
-                    </div>
-                    
-                </div>
-            </div>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="cart-table">
+          <% if(wishlist && wishlist.products && wishlist.products.length>0){ %>
+          <table>
+            <thead>
+              <tr>
+                <th class="px-2">Image</th>
+                <th class="p-name px-2">Product Name</th>
+                <th>Price</th>
+                <th>Add to Cart</th>
+                <th><i class="ti-close"></i></th>
+              </tr>
+            </thead>
+            <tbody>
+              <% wishlist.products.forEach((product) => { %>
+              <tr>
+                <td class="cart-pic first-row px-3">
+                  <a
+                    href="/productDetails/<%=product.productsId._id%>"
+                    style="text-decoration: none"
+                  >
+                    <img
+                      src="/uploads/re-image/<%=product.productsId.productImage[0]%>"
+                      alt=""
+                    />
+                  </a>
+                </td>
+                <td class="cart-title first-row px-2">
+                  <h5><%=product.productsId.productName%></h5>
+                </td>
+                <td class="p-price first-row">
+                  Rs <%=product.productsId.salePrice%>
+                </td>
+                <td>
+                  <a
+                    href="/addToCart/<%= product.productsId._id %>"
+                    data-id="<%=product.productsId._id%>"
+                    class="btn cart-btn"
+                    style="background-color: #e7ab3c; color: #f0ffff"
+                    ><button class="btn px-3">
+                      <i class="fa fa-shopping-cart mr-1"></i> Add To Cart
+                    </button></a
+                  >
+                </td>
+                <td class="close-td first-row">
+                  <a
+                    href=""
+                    data-id="<%= product.productsId._id %>"
+                    class="btn btn-danger btn-sm wishlist-remove"
+                    style="text-decoration: none"
+                  >
+                    <i class="ti-close"></i>
+                  </a>
+                </td>
+              </tr>
+
+              <% }) %>
+            </tbody>
+          </table>
+          <% }else{ %>
+
+          <h4 colspan="4">No items found in Wishlist</h4>
+
+          <% } %>
         </div>
+        <div class="row">
+          <div class="col-lg-4">
+            <div class="cart-buttons">
+              <a href="/" class="primary-btn continue-shop"
+                >Continue shopping</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 </section>
 
 <%- include('../../views/partials/user/footer') %>

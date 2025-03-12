@@ -1,317 +1,503 @@
 <!DOCTYPE html>
 <html lang="zxx">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="description" content="Fashi Template">
-    <meta name="keywords" content="Fashi, unica, creative, html">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="Fashi Template" />
+    <meta name="keywords" content="Fashi, unica, creative, html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Puzl Mart</title>
 
     <!-- Google Font -->
-    <link href="https://fonts.googleapis.com/css?family=Muli:300,400,500,600,700,800,900&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Train+One&display=swap" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css?family=Muli:300,400,500,600,700,800,900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Train+One&display=swap"
+      rel="stylesheet"
+    />
     <!-- Css Styles -->
-    <link rel="stylesheet" href="/tempFiles/css/bootstrap.min.css" type="text/css">
-    <link rel="stylesheet" href="/tempFiles/css/font-awesome.min.css" type="text/css">
-    <link rel="stylesheet" href="/tempFiles/css/themify-icons.css" type="text/css">
-    <link rel="stylesheet" href="/tempFiles/css/elegant-icons.css" type="text/css">
-    <link rel="stylesheet" href="/tempFiles/css/owl.carousel.min.css" type="text/css">
-    <link rel="stylesheet" href="/tempFiles/css/nice-select.css" type="text/css">
-    <link rel="stylesheet" href="/tempFiles/css/jquery-ui.min.css" type="text/css">
-    <link rel="stylesheet" href="/tempFiles/css/slicknav.min.css" type="text/css">
-    <link rel="stylesheet" href="/tempFiles/css/style.css" type="text/css">
+    <link
+      rel="stylesheet"
+      href="/tempFiles/css/bootstrap.min.css"
+      type="text/css"
+    />
+    <link
+      rel="stylesheet"
+      href="/tempFiles/css/font-awesome.min.css"
+      type="text/css"
+    />
+    <link
+      rel="stylesheet"
+      href="/tempFiles/css/themify-icons.css"
+      type="text/css"
+    />
+    <link
+      rel="stylesheet"
+      href="/tempFiles/css/elegant-icons.css"
+      type="text/css"
+    />
+    <link
+      rel="stylesheet"
+      href="/tempFiles/css/owl.carousel.min.css"
+      type="text/css"
+    />
+    <link
+      rel="stylesheet"
+      href="/tempFiles/css/nice-select.css"
+      type="text/css"
+    />
+    <link
+      rel="stylesheet"
+      href="/tempFiles/css/jquery-ui.min.css"
+      type="text/css"
+    />
+    <link
+      rel="stylesheet"
+      href="/tempFiles/css/slicknav.min.css"
+      type="text/css"
+    />
+    <link rel="stylesheet" href="/tempFiles/css/style.css" type="text/css" />
 
-    <link rel="stylesheet" href="/css/product.css">
-    <link rel="stylesheet" href="/css/home.css">
+    <link rel="stylesheet" href="/css/product.css" />
+    <link rel="stylesheet" href="/css/home.css" />
 
     <script>
-        function imageZoom(imgID, resultID) {
-       let img = document.getElementById(imgID);
-       let result = document.getElementById(resultID);
-       let lens = document.createElement("DIV");
-       lens.setAttribute("class", "img-zoom-lens");
-       img.parentElement.insertBefore(lens, img);
-     
-       let cx = result.offsetWidth / lens.offsetWidth;
-       let cy = result.offsetHeight / lens.offsetHeight;
-     
-       result.style.backgroundImage = `url('${img.src}')`;
-       result.style.backgroundSize = `${img.width * cx}px ${img.height * cy}px`;
-     
-       lens.addEventListener("mousemove", moveLens);
-       img.addEventListener("mousemove", moveLens);
-       lens.addEventListener("touchmove", moveLens);
-       img.addEventListener("touchmove", moveLens);
-     
-       function moveLens(e) {
-         e.preventDefault();
-         let pos = getCursorPos(e);
-         let x = pos.x - lens.offsetWidth / 2;
-         let y = pos.y - lens.offsetHeight / 2;
-     
-         if (x > img.width - lens.offsetWidth) x = img.width - lens.offsetWidth;
-         if (x < 0) x = 0;
-         if (y > img.height - lens.offsetHeight) y = img.height - lens.offsetHeight;
-         if (y < 0) y = 0;
-     
-         lens.style.left = `${x}px`;
-         lens.style.top = `${y}px`;
-         result.style.backgroundPosition = `-${x * cx}px -${y * cy}px`;
-       }
-     
-       function getCursorPos(e) {
-         e = e || window.event;
-         let a = img.getBoundingClientRect();
-         let x = e.pageX - a.left;
-         let y = e.pageY - a.top;
-         x -= window.pageXOffset;
-         y -= window.pageYOffset;
-         return { x: x, y: y };
-       }
-     }
-     
-    </script>
-</head>
+      function imageZoom(imgID, resultID) {
+        let img = document.getElementById(imgID);
+        let result = document.getElementById(resultID);
+        let lens = document.createElement("DIV");
+        lens.setAttribute("class", "img-zoom-lens");
+        img.parentElement.insertBefore(lens, img);
 
-<body>
+        let cx = result.offsetWidth / lens.offsetWidth;
+        let cy = result.offsetHeight / lens.offsetHeight;
+
+        result.style.backgroundImage = `url('${img.src}')`;
+        result.style.backgroundSize = `${img.width * cx}px ${
+          img.height * cy
+        }px`;
+
+        lens.addEventListener("mousemove", moveLens);
+        img.addEventListener("mousemove", moveLens);
+        lens.addEventListener("touchmove", moveLens);
+        img.addEventListener("touchmove", moveLens);
+
+        function moveLens(e) {
+          e.preventDefault();
+          let pos = getCursorPos(e);
+          let x = pos.x - lens.offsetWidth / 2;
+          let y = pos.y - lens.offsetHeight / 2;
+
+          if (x > img.width - lens.offsetWidth)
+            x = img.width - lens.offsetWidth;
+          if (x < 0) x = 0;
+          if (y > img.height - lens.offsetHeight)
+            y = img.height - lens.offsetHeight;
+          if (y < 0) y = 0;
+
+          lens.style.left = `${x}px`;
+          lens.style.top = `${y}px`;
+          result.style.backgroundPosition = `-${x * cx}px -${y * cy}px`;
+        }
+
+        function getCursorPos(e) {
+          e = e || window.event;
+          let a = img.getBoundingClientRect();
+          let x = e.pageX - a.left;
+          let y = e.pageY - a.top;
+          x -= window.pageXOffset;
+          y -= window.pageYOffset;
+          return { x: x, y: y };
+        }
+      }
+    </script>
+  </head>
+
+  <body>
     <!-- Page Preloder -->
     <div id="preloder">
-        <div class="loader">
-            
+      <div class="loader"></div>
+      <div class="rubik-cube" style="margin-left: 48.3rem; margin-top: 23.5rem">
+        <div class="face front">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
         </div>
-        <div class="rubik-cube" style="margin-left: 48.3rem;margin-top: 23.5rem;">
-            <div class="face front">
-              <div></div><div></div><div></div>
-              <div></div><div></div><div></div>
-              <div></div><div></div><div></div>
-            </div>
-            <div class="face back">
-              <div></div><div></div><div></div>
-              <div></div><div></div><div></div>
-              <div></div><div></div><div></div>
-            </div>
-            <div class="face right">
-              <div></div><div></div><div></div>
-              <div></div><div></div><div></div>
-              <div></div><div></div><div></div>
-            </div>
-            <div class="face left">
-              <div></div><div></div><div></div>
-              <div></div><div></div><div></div>
-              <div></div><div></div><div></div>
-            </div>
-            <div class="face top">
-              <div></div><div></div><div></div>
-              <div></div><div></div><div></div>
-              <div></div><div></div><div></div>
-            </div>
-            <div class="face bottom">
-              <div></div><div></div><div></div>
-              <div></div><div></div><div></div>
-              <div></div><div></div><div></div>
-            </div>
+        <div class="face back">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
         </div>
+        <div class="face right">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+        <div class="face left">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+        <div class="face top">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+        <div class="face bottom">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+      </div>
     </div>
 
     <!-- Header Section Begin -->
     <header class="header-section">
-        <div class="container">
-            <div class="inner-header">
-                <div class="row" style="align-items: center;">
-                    <div class="col-lg-2 col-md-2">
-                        <div class="logo" style="display: flex;border: 2px solid #e7ab3c;width: 7.5rem;padding:0.5rem;height:4.5rem;border-radius: 5px; box-shadow: 1px 0px 12px 3px #0000006b;">
-                            
-                                <p class="logo-container" style="font-size: 1.7rem;;font-weight: 600;color:#e7ab3c;font-family: 'Train One', serif;font-style: normal;border-radius: 5px;">
-                                    Puzl
-                                    Mart
-                                  </p>
-                                  <div class="rubik-cube">
-                                      <div class="face front">
-                                        <div></div><div></div><div></div>
-                                        <div></div><div></div><div></div>
-                                        <div></div><div></div><div></div>
-                                      </div>
-                                      <div class="face back">
-                                        <div></div><div></div><div></div>
-                                        <div></div><div></div><div></div>
-                                        <div></div><div></div><div></div>
-                                      </div>
-                                      <div class="face right">
-                                        <div></div><div></div><div></div>
-                                        <div></div><div></div><div></div>
-                                        <div></div><div></div><div></div>
-                                      </div>
-                                      <div class="face left">
-                                        <div></div><div></div><div></div>
-                                        <div></div><div></div><div></div>
-                                        <div></div><div></div><div></div>
-                                      </div>
-                                      <div class="face top">
-                                        <div></div><div></div><div></div>
-                                        <div></div><div></div><div></div>
-                                        <div></div><div></div><div></div>
-                                      </div>
-                                      <div class="face bottom">
-                                        <div></div><div></div><div></div>
-                                        <div></div><div></div><div></div>
-                                        <div></div><div></div><div></div>
-                                      </div>
-                                    </div>
-                           
-                        </div>
-                    </div>
-                    <div class="col-lg-7 col-md-7">
-                        <div class="advanced-search">
-                            <div class="input-group">
-                                <form action="/search" method="POST" class="form-inline search"></form>
-                                    <input name="query" type="search" placeholder="What do you need?" style="width:32rem;border:1px solid #ebebeb">
-                                    <button type="submit" style="top:0.01rem"><i class="ti-search"></i></button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 text-right col-md-3">
-                        <ul class="nav-right">
-                            <li class="cart-icon">
-                                <a href="#">
-                                    <i class="icon_heart_alt"></i>
-                                </a>
-                                <div class="cart-hover">
-                                    <div class="select-items">
-                                        <table>
-                                            <tbody>
-                                                <% if(wishlist && wishlist.products && wishlist.products.length > 0){ %>
-                                                <% wishlist.products.forEach((product) => { %>
-                                                
-                                                <tr>
-                                                    <td class="si-pic">
-                                                        <a href="/productDetails/<%=product.productsId%>" style="text-decoration: none;">
-                                                            <img src="/uploads/re-image/<%=product.productsId.productImage[0]%>" style="width: 99%;" alt="Item" class="img-fluid cart-img">
-                                                        </a>
-                                                    </td>
-                                                    <td class="si-text">
-                                                        <div class="product-selected">
-                                                            <p>Rs <%=product.productsId.salePrice%></p>
-                                                            <h6><%=product.productsId.productName%></h6>
-                                                        </div>
-                                                    </td>
-                                                    <td class="si-close">
-                                                        <div style="display:flex; gap:0.5rem">
-                                                        <div>
-                                                        <a href="/addToCart/<%= product.productsId._id %>" data-id="<%=product.productsId._id%>" class="cart-btn" style="background-color: #e7ab3c;color:#f0ffff; border-radius: 10px;"><button class="btn"><i class="fa fa-shopping-cart mr-1"></i></button></a>
-                                                        </div>
-                                                        <div>
-                                                        <a href="" data-id="<%= product.productsId._id %>" class="btn btn-danger btn-sm wishlist-remove"  style="text-decoration: none;">
-                                                            <i class="ti-close"></i>
-                                                        </a>
-                                                        </div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <% }) %>
-                                              <% }else{ %>
-                                                      
-                                                <h4 colspan="4">Your Wishlist is empty</h4>
-                                                      
-                                              <% } %>
-    
-                                            </tbody>
-                                        </table>
-                                    </div>
-    
-                                  <div class="select-button">
-                                      <a href="/wishlist" class="primary-btn view-card">VIEW WISHLIST</a>
-    
-                                  </div>
-                                </div>
-                            </li>
-                            <li class="cart-icon">
-                                <a href="#">
-                                    <i class="icon_bag_alt"></i>                                </a>
-                                <div class="cart-hover">
-                                    <div class="select-items">
-                                        <table>
-                                            <tbody>
-                                                <% if(cart && cart.items && cart.items.length > 0){ %>
-                                                <% cart.items.forEach(item => { %>
-                                                <% if(item.productId.isBlocked === false) { %>
-                                                
-                                                <tr>
-                                                    <td class="si-pic">
-                                                        <a href="/productDetails/<%=item.productId._id%>" style="text-decoration: none;">
-                                                            <img src="/uploads/re-image/<%=item.productId.productImage[0]%>" style="width: 99%;" alt="Item" class="img-fluid cart-img">
-                                                        </a>
-                                                    </td>
-                                                    <td class="si-text">
-                                                        <div class="product-selected">
-                                                            <p>Rs <%=item.productId.salePrice%> x <%=item.quantity%></p>
-                                                            <h6><%=item.productId.productName%></h6>
-                                                        </div>
-                                                    </td>
-                                                    <td class="si-close">
-                                                        <a href="/removeFromCart/<%=item.productId._id%>" class="btn btn-danger cart-remove"><i class="ti-close"></i></a>
-                                                        
-                                                    </td>
-                                                </tr>
-                                                
-                                                <% } else { %> 
-                                                    <p>Product not found</p>  
-                                                  <% } %>
-                                                <% }) %>
-                                              <% }else{ %>
-                                                      
-                                                <h4 colspan="4">Your cart is empty</h4>
-                                                      
-                                              <% } %>
-                                             
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <div class="select-total">
-                                      <span>total:</span>
-                                      <h5>Rs <%= cart ? cart.items.reduce((acc, item) => acc + item.productId.salePrice * item.quantity, 0) : 0 %></h5>
-                                  </div>
-                                  <div class="select-button">
-                                      <a href="/cart" class="primary-btn view-card">VIEW CART</a>
-                                      <a href="/buyNow" class="primary-btn checkout-btn">CHECK OUT</a>
-                                  </div>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
+      <div class="container">
+        <div class="inner-header">
+          <div class="row" style="align-items: center">
+            <div class="col-lg-2 col-md-2">
+              <div
+                class="logo"
+                style="
+                  display: flex;
+                  border: 2px solid #e7ab3c;
+                  width: 7.5rem;
+                  padding: 0.5rem;
+                  height: 4.5rem;
+                  border-radius: 5px;
+                  box-shadow: 1px 0px 12px 3px #0000006b;
+                "
+              >
+                <p
+                  class="logo-container"
+                  style="
+                    font-size: 1.7rem;
+                    font-weight: 600;
+                    color: #e7ab3c;
+                    font-family: 'Train One', serif;
+                    font-style: normal;
+                    border-radius: 5px;
+                  "
+                >
+                  Puzl Mart
+                </p>
+                <div class="rubik-cube">
+                  <div class="face front">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                  </div>
+                  <div class="face back">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                  </div>
+                  <div class="face right">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                  </div>
+                  <div class="face left">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                  </div>
+                  <div class="face top">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                  </div>
+                  <div class="face bottom">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                  </div>
                 </div>
+              </div>
             </div>
-        </div>
-        <div class="nav-item">
-            <div class="container">
-                <nav class="nav-menu mobile-menu">
-                    <ul>
-                        <li class="active"><a href="/">Home</a></li>
-                        <li><a href="/products">Products</a></li>
-                        <li><a href="#">Collection</a>
-                            <ul class="dropdown">
-                                <% category.forEach(cat => { %>
-                                    <li><a href=""><%= cat.name %></a></li>
-                                <% }) %>
-                            </ul>
-                        </li>
-                        <li><a href="#footer-section">About us</a></li>
-                        <li><a href="#footer-section">Contact us</a></li>
-                        <li><a href="#">My account</a>
-                            <ul class="dropdown">
-                                <% if (user ) { %>
-                                    <li><a href="/userProfile"><%= user.name %></a></li>
-                                    <li><a href="/logout">Logout</a></li>
-                                <% }else{ %>
-                                    <li><a href="/login">Login</a></li>
-                                    <li><a href="/signup">Signup</a></li>
-                                <% } %>
-                            </ul>
-                        </li>
-                    </ul>
-                </nav>
+            <div class="col-lg-7 col-md-7">
+              <div class="advanced-search">
+                <div class="input-group">
+                  <form
+                    action="/search"
+                    method="POST"
+                    class="form-inline search"
+                  >
+                    <input
+                      name="query"
+                      type="search"
+                      placeholder="What do you need?"
+                      style="width: 26.5rem; border: 1px solid #ebebeb"
+                    />
+                    <button type="submit" style="top: 0.01rem">
+                      <i class="ti-search"></i>
+                    </button>
+                  </form>
+                </div>
+              </div>
             </div>
+            <div class="col-lg-3 text-right col-md-3">
+              <ul class="nav-right">
+                <li class="cart-icon">
+                  <a href="#">
+                    <i class="icon_heart_alt"></i>
+                  </a>
+                  <div class="cart-hover">
+                    <div class="select-items">
+                      <table>
+                        <tbody>
+                          <% if(wishlist && wishlist.products &&
+                          wishlist.products.length > 0){ %> <%
+                          wishlist.products.forEach((product) => { %>
+
+                          <tr>
+                            <td class="si-pic">
+                              <a
+                                href="/productDetails/<%=product.productsId%>"
+                                style="text-decoration: none"
+                              >
+                                <img
+                                  src="/uploads/re-image/<%=product.productsId.productImage[0]%>"
+                                  style="width: 99%"
+                                  alt="Item"
+                                  class="img-fluid cart-img"
+                                />
+                              </a>
+                            </td>
+                            <td class="si-text">
+                              <div class="product-selected">
+                                <p>Rs <%=product.productsId.salePrice%></p>
+                                <h6><%=product.productsId.productName%></h6>
+                              </div>
+                            </td>
+                            <td class="si-close">
+                              <div style="display: flex; gap: 0.5rem">
+                                <div>
+                                  <a
+                                    href="/addToCart/<%= product.productsId._id %>"
+                                    data-id="<%=product.productsId._id%>"
+                                    class="cart-btn"
+                                    style="
+                                      background-color: #e7ab3c;
+                                      color: #f0ffff;
+                                      border-radius: 10px;
+                                    "
+                                    ><button class="btn">
+                                      <i
+                                        class="fa fa-shopping-cart mr-1"
+                                      ></i></button
+                                  ></a>
+                                </div>
+                                <div>
+                                  <a
+                                    href=""
+                                    data-id="<%= product.productsId._id %>"
+                                    class="btn btn-danger btn-sm wishlist-remove"
+                                    style="text-decoration: none"
+                                  >
+                                    <i class="ti-close"></i>
+                                  </a>
+                                </div>
+                              </div>
+                            </td>
+                          </tr>
+                          <% }) %> <% }else{ %>
+
+                          <h4 colspan="4">Your Wishlist is empty</h4>
+
+                          <% } %>
+                        </tbody>
+                      </table>
+                    </div>
+
+                    <div class="select-button">
+                      <a href="/wishlist" class="primary-btn view-card"
+                        >VIEW WISHLIST</a
+                      >
+                    </div>
+                  </div>
+                </li>
+                <li class="cart-icon">
+                  <a href="#"> <i class="icon_bag_alt"></i> </a>
+                  <div class="cart-hover">
+                    <div class="select-items">
+                      <table>
+                        <tbody>
+                          <% if(cart && cart.items && cart.items.length > 0){ %>
+                          <% cart.items.forEach(item => { %> <%
+                          if(item.productId ) { %>
+
+                          <tr>
+                            <td class="si-pic">
+                              <a
+                                href="/productDetails/<%=item.productId._id%>"
+                                style="text-decoration: none"
+                              >
+                                <img
+                                  src="/uploads/re-image/<%=item.productId.productImage[0]%>"
+                                  style="width: 99%"
+                                  alt="Item"
+                                  class="img-fluid cart-img"
+                                />
+                              </a>
+                            </td>
+                            <td class="si-text">
+                              <div class="product-selected">
+                                <p>
+                                  Rs <%=item.productId.salePrice%> x
+                                  <%=item.quantity%>
+                                </p>
+                                <h6><%=item.productId.productName%></h6>
+                              </div>
+                            </td>
+                            <td class="si-close">
+                              <a
+                                href="/removeFromCart/<%=item.productId._id%>"
+                                class="btn btn-danger cart-remove"
+                                ><i class="ti-close"></i
+                              ></a>
+                            </td>
+                          </tr>
+
+                          <% } else { %>
+                          <p>Product not found</p>
+                          <% } %> <% }) %> <% }else{ %>
+
+                          <h4 colspan="4">Your cart is empty</h4>
+
+                          <% } %>
+                        </tbody>
+                      </table>
+                    </div>
+                    <div class="select-total">
+                      <span>total:</span>
+                      <h5>
+                        Rs <%= cart ? cart.items.reduce((acc, item) => acc +
+                        item.productId.salePrice * item.quantity, 0) : 0 %>
+                      </h5>
+                    </div>
+                    <div class="select-button">
+                      <a href="/cart" class="primary-btn view-card"
+                        >VIEW CART</a
+                      >
+                      <a href="/buyNow" class="primary-btn checkout-btn"
+                        >CHECK OUT</a
+                      >
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
+      </div>
+      <div class="nav-item">
+        <div class="container">
+          <nav class="nav-menu mobile-menu">
+            <ul>
+              <li class="active"><a href="/">Home</a></li>
+              <li><a href="/products">Products</a></li>
+              <li>
+                <a href="#">Collection</a>
+                <ul class="dropdown">
+                  <% category.forEach(cat => { %>
+                  <li><a href=""><%= cat.name %></a></li>
+                  <% }) %>
+                </ul>
+              </li>
+              <li><a href="#footer-section">About us</a></li>
+              <li><a href="#footer-section">Contact us</a></li>
+              <li>
+                <a href="#">My account</a>
+                <ul class="dropdown">
+                  <% if (user ) { %>
+                  <li><a href="/userProfile"><%= user.name %></a></li>
+                  <li><a href="/logout">Logout</a></li>
+                  <% }else{ %>
+                  <li><a href="/login">Login</a></li>
+                  <li><a href="/signup">Signup</a></li>
+                  <% } %>
+                </ul>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
     </header>
+  </body>
+</html>
