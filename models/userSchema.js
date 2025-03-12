@@ -1,116 +1,130 @@
-const mongoose = require('mongoose');
-const {Schema} = mongoose;
+const mongoose = require("mongoose");
+const { Schema } = mongoose;
 
 const userSchema = new Schema({
-    name:{
-        type:String,
-        required:true
+  name: {
+    type: String,
+    required: true,
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  phone: {
+    type: String,
+    required: false,
+    unique: true,
+    sparse: true,
+    default: null,
+  },
+  googleId: {
+    type: String,
+    unique: false,
+  },
+  password: {
+    type: String,
+    required: false,
+  },
+  isBlocked: {
+    type: Boolean,
+    default: false,
+  },
+  isAdmin: {
+    type: Boolean,
+    default: false,
+  },
+  cart: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Cart",
     },
-    email:{
-        type:String,
-        required:true,
-        unique:true
-    },
-    phone : {
-        type:String,
-        required:false,
-        unique:true,
-        sparse:true,
-        default:null
-    },
-    googleId:{
-        type:String,
-        unique:false
-    },
-    password:{
-        type:String,
-        required:false
-    },
-    isBlocked:{
-        type:Boolean,
-        default:false
-    },
-    isAdmin:{
-        type:Boolean,
-        default:false
-    },
-    cart:[{
-        type:Schema.Types.ObjectId,
-        ref:"Cart"
-    }],
-    wallet: {
-        type: {
-            balance: {
-                type: Number,
-                default: 0
-            },
-            transactions: [
-                {
-                    transactionsType: {
-                        type: String,
-                        enum: ['credit', 'debit']
-                    },
-                    amount: {
-                        type: Number
-                    },
-                    reason: {
-                        type: String
-                    },
-                    date: {
-                        type: Date,
-                        default: Date.now
-                    }
-                }
-            ]
+  ],
+  wallet: {
+    type: {
+      balance: {
+        type: Number,
+        default: 0,
+      },
+      transactions: [
+        {
+          transactionsType: {
+            type: String,
+            enum: ["credit", "debit"],
+          },
+          amount: {
+            type: Number,
+          },
+          reason: {
+            type: String,
+          },
+          date: {
+            type: Date,
+            default: Date.now,
+          },
         },
-        default: { balance: 0, transactions: [] }
+      ],
     },
-    wishlist:[{
-        type:Schema.Types.ObjectId,
-        ref:"Wishlist"
-    }],
-    orderHistory:[{
-        type:Schema.Types.ObjectId,
-        ref:"Order"
-    }],
-    createdOn : {
-        type:Date,
-        default:Date.now
+    default: { balance: 0, transactions: [] },
+  },
+  wishlist: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Wishlist",
     },
-    redeemed :{
-        type:Boolean,
+  ],
+  orderHistory: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Order",
     },
-    redeemedUsers:[{
-        type:Schema.Types.ObjectId,
-        ref:"User"
-    }],
-    searchHistory:[{
-        category:{
-            type:Schema.Types.ObjectId,
-            ref:'Category'
+  ],
+  createdOn: {
+    type: Date,
+    default: Date.now,
+  },
+  redeemed: {
+    type: Boolean,
+  },
+  redeemedUsers: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+  ],
+  searchHistory: [
+    {
+      category: {
+        type: Schema.Types.ObjectId,
+        ref: "Category",
+      },
+      brand: [
+        {
+          type: String,
         },
-        brand:[{
-            type:String
-        }],
-        searchOn:{
-            type:Date,
-            default:Date.now
-        }
-    }],
-    coupons:[{
-        type:Schema.Types.ObjectId,
-        ref:'Coupon'
-    }],
-    referralCode:{
-        type:String,
-        unique:true
+      ],
+      searchOn: {
+        type: Date,
+        default: Date.now,
+      },
     },
-    referredBy:{
-        type:String,
-        default:null
-    }
-})
+  ],
+  coupons: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Coupon",
+    },
+  ],
+  referralCode: {
+    type: String,
+    unique: true,
+  },
+  referredBy: {
+    type: String,
+    default: null,
+  },
+});
 
-const User = mongoose.model("User",userSchema);
+const User = mongoose.model("User", userSchema);
 
 module.exports = User;
