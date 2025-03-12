@@ -40,7 +40,11 @@
     color:black;
   }
   .breadcrumbs-txt:hover{
-    color:#e7ab3c
+    color:#e7ab3c;
+  }
+  .breadcrumbs-txt.active{
+    color:#e7ab3c;
+    font-weight: bold;
   }
   .sc-container{
     width:100%;

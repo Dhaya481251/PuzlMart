@@ -275,6 +275,7 @@ const loadEditAddress = async (req, res) => {
   try {
     const addressId = req.query.id;
     const user = req.session.user;
+    const userData = await User.findById(user);
     const cart = await Cart.findOne({ user }).populate("items.productId");
     const currentAddress = await Address.findOne({ "address._id": addressId });
     const wishlist = await Wishlist.findOne({ user }).populate(
@@ -295,7 +296,7 @@ const loadEditAddress = async (req, res) => {
 
     res.render("editAddressPage", {
       address: addressData,
-      user: user,
+      user: userData,
       cart,
       wishlist,
       category: category,
