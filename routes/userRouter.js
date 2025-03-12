@@ -33,6 +33,8 @@ router.post("/verifyForgotOtp", userController.verifyForgotOtp);
 router.get("/resetPassword", userController.loadResetPassword);
 router.post("/resendForgotOtp", userController.resendForgotOtp);
 router.post("/resetPassword", userController.resetPassword);
+router.get('/about',userAuth,userController.loadAboutPage);
+router.get('/contact',userAuth,userController.loadContactPage);
 
 //Google Auth login
 router.get(
