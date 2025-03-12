@@ -388,6 +388,35 @@ const resetPassword = async (req, res) => {
   }
 };
 
+const loadAboutPage = async(req,res) => {
+  try {
+    const userId = req.session.user;
+    const userData = await User.findById(userId);
+    const categories = await Category.find({ isListed: true });
+    const cart = await Cart.findOne({ userId }).populate("items.productId");
+    const wishlist = await Wishlist.findOne({ userId }).populate(
+      "products.productsId"
+    );
+    res.render('aboutUs',{user:userData,category:categories,cart,wishlist});
+  } catch (error) {
+    res.status(500).send('Internal server error');
+  }
+}
+
+const loadContactPage = async(req,res) => {
+  try {
+    const userId = req.session.user;
+    const userData = await User.findById(userId);
+    const categories = await Category.find({ isListed: true });
+    const cart = await Cart.findOne({ userId }).populate("items.productId");
+    const wishlist = await Wishlist.findOne({ userId }).populate(
+      "products.productsId"
+    );
+    res.render('contactUs',{user:userData,category:categories,cart,wishlist});
+  } catch (error) {
+    res.status(500).send('Internal server error');
+  }
+}
 module.exports = {
   loadHomepage,
   loadLogin,
@@ -403,4 +432,6 @@ module.exports = {
   loadResetPassword,
   resendForgotOtp,
   resetPassword,
+  loadAboutPage,
+  loadContactPage
 };
