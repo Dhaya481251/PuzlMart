@@ -1,25 +1,25 @@
 <%-include('../../views/partials/user/header')%>
 <main class="container">
   <nav class="breadcrumbs mt-3 mb-3 container">
-    <a href="/" class="breadcrumbs-txt" style="text-decoration: none">Home /</a>
+    <a href="/" class="breadcrumbs-txt" style="text-decoration: none">Home</a>&gt;
     <a
       href="/userProfile"
       class="breadcrumbs-txt"
       style="text-decoration: none"
     >
-      My Details /</a
-    >
+      My Details</a
+    >&gt;
     <a href="/myOrders" class="breadcrumbs-txt" style="text-decoration: none">
-      My Orders /</a
-    >
+    My Orders</a
+    >&gt;
     <a href="" class="breadcrumbs-txt active" style="text-decoration: none"
       ><%=orders.orderId%></a
     >
   </nav>
 
   <div class="orders-list">
-    <% if(orders.paymentStatus === "Pending" || orders.paymentStatus === 'Not
-    paid'){ %>
+    <% if (orders.paymentStatus === "Pending" || orders.paymentStatus === "Not paid") { %>
+
     <div class="payment" style="margin-left: 1rem">
       <form action="/startPayPalPayment/<%=orders._id%>" method="POST">
         <button
