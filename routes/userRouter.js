@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const passport = require("passport");
-//const paypal = require('paypal');
 
 //controllers
 const userController = require("../controllers/user/userController");
@@ -11,6 +10,7 @@ const cartController = require("../controllers/user/cartController");
 const orderController = require("../controllers/user/orderController");
 const wishlistController = require("../controllers/user/wishlistController");
 const walletController = require("../controllers/user/walletController");
+const categoryController = require("../controllers/user/categoryController");
 
 const { userAuth, adminAuth } = require("../middlewares/auth");
 
@@ -127,5 +127,9 @@ router.get("/addToWishlist/:id", userAuth, wishlistController.addToWishlist);
 router.get("/removeFromWishlist/:id",userAuth,wishlistController.removeFromWishlist);
 //wallet management
 router.get("/wallet", userAuth, walletController.loadWallet);
+
+//category management
+router.get("/categoryItems/:id",userAuth,categoryController.loadCategoryItems);
+router.get("/filterProducts/:id",userAuth,categoryController.filterProducts);
 
 module.exports = router;

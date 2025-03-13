@@ -53,7 +53,7 @@ const loadHomepage = async (req, res) => {
         brands,
       });
     } else {
-      res.render("home", { user: null });
+      res.render("home", { user: null ,products:productData,cart:null,wishlist:null,category:categories,brands});
     }
   } catch (error) {
     res.status(500).send("Server Error");
@@ -65,7 +65,7 @@ const loadLogin = async (req, res) => {
     if (!req.session.user) {
       return res.render("login");
     } else {
-      return res.redirect("/");
+      return res.redirect(302,"/");
     }
   } catch (error) {
     res.status(500).send("Server Internal Error");
