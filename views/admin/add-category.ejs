@@ -4,14 +4,9 @@
     <h1>Add New Category</h1>
     <nav>
       <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="/admin">Home</a></li>
         <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
-        <li class="breadcrumb-item">
-          <a href="/admin/category">Categories</a>
-        </li>
-        <li class="breadcrumb-item active">
-          <a href="/admin/addCategory">Add Category</a>
-        </li>
+        <li class="breadcrumb-item"><a href="/admin/category">Categories</a></li>
+        <li class="breadcrumb-item active"><a href="/admin/addCategory">Add Category</a></li>
       </ol>
     </nav>
   </div>
@@ -23,11 +18,7 @@
         <div class="card">
           <div class="card-body">
             <h5 class="card-title">Add New Category</h5>
-            <form
-              class="row g-3"
-              onsubmit="handleFormSubmit(event)"
-              enctype="multipart/form-data"
-            >
+            <form class="row g-3" onsubmit="handleFormSubmit(event)"enctype="multipart/form-data">
               <div class="col-md-12">
                 <div class="form-floating">
                   <img id="previewImage" src="" alt="" />
