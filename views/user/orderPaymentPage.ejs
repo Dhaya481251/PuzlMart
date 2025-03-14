@@ -98,9 +98,9 @@
               class="availableCoupons-box px-3 py-3"
               style="display: flex; flex-direction: column"
             >
-              <% if (coupons && coupons.length > 0) { %> <%
-              coupons.forEach(coupon => { %> <% if(coupon.isActive && new Date()
-              < coupon.expireOn){ %>
+              <% if (coupons && coupons.length > 0) { %> 
+              <% coupons.forEach(coupon => { %> 
+                <% if(coupon.isActive && new Date()< coupon.expireOn){ %>
               <div
                 class="px-2 py-2"
                 style="
@@ -169,7 +169,7 @@
                       </div>
                     </div>
                     <p
-                      id="copyMessage"
+                      id="copyMessage-<%=coupon.code%>"
                       style="color: #069606; text-shadow: -1px 1px 1px black"
                     ></p>
                   </div>
@@ -207,17 +207,17 @@
             <% cart.items.forEach(item => { %>
             <div class="d-flex justify-content-between">
               <p><%=item.productId.productName%> x <%=item.quantity%></p>
-              <p><%=item.productId.salePrice%></p>
+              <p><%=item.productId.regularPrice%></p>
             </div>
             <% }) %>
 
             <hr class="mt-0" />
             <% if(cart && cart.items.length > 0){ %>
             <div class="d-flex justify-content-between mb-3 pt-1">
-              <h6 class="font-weight-medium">Price</h6>
+              <h6 class="font-weight-medium">Price (<%=cart.items.length%>) items</h6>
               <h6 class="font-weight-medium total-price">
                 <%=cart ? cart.items.reduce((acc,item) => acc +
-                item.productId.salePrice*item.quantity,0):0%>
+                item.productId.regularPrice*item.quantity,0):0%>
               </h6>
             </div>
             <div class="d-flex justify-content-between">
@@ -367,7 +367,7 @@
     const appliedCouponText = document.getElementById("appliedCouponText");
     const removeCouponBtn = document.getElementById("removeCouponBtn");
     const copyButtons = document.querySelectorAll(".copy-btn");
-    const copyMessage = document.getElementById("copyMessage");
+    // const copyMessage = document.getElementById("copyMessage");
 
     const totalPriceElement = document.querySelector(".total-price");
     const discountPriceElement = document.querySelector(".discount-price");
@@ -385,23 +385,27 @@
     );
 
     copyButtons.forEach((button) => {
-      button.addEventListener("click", (event) => {
-        const couponCode = event.target.getAttribute("data-code");
-        if (couponCode) {
-          navigator.clipboard
-            .writeText(couponCode)
-            .then(() => {
-              copyMessage.textContent = `Coupon code copied`;
-            })
-            .catch((err) => {
-              console.error("Failed to copy: ", err);
-              copyMessage.textContent =
-                "Failed to copy coupon code. Please try again.";
-              copyMessage.style.color = "red";
-            });
-        }
-      });
-    });
+  button.addEventListener("click", (event) => {
+    const couponCode = event.target.getAttribute("data-code");
+    const messageId = `copyMessage-${couponCode}`; // Dynamically reference the correct message ID
+    const copyMessage = document.getElementById(messageId);
+
+    if (couponCode) {
+      navigator.clipboard
+        .writeText(couponCode)
+        .then(() => {
+          copyMessage.textContent = `Coupon code copied`;
+          copyMessage.style.color = "#069606"; // Success color
+        })
+        .catch((err) => {
+          console.error("Failed to copy: ", err);
+          copyMessage.textContent =
+            "Failed to copy coupon code. Please try again.";
+          copyMessage.style.color = "red"; // Error color
+        });
+    }
+  });
+});
 
     couponBtn.addEventListener("click", () => {
       couponDiv.style.display = "block";

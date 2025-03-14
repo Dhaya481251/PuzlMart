@@ -402,8 +402,8 @@
                       <table>
                         <tbody>
                           <% if(cart && cart.items && cart.items.length > 0){ %>
-                          <% cart.items.forEach(item => { %> <%
-                          if(item.productId ) { %>
+                          <% cart.items.forEach(item => { %> 
+                          <%if(item.productId) { %>
 
                           <tr>
                             <td class="si-pic">
@@ -439,7 +439,9 @@
 
                           <% } else { %>
                           <p>Product not found</p>
-                          <% } %> <% }) %> <% }else{ %>
+                          <% } %>
+                           <% }) %> 
+                          <% }else{ %>
 
                           <h4 colspan="4">Your cart is empty</h4>
 

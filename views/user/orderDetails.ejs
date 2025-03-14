@@ -64,7 +64,7 @@
       <hr />
       <ul>
         <% orders.items.forEach(item => { %>
-        <li>
+        <li style="list-style: none;">
           <img
             src="/uploads/re-image/<%= item.productId.productImage[0]%>"
             alt="<%= item.productId.productName %>"
@@ -73,7 +73,7 @@
           <span
             ><%= item.productId.productName %> | <%= item.quantity %> item</span
           ><br />
-          <span>Rs <%= orders.finalAmount %></span>
+          
 
           <% if(item.reviews){ %>
           <p>
@@ -93,7 +93,7 @@
         </li>
         <% }) %>
       </ul>
-
+      <span style="font-weight: bold;">Rs <%= orders.finalAmount %></span>
       <hr />
       <h5>Order Date: <%= orders.createdOn.toLocaleDateString() %></h5>
 
@@ -118,9 +118,9 @@
         notifications.forEach(notification => { %> <% if
         (notification.NotificationMessage) { %>
         <p><%= notification.NotificationMessage %></p>
-        <% } %> <% }) %> <% } else { %>
-        <p>No notifications available.</p>
-        <% } %> <% } else { %>
+        <% } %> <% }) %> <% } %>
+        
+         <% } else { %>
         <button
           id="returnBtn"
           class="btn text-white"
@@ -154,7 +154,7 @@
       </div>
       <div id="returnDiv" style="display: none">
         <form action="/returnOrder/<%=orders._id%>" method="POST">
-          <label for="returnReason">Write a cancellation reason</label><br />
+          <label for="returnReason">Write a return reason</label><br />
           <textarea name="returnReason" id="returnReason" rows="3"></textarea>
           <button
             type="submit"
@@ -261,7 +261,7 @@
       <hr />
       <ul style="list-style: none">
         <% if(orders.items){ %>
-        <li>List Price : <%=orders ? orders.items.reduce((acc,item) => acc + item.salePrice*item.quantity,0):0 %></li>
+        <li>List Price : <%=orders ? orders.items.reduce((acc,item) => acc + item.regularPrice*item.quantity,0):0 %></li>
         <% } %>
         <li>
           Discount : - Rs <%=orders.discount.toFixed(2)%>

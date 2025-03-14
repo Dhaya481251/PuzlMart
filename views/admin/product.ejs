@@ -59,7 +59,7 @@
                   <td><%=data[i].category?.name%></td>
                   <td>
                     <% if(data[i].featured===false){ %>
-                    <button class="btn btn-danger">
+                    <button class="btn btn-success">
                       <a
                         href="/admin/featured?id=<%=data[i]._id%>"
                         class="text-white"
@@ -68,7 +68,7 @@
                       >
                     </button>
                     <% }else{ %>
-                    <button class="btn btn-success">
+                    <button class="btn btn-danger">
                       <a
                         href="/admin/unFeatured?id=<%=data[i]._id%>"
                         class="text-white"

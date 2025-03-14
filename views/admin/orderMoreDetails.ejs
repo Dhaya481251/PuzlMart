@@ -5,6 +5,7 @@
     <nav>
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="/orders">Orders</a></li>
         <li class="breadcrumb-item active">
           <a href="/admin/offer">Order Details</a>
         </li>
@@ -24,7 +25,7 @@
       <hr />
       <ul>
         <% orders.items.forEach(item => { %>
-        <li>
+        <li style="list-style: none;">
           <img
             src="/uploads/re-image/<%= item.productId.productImage[0] %>"
             alt="<%= item.productId.productName %>"
@@ -33,7 +34,7 @@
           <span
             ><%= item.productId.productName %> | <%= item.quantity %> item</span
           ><br />
-          <span>Rs <%= orders.finalAmount %></span>
+          
           <% if(item.rating){ %>
           <p>
             <span class="star-rating">
@@ -51,15 +52,19 @@
         </li>
         <% }) %>
       </ul>
-
+      <span style="font-weight: bold;">Rs <%= orders.finalAmount %></span>
       <hr />
       <h5>Order Date: <%= orders.createdOn.toLocaleDateString() %></h5>
 
       <h5>Status: <%= orders.status %></h5>
-
+      <% if(orders.status === 'Cancelled'){ %>
+        <p>Cancellation Reason : <%=orders.cancellationReason%></p>
+      <% }else if(orders.status === 'Returned'){ %>
+        <p>Return Reason : <%=orders.returnReason%></p>
+      <% } %>
       <h3>Delivered on <%=orders.deliveryDate.toLocaleDateString()%></h3>
     </div>
-
+    
     <div
       class="order-card px-3 py-3 mx-3 my-3"
       style="
@@ -104,17 +109,20 @@
       <p>Price Details</p>
       <hr />
       <ul style="list-style: none">
-        <% orders.items.forEach(item => { %>
-        <li>List Price : <%= item.productId.regularPrice %></li>
-        <li>Selling Price : Rs <%= item.productId.salePrice %></li>
-        <li>Delivery charge : FREE</li>
-        <hr />
-
-        <% }) %>
-        <li>Total Amount : <%= orders.finalAmount%></li>
+        <% if(orders.items){ %>
+          <li>List Price : <%=orders ? orders.items.reduce((acc,item) => acc + item.regularPrice*item.quantity,0):0 %></li>
+        <% } %>
+          <li>
+            Discount : - Rs <%=orders.discount.toFixed(2)%>
+          </li>
+          <li>Delivery charge : Rs <%=orders.deliveryCharge%></li>
+          <hr />
+          <li>Total Amount : <%= orders.finalAmount %></li>
       </ul>
       <hr />
       <p>Payment Method: <%= orders.paymentMethod %></p>
+      <hr />
+      <p>Payment Status: <%= orders.paymentStatus %></p>
     </div>
   </div>
 </main>

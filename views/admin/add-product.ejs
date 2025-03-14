@@ -111,7 +111,7 @@
             <!-- Image inputs with error element -->
             <div class="col-md-12" style="margin: 0rem;padding: 2rem;">
               <div class="border row">
-                <div id="addedImagesContainer" class="thumbnails-container"></div>
+
                 <div class="form-floating">
                   <div class="m-2">
                     <label for="floatingImage">Choose Images (Max : 4) : </label>
@@ -411,17 +411,6 @@ console.log('Image source:', image.src);
 
         }
       }
-      function deleteSingleImage(imageId,productId){
-            $.ajax({
-                url:'/admin/deleteImage',
-                method:'post',
-                data:{imageNameToServer:imageId,productIdToServer:productId},
-                success:((response) => {
-                    if(response.status===true){
-                        window.location.reload();
-                    }
-                })
-            })
-           }
+      
        </script>
 <%-include('../../views/partials/admin/footer')%>

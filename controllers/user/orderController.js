@@ -71,7 +71,7 @@ const loadCheckOutPage = async (req, res) => {
       cart,
       userAddress: addressData,
       coupons,
-      finalAmount: parseFloat(finalAmount.toFixed(2)), 
+      finalAmount: parseFloat(finalAmount.toFixed(2)), // Ensure two-decimal precision
       discount: parseFloat(discount.toFixed(2)),
       deliveryCharge,
       wishlist,
@@ -83,7 +83,6 @@ const loadCheckOutPage = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
-
 const orderPlaced = async (req, res) => {
   try {
     const userId = req.session.user;
@@ -91,48 +90,36 @@ const orderPlaced = async (req, res) => {
     const { selectedAddress, selectedPayment } = req.body;
     const coupon = await Coupon.findOne({ code: req.session.couponCode });
     const category = await Category.find({ isListed: true });
-
     if (!selectedAddress || !selectedPayment) {
       return res.status(400).send("Address and payment method are required");
     }
 
     const cart = await Cart.findOne({ userId }).populate("items.productId");
-    if (cart && cart.items) {
-      cart.items = cart.items.filter(
-        (item) =>
-          item.productId &&
-          item.productId.productName &&
-          item.productId.salePrice
-      );
+    if (!cart || !cart.items || cart.items.length === 0) {
+      return res.status(400).send("Cart is empty");
     }
-
     const wishlist = await Wishlist.findOne({ userId }).populate(
-      "products.productsId"
+            "products.productsId"
     );
-
-    cart.items.forEach((item) => {
-      const product = item.productId;
-    });
-
     const userAddresses = await Address.findOne({ userId });
     if (!userAddresses) {
       return res.status(404).send("No addresses found for the user");
     }
 
-    const orderAddress = userAddresses?.address.find(
+    const orderAddress = userAddresses.address.find(
       (addr) => addr._id.toString() === selectedAddress
     );
-
     if (!orderAddress) {
       return res.status(404).send("Address not found");
     }
-    let deliveryCharge = 20;
-    let finalAmount =
-      cart.items.reduce(
-        (total, item) =>
-          total + (item.productId?.salePrice || 0) * item.quantity,
-        0
-      ) + deliveryCharge;
+
+    const deliveryCharge = 20; // Fixed delivery charge
+    const cartTotal = cart.items.reduce(
+      (total, item) =>
+        total + (item.productId?.salePrice || 0) * item.quantity,
+      0
+    );
+
     let discount = cart.items.reduce(
       (acc, item) =>
         acc +
@@ -141,42 +128,45 @@ const orderPlaced = async (req, res) => {
           item.quantity,
       0
     );
-    let couponDiscount = 0;
 
+    let couponDiscount = 0;
     if (coupon && new Date() <= coupon.expireOn) {
       if (coupon.discountType === "Percentage") {
-        couponDiscount = finalAmount * (coupon.discount / 100);
-        finalAmount -= couponDiscount;
-        discount += couponDiscount;
+        couponDiscount = cartTotal * (coupon.discount / 100);
       } else {
         couponDiscount = coupon.discount;
-        finalAmount = Math.max(0, finalAmount - coupon.discount);
-        discount += coupon.discount;
       }
-      userData.coupons.isActive = true;
-      await userData.save();
+      discount += couponDiscount;
     }
+
+    // Ensure consistency by reusing the same calculation logic
+    const finalAmount = Math.max(
+      0,
+      cartTotal - couponDiscount + deliveryCharge
+    );
 
     const orderData = new Order({
       userId,
-      deliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      deliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
       items: cart.items.map((item) => ({
         productId: item.productId,
         salePrice: item.productId.salePrice,
         regularPrice: item.productId.regularPrice,
         quantity: item.quantity,
       })),
-      finalAmount,
-      discount,
+      finalAmount: parseFloat(finalAmount.toFixed(2)),
+      discount: parseFloat(discount.toFixed(2)),
       deliveryCharge,
       addressId: orderAddress,
       paymentMethod: selectedPayment,
       status: "Pending",
       createdOn: new Date(),
     });
+
     orderData.addressDetails = orderAddress;
     orderData.couponApplied = coupon && new Date() <= coupon.expireOn;
 
+    // Update product quantities
     for (const item of cart.items) {
       const product = await Product.findById(item.productId);
       if (product) {
@@ -191,6 +181,10 @@ const orderPlaced = async (req, res) => {
       }
     }
 
+    // Save order data and clear cart
+    await orderData.save();
+    
+
     if (selectedPayment === "PayPal") {
       try {
         const url = await payment.createOrder(userId, couponDiscount);
@@ -198,9 +192,9 @@ const orderPlaced = async (req, res) => {
         await orderData.save();
         cart.items = [];
         await cart.save();
-
         return res.redirect(url);
       } catch (error) {
+        console.error('Error while making payment using paypal : ',error);
         orderData.paymentStatus = "Pending";
         await orderData.save();
         return res
@@ -210,34 +204,31 @@ const orderPlaced = async (req, res) => {
           );
       }
     } else if (selectedPayment === "COD") {
-      const order = new Order(orderData);
-      order.paymentStatus = "Not paid";
-      await order.save();
+      orderData.paymentStatus = "Not paid";
+      await orderData.save();
       cart.items = [];
-      await cart.save();
+    await cart.save();
       return res.render("orderConfirmation", { cart, wishlist, category });
     } else if (selectedPayment === "Wallet") {
-      const order = new Order(orderData);
-      const user = await User.findById(userId);
-
-      user.wallet.balance = user.wallet.balance - order.finalAmount || 0;
+      userData.wallet.balance = userData.wallet.balance - finalAmount || 0;
       const newTransaction = {
         transactionsType: "debit",
-        amount: order.finalAmount,
+        amount: finalAmount,
         reason: "Order Payment",
         date: new Date(),
       };
-      user.wallet.transactions.push(newTransaction);
-      await user.save();
-      order.paymentStatus = "Paid";
-      await order.save();
+      userData.wallet.transactions.push(newTransaction);
+      await userData.save();
+      orderData.paymentStatus = "Paid";
+      await orderData.save();
       cart.items = [];
-      await cart.save();
+    await cart.save();
       return res.render("orderConfirmation", { cart, wishlist, category });
     } else {
       return res.status(400).send("Invalid payment method");
     }
   } catch (error) {
+    console.error("Error in orderPlaced:", error);
     res.status(500).send("Internal Server Error");
   }
 };

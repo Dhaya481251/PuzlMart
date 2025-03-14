@@ -71,7 +71,6 @@ const filterProducts = async (req, res) => {
       return res.status(400).render("errorPage", { message: "Category not found" });
     }
 
-    // Extract and sanitize query parameters
     const { brand, minPrice, maxPrice, sort, query } = req.query;
     const filter = { isBlocked: false, category: { $in: id } };
     if (brand) {

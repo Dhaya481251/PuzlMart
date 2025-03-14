@@ -603,7 +603,6 @@ const searchAll = async (req, res) => {
         break;
 
       case "categories":
-        const category = await Category.find({});
 
         result = await Category.find({
           name: { $regex: searchString, $options: "i" },
@@ -635,7 +634,7 @@ const searchAll = async (req, res) => {
       case "products":
         result = await Product.find({
           productName: { $regex: searchString, $options: "i" },
-        })
+        }).populate('category')
           .limit(limit)
           .skip((page - 1) * limit)
           .exec();
@@ -768,6 +767,7 @@ const searchAll = async (req, res) => {
       });
     }
   } catch (error) {
+    console.error('Error while searching : ',error);
     res.status(500).send("Internal Server Error");
   }
 };

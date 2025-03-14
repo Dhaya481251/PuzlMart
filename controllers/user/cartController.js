@@ -18,9 +18,7 @@ const loadCart = async (req, res) => {
     const user = await User.findById(userId);
     let cart = await Cart.findOne({ userId }).populate("items.productId");
     const category = await Category.find({ isListed: true });
-    const wishlist = await Wishlist.findOne({ userId }).populate(
-      "products.productsId"
-    );
+    const wishlist = await Wishlist.findOne({ userId }).populate("products.productsId");
 
     if (cart && cart.items) {
       cart.items = cart.items.filter(

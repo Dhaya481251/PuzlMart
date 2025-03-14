@@ -76,8 +76,9 @@
                 <% } %>
             </div>
             <p class="mb-4"><%=product.description%></p>
-            <div class="d-flex align-items-center mb-4 pt-2">
+            <div class="d-flex align-items-center mb-4 pt-2" style="gap:1rem">
                 <a href="/addToCart/<%= product._id %>" data-id="<%=product._id%>" class="btn cart-btn" style="background-color: #e7ab3c;color:#f0ffff"><button class="btn  px-3"><i class="fa fa-shopping-cart mr-1"></i> Add To Cart</button></a>
+                <a href="/addToWishlist/<%= product._id %>" data-id="<%=product._id%>" class="btn wishlist-btn" style="background-color: #e7ab3c;color:#f0ffff"><button class="btn px-3"><i class="fa-solid fa-heart"></i> Add To Wishlist</button></a>
             </div>
             <div id="myresult" class="img-zoom-result"></div>
         </div>

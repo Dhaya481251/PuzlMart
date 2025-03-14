@@ -1,4 +1,4 @@
-<%- include("../../views/partials/admin/header") %>
+views/admin/product.ejs<%- include("../../views/partials/admin/header") %>
 <main id="main" class="main">
   <div class="pagetitle">
     <h1>Sales Report</h1>
@@ -88,13 +88,13 @@
                 </tr>
               </thead>
               <tbody>
-                <% orders.forEach(order => { %> <% order.items.forEach(item => {
-                %>
+                <% orders.forEach(order => { %> 
+                  <% order.items.forEach(item => {%>
                 <tr id="">
                   <td><%= item.productId?.productName %></td>
 
-                  <td><%= item.productId?.regularPrice %></td>
-                  <td><%= item.productId?.salePrice %></td>
+                  <td><%= item.regularPrice %></td>
+                  <td><%= item.salePrice %></td>
 
                   <td><%= item.quantity %></td>
                   <td><%= order.discount %></td>
