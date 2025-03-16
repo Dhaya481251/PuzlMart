@@ -106,8 +106,8 @@ exports.createOrder = async (userId, couponDiscount = 0) => {
           },
         ],
         application_context: {
-          return_url: "http://localhost:3000/paymentSuccessfull",
-          cancel_url: "http://localhost:3000",
+          return_url: "https://puzlmart.shop/paymentSuccessfull",
+          cancel_url: "http://puzlmart.shop",
           shipping_preference: "NO_SHIPPING",
           user_action: "PAY_NOW",
           brand_name: "Puzl Mart",
