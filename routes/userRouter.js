@@ -45,14 +45,17 @@ router.get(
   "/auth/google/callback",
   passport.authenticate("google", { failureRedirect: "/login" }),
   (req, res) => {
+    console.log("Google OAuth Callback Triggered");
+    console.log("Authenticated User:", req.user);
     if (req.user) {
       req.session.user = req.user._id;
       res.redirect("/");
     } else {
-      return res.redirect("/login");
+      res.redirect("/login");
     }
   }
 );
+
 
 //Product management
 router.get("/products", userAuth, productController.loadProductpage);
