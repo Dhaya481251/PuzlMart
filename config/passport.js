@@ -4,21 +4,23 @@ const User = require("../models/userSchema");
 const env = require("dotenv").config();
 const crypto = require("crypto");
 
+const callbackURL =
+  process.env.NODE_ENV === "production"
+    ? "https://puzlmart.shop/auth/google/callback"
+    : "http://localhost:3000/auth/google/callback";
 
-    
 passport.use(
   new GoogleStrategy(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "https://puzlmart.shop/auth/google/callback/auth/google/callback",
+      callbackURL: callbackURL,
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
         const user = await User.findOne({ googleId: profile.id });
 
         if (user) {
-          console.log("User found in database:", user);
           return done(null, user);
         }
 
@@ -41,7 +43,7 @@ passport.use(
           const referrer = await User.findOne({ referralCode });
           if (referrer) {
             referrer.wallet.balance += 100;
-            newUser.wallet.balance += 100;
+            newUser.wallet.balance += 100; 
 
             const referrerTransaction = {
               transactionsType: "credit",
@@ -65,9 +67,10 @@ passport.use(
         }
 
         await newUser.save();
-
+        
         return done(null, newUser);
       } catch (error) {
+        
         return done(error);
       }
     }
