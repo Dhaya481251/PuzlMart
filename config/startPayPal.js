@@ -75,6 +75,13 @@ exports.createOrder = async (userId, id) => {
 
     console.log("finalAmountUSD:", finalAmountUSD);
     console.log("discountUSD:", discountUSD);
+    const return_url = process.env.NODE_ENV === 'production'
+    ? "https://puzlmart.shop/paymentSuccessfull"
+    : "http://localhost:3000/paymentSuccessfull";
+
+    const cancel_url = process.env.NODE_ENV === 'production'
+    ? "https://puzlmart.shop"
+    : "http://localhost:3000";
 
     const accessToken = await generateAccessToken();
 
@@ -108,8 +115,8 @@ exports.createOrder = async (userId, id) => {
           },
         ],
         application_context: {
-          return_url: `http://localhost:3000/paymentSuccessfull`,
-          cancel_url: "http://localhost:3000",
+          return_url,
+          cancel_url,
           shipping_preference: "NO_SHIPPING",
           user_action: "PAY_NOW",
           brand_name: "Puzl Mart",

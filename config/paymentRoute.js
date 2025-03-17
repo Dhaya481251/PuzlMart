@@ -73,7 +73,13 @@ exports.createOrder = async (userId, couponDiscount = 0) => {
     const discountUSD = await convertCurrency(couponDiscount);
     const finalAmountUSD = (itemTotalUSD - discountUSD).toFixed(2);
 
+    const return_url = process.env.NODE_ENV === 'production'
+    ? "https://puzlmart.shop/paymentSuccessfull"
+    : "http://localhost:3000/paymentSuccessfull";
 
+    const cancel_url = process.env.NODE_ENV === 'production'
+    ? "https://puzlmart.shop"
+    : "http://localhost:3000";
     const accessToken = await generateAccessToken();
 
     const response = await axios({
@@ -106,8 +112,8 @@ exports.createOrder = async (userId, couponDiscount = 0) => {
           },
         ],
         application_context: {
-          return_url: "https://puzlmart.shop/paymentSuccessfull",
-          cancel_url: "http://puzlmart.shop",
+          return_url,
+          cancel_url,
           shipping_preference: "NO_SHIPPING",
           user_action: "PAY_NOW",
           brand_name: "Puzl Mart",
