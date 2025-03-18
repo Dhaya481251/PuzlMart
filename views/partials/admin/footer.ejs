@@ -58,7 +58,7 @@
           title: result.type === 'success' ? 'Success' : 'Error',
           text: result.message,
           showConfirmButton: true
-      });
+      }).then(() => location.reload());
       
   } catch (error) {
       console.error('Error handling return action:', error);
