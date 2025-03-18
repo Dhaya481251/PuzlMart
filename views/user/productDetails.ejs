@@ -60,7 +60,7 @@
                 <% } else if (product.category.categoryOffer) { %> 
                     <% if (product.category.categoryOffer.discountType === 'Percentage') { %>
                         <div>
-                        <span style="text-decoration: line-through; color:#878787">Rs <%=productregularPrice%></span>
+                        <span style="text-decoration: line-through; color:#878787">Rs <%=product.regularPrice%></span>
                         <span style="text-decoration: none; color: green;">
                             <%= product.category.categoryOffer.value %> % Off
                         </span>
