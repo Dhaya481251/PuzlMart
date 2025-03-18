@@ -36,10 +36,10 @@
                 <tr id="offer-<%= offer._id %>">
                   <td><%= offer.offerType %></td>
                   <td><%= offer.discountType %></td>
-                  <% if(offer.rewardType === 'Percentage'){ %>
+                  <% if(offer.discountType === 'Percentage'){ %>
                   <td><%= offer.value %> %</td>
                   <% }else{%>
-                  <td><%= (offer.value).toFixed(2) %></td>
+                  <td> Rs <%= (offer.value).toFixed(2) %></td>
                   <% } %>
                   <td><%= new Date(offer.startDate).toLocaleString() %></td>
                   <td><%= new Date(offer.endDate).toLocaleString() %></td>
