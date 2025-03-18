@@ -313,6 +313,11 @@
     returnBtn.style.display = "Block";
     cancelBtn.style.display = "none";
   }
+
+  if("<%=orders.returnStatus%>" === "Declined"){
+    returnBtn.style.display = "none";
+    cancelBtn.style.display = "none";
+  }
   if ("<%=orders.status%>" === "Shipped") {
     cancelBtn.style.display = "none";
     returnBtn.style.display = "none";
