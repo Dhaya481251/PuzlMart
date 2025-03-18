@@ -7,7 +7,7 @@
       class="breadcrumbs-txt"
       style="text-decoration: none"
     >
-      My Details</a
+      My Account</a
     >&gt;
     <a href="/myOrders" class="breadcrumbs-txt" style="text-decoration: none">
     My Orders</a
@@ -119,7 +119,6 @@
         (notification.NotificationMessage) { %>
         <p><%= notification.NotificationMessage %></p>
         <% } %> <% }) %> <% } %>
-        
          <% } else { %>
         <button
           id="returnBtn"
@@ -302,28 +301,25 @@
   const returnDiv = document.getElementById("returnDiv");
   const returnBtn = document.getElementById("returnBtn");
 
-const updateButtonVisibility = () => {
-  if (["Pending", "Processing"].includes("<%=orders.status%>")) {
+  const updateButtonVisibility = () => {
+  if (["Pending", "Processing"].includes("<%= orders.status %>")) {
     cancelBtn.style.display = "block";
     returnBtn.style.display = "none";
-  } else if ("<%=orders.status%>" === "Delivered") {
+  } else if ("<%= orders.status %>" === "Delivered" && "<%= orders.returnStatus %>" !== "Declined") {
     returnBtn.style.display = "block";
     cancelBtn.style.display = "none";
   } else if (
-    "<%=orders.returnStatus%>" === "Declined" &&
-    "<%=orders.status%>" === "Delivered"
-  ) {
-    cancelBtn.style.display = "none";
-    returnBtn.style.display = "none";
-  } else if (
-    ["Shipped", "Cancelled", "Returned"].includes("<%=orders.status%>")
+    ["Shipped", "Cancelled", "Returned" , "Return Request"].includes("<%= orders.status %>") ||
+    "<%= orders.returnStatus %>" === "Declined"
   ) {
     cancelBtn.style.display = "none";
     returnBtn.style.display = "none";
   }
 };
 
+
 updateButtonVisibility();
+
 
   cancelBtn.addEventListener("click", () => {
     cancelBtn.style.display = "none";
