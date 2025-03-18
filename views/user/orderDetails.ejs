@@ -314,7 +314,7 @@
     cancelBtn.style.display = "none";
   }
 
-  if("<%=orders.returnStatus%>" === "Declined"){
+  if("<%=orders.returnStatus%>" === "Declined" && "<%=orders.status%>" === "Delivered"){
     returnBtn.style.display = "none";
     cancelBtn.style.display = "none";
   }
