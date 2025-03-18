@@ -301,35 +301,30 @@
   const cancelDiv = document.getElementById("cancelDiv");
   const returnDiv = document.getElementById("returnDiv");
   const returnBtn = document.getElementById("returnBtn");
-  if (
-    "<%=orders.status%>" === "Pending" ||
-    "<%=orders.status%>" === "Processing"
-  ) {
+
+const updateButtonVisibility = () => {
+  if (["Pending", "Processing"].includes("<%=orders.status%>")) {
     cancelBtn.style.display = "block";
     returnBtn.style.display = "none";
+  } else if ("<%=orders.status%>" === "Delivered") {
+    returnBtn.style.display = "block";
+    cancelBtn.style.display = "none";
+  } else if (
+    "<%=orders.returnStatus%>" === "Declined" &&
+    "<%=orders.status%>" === "Delivered"
+  ) {
+    cancelBtn.style.display = "none";
+    returnBtn.style.display = "none";
+  } else if (
+    ["Shipped", "Cancelled", "Returned"].includes("<%=orders.status%>")
+  ) {
+    cancelBtn.style.display = "none";
+    returnBtn.style.display = "none";
   }
+};
 
-  if ("<%=orders.status%>" === "Delivered") {
-    returnBtn.style.display = "Block";
-    cancelBtn.style.display = "none";
-  }
+updateButtonVisibility();
 
-  if("<%=orders.returnStatus%>" === "Declined" && "<%=orders.status%>" === "Delivered"){
-    returnBtn.style.display = "none";
-    cancelBtn.style.display = "none";
-  }
-  if ("<%=orders.status%>" === "Shipped") {
-    cancelBtn.style.display = "none";
-    returnBtn.style.display = "none";
-  }
-  if ("<%=orders.status%>" === "Cancelled") {
-    cancelBtn.style.display = "none";
-    returnBtn.style.display = "none";
-  }
-  if ("<%=orders.status%>" === "Returned") {
-    cancelBtn.style.display = "none";
-    returnBtn.style.display = "none";
-  }
   cancelBtn.addEventListener("click", () => {
     cancelBtn.style.display = "none";
     cancelDiv.style.display = "block";
