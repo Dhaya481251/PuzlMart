@@ -114,7 +114,7 @@ const orderPlaced = async (req, res) => {
       return res.status(404).send("Address not found");
     }
 
-    const deliveryCharge = 20; // Fixed delivery charge
+    const deliveryCharge = 20;
     const cartTotal = cart.items.reduce(
       (total, item) =>
         total + (item.productId?.salePrice || 0) * item.quantity,
@@ -140,7 +140,6 @@ const orderPlaced = async (req, res) => {
       discount += couponDiscount;
     }
 
-    // Ensure consistency by reusing the same calculation logic
     const finalAmount = Math.max(
       0,
       cartTotal - couponDiscount + deliveryCharge
@@ -148,7 +147,7 @@ const orderPlaced = async (req, res) => {
 
     const orderData = new Order({
       userId,
-      deliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
+      deliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), 
       items: cart.items.map((item) => ({
         productId: item.productId,
         salePrice: item.productId.salePrice,
@@ -167,7 +166,6 @@ const orderPlaced = async (req, res) => {
     orderData.addressDetails = orderAddress;
     orderData.couponApplied = coupon && new Date() <= coupon.expireOn;
 
-    // Update product quantities
     for (const item of cart.items) {
       const product = await Product.findById(item.productId);
       if (product) {
@@ -182,7 +180,6 @@ const orderPlaced = async (req, res) => {
       }
     }
 
-    // Save order data and clear cart
     await orderData.save();
     
 
