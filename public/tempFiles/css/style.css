@@ -187,10 +187,6 @@ ol {
 	width: 80px;
 	height: 80px;
 	position: relative;
-	/* top: 50%;
-	left: 50%;
-	margin-top: -13px;
-	margin-left: -13px; */
 	border-radius: 60px;
 	animation: loader 0.8s linear infinite;
 	-webkit-animation: loader 0.8s linear infinite;
@@ -4308,8 +4304,6 @@ ol {
 }
 .rubik-cube {
     position: absolute;
-    /* margin-left: 1rem;
-    margin-top: 0.5rem; */
     width: 30px;
     height: 30px;
     transform-style: preserve-3d;
