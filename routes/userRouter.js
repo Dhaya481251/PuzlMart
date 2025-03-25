@@ -12,7 +12,7 @@ const wishlistController = require("../controllers/user/wishlistController");
 const walletController = require("../controllers/user/walletController");
 const categoryController = require("../controllers/user/categoryController");
 
-const { userAuth, adminAuth } = require("../middlewares/auth");
+const { userAuth, adminAuth,validateCartState } = require("../middlewares/auth");
 
 const multer = require("multer");
 const storage = require("../helpers/multer");
@@ -98,8 +98,8 @@ router.post("/increaseQuantity/:id", userAuth, cartController.increaseQuantity);
 router.post("/decreaseQuantity/:id", userAuth, cartController.decreaseQuantity);
 
 //Order management
-router.get("/buyNow", userAuth, orderController.loadCheckOutPage);
-router.post("/buy", userAuth, orderController.orderPlaced);
+router.get("/buyNow", userAuth, validateCartState, orderController.loadCheckOutPage);
+router.post("/buy", userAuth, validateCartState, orderController.orderPlaced);
 router.get("/orderConfirmation", userAuth, orderController.orderConfirmation);
 router.get("/paymentSuccessfull", userAuth, orderController.paymentSuccessfull);
 router.get("/myOrders", userAuth, orderController.loadMyOrdersPage);

@@ -83,6 +83,7 @@ const loadCheckOutPage = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
+
 const orderPlaced = async (req, res) => {
   try {
     const userId = req.session.user;

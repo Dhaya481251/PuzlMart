@@ -11,7 +11,7 @@ const orderController = require("../controllers/admin/orderController");
 const couponController = require("../controllers/admin/couponController");
 const offerController = require("../controllers/admin/offerController");
 
-const { userAuth, adminAuth } = require("../middlewares/auth");
+const { userAuth, adminAuth,validateCartState } = require("../middlewares/auth");
 
 const multer = require("multer");
 const storage = require("../helpers/multer");
