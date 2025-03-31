@@ -11,16 +11,95 @@ const moment = require("moment");
 const PDFDocument = require("pdfkit");
 const XLSX = require("xlsx");
 const Notification = require("../../models/notificationSchema");
+const {StatusCodes,ReasonPhrases} = require('http-status-codes');
 
+const fetchDashboardData = async() => {
+  const users = await User.find({isAdmin:false});
+  const orders = await Order.find()
+  .sort({createdOn:-1})
+  .populate('items.productId')
+  .populate('userId');
+  const products = await Product.find();
+  const notifications = await Notification.find({notificationType:'returnRequest'})
+  .populate('orderId')
+  .sort({createdOn:-1});
+
+  const topSellingProducts = await Order.aggregate([
+    {$unwind:'$items'},
+    {$group:{_id:'$items.productId',totalQuantitySold:{$sum:'$items.quantity'}}},
+    {$sort:{totalQuantitySold:-1}},
+    {$limit:10},
+    {$lookup:{from:'products',localField:'_id',foreignField:'_id',as:'productDetails'}},
+    {$unwind:'$productDetails'}
+  ]);
+  const topSellingCategories = await Order.aggregate([
+    {$unwind:'$items'},
+    {$lookup:{from:'products',localField:'items.productId',foreignField:'_id',as:'productDetails'}},
+    {$unwind:'$productDetails'},
+    {$group:{_id:'$productDetails.category',totalQuantitySold:{$sum:'$items.quantity'}}},
+    {$sort:{totalQuantitySold:-1}},
+    {$limit:10},
+    {$lookup:{from:'categories',localField:'_id',foreignField:'_id',as:'categoryDetails'}},
+    {$unwind:'$categoryDetails'},
+    {$project:{_id:'$categoryDetails',totalQuantitySold:1}}
+  ])
+
+  const topSellingBrands = await Order.aggregate([
+    {$unwind:'$items'},
+    {$lookup:{from:'products',localField:'items.productId',foreignField:'_id',as:'productDetails'}},
+    {$unwind:'$productDetails'},
+    {$group:{_id:'$productDetails.brand',totalQuantitySold:{$sum:'$items.quantity'}}},
+    {$sort:{totalQuantitySold:-1}},
+    {$limit:10},
+    {$lookup:{from:'brands',localField:'_id',foreignField:'brandName',as:'brandDetails'}},
+    {$unwind:'$brandDetails'},
+    {$project:{brandName:'$_id',brandImage:'$brandDetails.brandImage',totalQuantitySold:1}}
+  ])
+  return {users,orders,products,notifications,topSellingProducts,topSellingCategories,topSellingBrands};
+};
+
+const fetchSalesReportData = async() => {
+  
+  const limit = 4;
+
+  const orders = await Order.find({status:'Delivered'})
+  .populate('items.productId')
+  
+
+  let totalOrderAmount = 0;
+  let totalDiscount = 0;
+
+  orders.forEach((order) => {
+    order.items.forEach((item) => {
+      const total = order.finalAmount;
+      totalOrderAmount += total;
+      totalDiscount += order.discount;
+    });
+  });
+  const totalOrders = await Order.find({
+    status:'Delivered',
+  })
+  .countDocuments();
+
+  const totalPages = Math.ceil(totalOrders/limit);
+
+  const notifications = await Notification.find({
+    notificationType:'returnRequest'
+  })
+  .populate('orderId')
+  .sort({createdOn:-1});
+  
+  return {orders,totalPages,totalOrders,totalOrderAmount,totalDiscount,notifications}
+}
 const loadLogin = async (req, res) => {
   try {
     if (req.session.admin) {
       res.redirect("/admin");
     }
 
-    return res.render("admin-login");
+    return res.render("admin-login",{errorMessage:null});
   } catch (error) {
-    res.status(500).send("Sever Internal Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).render('admin-login',{errorMessage:'Something went wrong! Please try again.'});
   }
 };
 
@@ -33,15 +112,15 @@ const login = async (req, res) => {
       if (passwordMatch) {
         req.session.admin = true;
 
-        return res.redirect(302, "/admin");
+        return res.redirect(StatusCodes.MOVED_TEMPORARILY, "/admin");
       } else {
-        return res.render("admin-login", { message: "Incorrect Password" });
+        return res.render("admin-login", {errorMessage:null, message: "Incorrect Password" });
       }
     } else {
-      return res.render("admin-login", { message: "Admin not found" });
+      return res.render("admin-login", {errorMessage:null, message: "Admin not found" });
     }
   } catch (error) {
-    return res.status(500).send("Internal server error");
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).render('admin-login',{errorMessage:'Something went wrong! Please try again.'});
   }
 };
 
@@ -161,9 +240,10 @@ const loadDashboard = async (req, res) => {
         topSellingCategories,
         topSellingBrands,
         notifications,
+        errorMessage:null
       });
     } catch (error) {
-      res.status(500).send("Internal Server Error");
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).render('admin-login',{errorMessage:'Something went wrong! Please try again.'});
     }
   }
 };
@@ -178,11 +258,12 @@ const logout = async (req, res) => {
       res.redirect("/admin/login");
     });
   } catch (error) {
-    res.status(500).send("Internal Server Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
   }
 };
 
 const salesReport = async (req, res) => {
+  const {users,orders,products,notifications,topSellingProducts,topSellingCategories,topSellingBrands} = await fetchDashboardData();
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = 4;
@@ -222,12 +303,15 @@ const salesReport = async (req, res) => {
       totalOrderAmount: totalOrderAmount,
       totalDiscount: totalDiscount,
       notifications,
+      errorMessage:null
     });
   } catch (error) {
-    res.status(500).send("Internal Server Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).render('admin-dashboard',{errorMessage:'Something went wrong! Please try again',users,orders,products,notifications,topSellingProducts,topSellingCategories,topSellingBrands});
   }
 };
 const filterSalesReport = async (req, res) => {
+  const {orders,totalPages,totalOrders,totalOrderAmount,totalDiscount,notifications} = fetchSalesReportData();
+  const page = parseInt(req.query.page) || 1;
   try {
     const filter = req.body.filter;
     const filterMap = {
@@ -252,7 +336,7 @@ const filterSalesReport = async (req, res) => {
       return res.status(400).send("Invalid filter");
     }
 
-    const page = parseInt(req.query.page) || 1;
+    
     const limit = 4;
     const skip = (page - 1) * limit;
 
@@ -292,13 +376,16 @@ const filterSalesReport = async (req, res) => {
       currentPage: page,
       totalPages: totalPages,
       notifications,
+      errorMessage:null
     });
   } catch (error) {
-    res.status(500).send("Internal server error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).render('salesReport',{errorMessage:'Something went wrong! Please try again.',orders,currentPage:page,totalPages,totalOrders,totalOrderAmount,totalDiscount,notifications});
   }
 };
 
 const downloadPDF = async (req, res) => {
+  const {orders,totalPages,totalOrders,totalOrderAmount,totalDiscount,notifications} = fetchSalesReportData();
+  const page = parseInt(req.query.page) || 1;
   try {
     const orders = await Order.find({ status: "Delivered" }).populate(
       "items.productId"
@@ -429,11 +516,13 @@ const downloadPDF = async (req, res) => {
     doc.end();
     doc.pipe(res);
   } catch (error) {
-    res.status(500).send("Internal server error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).render('salesReport',{errorMessage:'Something went wrong! Please try again.',orders,currentPage:page,totalPages,totalOrders,totalOrderAmount,totalDiscount,notifications});
   }
 };
 
 const downloadEXCEL = async (req, res) => {
+  const {orders,totalPages,totalOrders,totalOrderAmount,totalDiscount,notifications} = fetchSalesReportData();
+  const page = parseInt(req.query.page) || 1;
   try {
     const orders = await Order.find({ status: "Delivered" }).populate(
       "items.productId"
@@ -475,11 +564,12 @@ const downloadEXCEL = async (req, res) => {
 
     res.send(excelBuffer);
   } catch (error) {
-    res.status(500).send("Internal server error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).render('salesReport',{errorMessage:'Something went wrong! Please try again.',orders,currentPage:page,totalPages,totalOrders,totalOrderAmount,totalDiscount,notifications});
   }
 };
 
 const getChartData = async (req, res) => {
+  const {users,orders,products,notifications,topSellingProducts,topSellingCategories,topSellingBrands} = await fetchDashboardData();
   try {
     const { filter } = req.query;
 
@@ -562,11 +652,12 @@ const getChartData = async (req, res) => {
       doughnutChartData: categoryRevenue,
     });
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch chart data" });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).render('admin-dashboard',{errorMessage:'Something went wrong! Please try again',users,orders,products,notifications,topSellingProducts,topSellingCategories,topSellingBrands});
   }
 };
 
 const searchAll = async (req, res) => {
+  const {users,orders,products,notifications,topSellingProducts,topSellingCategories,topSellingBrands} = await fetchDashboardData();
   try {
     const searchString = req.body.query;
     const searchType = req.body.type;
@@ -722,6 +813,7 @@ const searchAll = async (req, res) => {
         totalPages: Math.ceil(count / limit),
         currentPage: page,
         notifications,
+        errorMessage:null
       });
     } else if (searchType === "categories") {
       res.render(view, {
@@ -729,6 +821,7 @@ const searchAll = async (req, res) => {
         totalPages: Math.ceil(count / limit),
         currentPage: page,
         notifications,
+        errorMessage:null
       });
     } else if (searchType === "brands") {
       res.render(view, {
@@ -736,6 +829,7 @@ const searchAll = async (req, res) => {
         totalPages: Math.ceil(count / limit),
         currentPage: page,
         notifications,
+        errorMessage:null
       });
     } else if (searchType === "products") {
       res.render(view, {
@@ -743,6 +837,7 @@ const searchAll = async (req, res) => {
         totalPages: Math.ceil(count / limit),
         currentPage: page,
         notifications,
+        errorMessage:null
       });
     } else if (searchType === "orders") {
       res.render(view, {
@@ -750,6 +845,7 @@ const searchAll = async (req, res) => {
         totalPages: Math.ceil(count / limit),
         currentPage: page,
         notifications,
+        errorMessage:null
       });
     } else if (searchType === "coupons") {
       res.render(view, {
@@ -757,6 +853,7 @@ const searchAll = async (req, res) => {
         totalPages: Math.ceil(count / limit),
         currentPage: page,
         notifications,
+        errorMessage:null
       });
     } else if (searchType === "offers") {
       res.render(view, {
@@ -764,11 +861,11 @@ const searchAll = async (req, res) => {
         totalPages: Math.ceil(count / limit),
         currentPage: page,
         notifications,
+        errorMessage:null
       });
     }
   } catch (error) {
-    console.error('Error while searching : ',error);
-    res.status(500).send("Internal Server Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).render('admin-dashboard',{errorMessage:'Something went wrong! Please try again.',users,orders,products,notifications,topSellingProducts,topSellingCategories,topSellingBrands});
   }
 };
 
