@@ -117,7 +117,7 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
   document.querySelectorAll('.cart-remove').forEach(button => {
         button.addEventListener('click', async (event) => {
@@ -277,42 +277,37 @@ document.querySelectorAll('.cart-btn').forEach(button => {
     });
 });
   })
-})
-const sendRequest = async (url,method) => {
-    try {
-      const response = await fetch(url,{method});
-      const data = await response.json();
-      if(!response.ok){
-        Swal.fire({
-          icon:'error',
-          title:'Oops',
-          text:data.error || 'Something went wrong!'
-        });
-      }else{
-        location.reload();
-      }
-    } catch (error) {
-      Swal.fire({
-        icon:'error',
-        title:'Error',
-        text:error.message || 'An unexpected error occured!'
-      });
-    }
-  };
-  document.querySelectorAll('.increase-btn').forEach(button => {
-    button.addEventListener('click',(e) => {
-      e.preventDefault();
-      const productId = button.dataset.id;
-      sendRequest(`/increaseQuantity/${productId}`,'POST');
+});
+
+const sendRequest = (url,method) => {
+    $.ajax({
+        url:url,
+        type:method,
+        success:() => {
+            location.reload();
+        }
+        ,error: (xhr) => {
+            Swal.fire({
+                icon:'error',
+                title:'Oops',
+                text:xhr.responseJSON?.error || 'Something went wrong! Please try again.'
+            });
+        }
     });
-  });
-  document.querySelectorAll('.decrease-btn').forEach(button => {
-    button.addEventListener('click',(e) => {
-      e.preventDefault();
-      const productId = button.dataset.id;
-      sendRequest(`/decreaseQuantity/${productId}`,'POST')
-    });
-  });
+};
+
+$('.increase-btn').on('click',function(e) {
+    e.preventDefault();
+    const productId = $(this).data('id');
+    sendRequest(`/increaseQuantity/${productId}`,'POST');
+});
+
+$('.decrease-btn').on('click',function(e) {
+    e.preventDefault();
+    const productId = $(this).data('id');
+    sendRequest(`/decreaseQuantity/${productId}`,'POST')
+});
+
 </script>
 </body>
 </html>
