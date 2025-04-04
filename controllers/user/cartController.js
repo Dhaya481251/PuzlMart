@@ -172,6 +172,7 @@ const increaseQuantity = async (req, res) => {
     await cart.save();
     res.json({ success: true });
   } catch (error) {
+    
     res.status(500).json({ error: "Internal server error" });
   }
 };
