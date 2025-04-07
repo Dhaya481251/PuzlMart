@@ -205,6 +205,18 @@
         
 
 </main>
+<div id="errorModal" class="modal" tabindex="-1" style="position:absolute;padding-top:37%">
+  <div class="modal-dialog">
+    <div class="modal-content" style="background-color: darkred;color:white;flex-direction: row;">
+      <div class="modal-body">
+        <%= errorMessage || "" %>
+      </div>
+      <div class="modal-footer" style="border-top: none;">
+        <button type="button" class="btn btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+    </div>
+  </div>
+</div>
 <script>
   let barChartInstance = null;
 let doughnutChartInstance = null;
@@ -282,6 +294,11 @@ console.log(data.doughnutChartData);
 
 document.addEventListener('DOMContentLoaded', () => {
     fetchChartData('monthly');
+    const errorMessage = "<%= errorMessage %>";
+      if(errorMessage){
+        const errorModal = new bootstrap.Modal(document.getElementById("errorModal"));
+        errorModal.show();
+      }
 });
 </script>
 <%- include('../../views/partials/admin/footer') %>

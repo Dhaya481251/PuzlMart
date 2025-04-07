@@ -89,7 +89,6 @@
                       <span class="input-group-text bg-primary" id="inputGroupPrepend" style="width:2.5rem">
                         <i class="bi bi-eye-fill eye-icon" id="open-eye"></i>
                         <i class="bi bi-eye-slash-fill closeEye-icon" id="close-eye"></i>
-                     
                       </span>
                       </div>
                       <div id="passwordError" class="invalid-feedback error-message"></div>
@@ -99,7 +98,7 @@
                           <%= message %>
                       </div>
                     <% } %>
-                    </div>
+                  
                     <div class="col-12" style="display: flex;justify-content: center;">
                       <button class="btn btn-primary" style="border-radius:15px ; width:15rem" type="submit">Login</button>
                     </div>
@@ -111,7 +110,20 @@
         </div>
       </section>
     </div>
+    
   </main><!-- End #main -->
+  <div id="errorModal" class="modal" tabindex="-1" style="position:absolute;padding-top:37%">
+    <div class="modal-dialog">
+      <div class="modal-content" style="background-color: darkred;color:white;flex-direction: row;">
+        <div class="modal-body">
+          <%= errorMessage || "" %>
+        </div>
+        <div class="modal-footer" style="border-top: none;">
+          <button type="button" class="btn btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+      </div>
+    </div>
+  </div>
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
   <script>
     const passwordInput = document.getElementById('adminPassword');
@@ -155,6 +167,12 @@
                  event.preventDefault();
              }
          });
+
+      const errorMessage = "<%= errorMessage %>";
+      if(errorMessage){
+        const errorModal = new bootstrap.Modal(document.getElementById("errorModal"));
+        errorModal.show();
+      }
      });
  </script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>

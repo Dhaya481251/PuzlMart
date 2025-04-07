@@ -151,7 +151,18 @@
     </div>
   </div>
 </main>
-
+<div id="errorModal" class="modal" tabindex="-1" style="position:absolute;padding-top:37%">
+  <div class="modal-dialog">
+    <div class="modal-content" style="background-color: darkred;color:white;flex-direction: row;">
+      <div class="modal-body">
+        <%= errorMessage || "" %>
+      </div>
+      <div class="modal-footer" style="border-top: none;">
+        <button type="button" class="btn btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+    </div>
+  </div>
+</div>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.js"></script>
 <script>
   const addBrand = document.getElementById("addBrand");
@@ -216,7 +227,7 @@
             } else {
               Swal.fire(
                 "Error!",
-                "Failed to delete the brand. Please try again",
+                "Something went wrong! Please try again.",
                 "error"
               );
             }
@@ -225,7 +236,7 @@
             console.error("Error:", error);
             Swal.fire(
               "Error!",
-              "An error occurred while trying to delete the brand",
+              "Something went wrong! Please try again.",
               "error"
             );
           });
@@ -329,6 +340,13 @@
       element.style.display = "none";
     });
   }
+  document.addEventListener("DOMContentLoaded",() => {
+    const errorMessage = "<%= errorMessage %>";
+      if(errorMessage){
+        const errorModal = new bootstrap.Modal(document.getElementById("errorModal"));
+        errorModal.show();
+      }
+  })
 </script>
 
 <%-include('../../views/partials/admin/footer')%>

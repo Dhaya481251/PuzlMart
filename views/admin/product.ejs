@@ -173,7 +173,18 @@
     </div>
   </section>
 </main>
-
+<div id="errorModal" class="modal" tabindex="-1" style="position:absolute;padding-top:37%">
+  <div class="modal-dialog">
+    <div class="modal-content" style="background-color: darkred;color:white;flex-direction: row;">
+      <div class="modal-body">
+        <%= errorMessage || "" %>
+      </div>
+      <div class="modal-footer" style="border-top: none;">
+        <button type="button" class="btn btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+    </div>
+  </div>
+</div>
 <script>
   async function addOffer(productId) {
     const { value: amount } = await Swal.fire({
@@ -239,7 +250,7 @@
               "Error removing offer:",
               error.responseText || error.statusText
             );
-            Swal.fire("Error", "Could not remove offer.", "error");
+            Swal.fire("Error", "Something went wrong! Please try again.", "error");
           },
         });
       }
@@ -273,7 +284,7 @@
             } else {
               Swal.fire(
                 "Error!",
-                "Failed to remove the product. Please try again.",
+                "Something went wrong! Please try again.",
                 "error"
               );
             }
@@ -282,7 +293,7 @@
             console.error("Error : ", error);
             Swal.fire(
               "Error!",
-              "An error occured while trying to remove the product",
+              "Something went wrong! Please try again.",
               "error"
             );
           });
@@ -319,5 +330,12 @@
       }
     });
   }
+  document.addEventListener("DOMContentLoaded",() => {
+    const errorMessage = "<%= errorMessage %>";
+      if(errorMessage){
+        const errorModal = new bootstrap.Modal(document.getElementById("errorModal"));
+        errorModal.show();
+      }
+  })
 </script>
 <%-include('../../views/partials/admin/footer')%>

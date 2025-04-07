@@ -68,7 +68,18 @@
     </section>
 
   </main>
-
+  <div id="errorModal" class="modal" tabindex="-1" style="position:absolute;padding-top:37%">
+    <div class="modal-dialog">
+      <div class="modal-content" style="background-color: darkred;color:white;flex-direction: row;">
+        <div class="modal-body">
+          <%= errorMessage || "" %>
+        </div>
+        <div class="modal-footer" style="border-top: none;">
+          <button type="button" class="btn btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+      </div>
+    </div>
+  </div>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.js"></script>
  
 
@@ -97,12 +108,12 @@ async function confirmBlockUser(userId){
                             Swal.fire('Blocked','The user has been blocked successfully','success')
                             .then(() => location.reload());
                         }else{
-                            Swal.fire('Error!','Failed to block the user. Please try again.', 'error');
+                            Swal.fire('Error!','Something went wrong! Please try again.', 'error');
                         }
                     })
                     .catch(error => {
                         console.error('Error blocking user : ',error);
-                        Swal.fire('Error!', 'An error occurred while trying to block the user. Please try again.', 'error');
+                        Swal.fire('Error!', 'Something went wrong! Please try again.', 'error');
                     });
                 }
             }
@@ -129,14 +140,21 @@ async function confirmunBlockUser(userId){
                             Swal.fire('Unblocked','The user has been unblocked successfully','success')
                             .then(() => location.reload());
                         }else{
-                            Swal.fire('Error!','Failed to delete the unblock the user. Please try again.','error');
+                            Swal.fire('Something went wrong! Please try again.','error');
                         }
                     })
                     .catch(error => {
                         console.error('Error unblocking user : ',error);
-                        Swal.fire('Error!','An error occurred while trying to unblock the user','error')
+                        Swal.fire('Error!','Something went wrong! Please try again.','error')
                     });
                 }
             }
+document.addEventListener("DOMContentLoaded",() => {
+    const errorMessage = "<%= errorMessage %>";
+      if(errorMessage){
+        const errorModal = new bootstrap.Modal(document.getElementById("errorModal"));
+        errorModal.show();
+      }
+})
 </script>
 <%-include('../../views/partials/admin/footer')%>
