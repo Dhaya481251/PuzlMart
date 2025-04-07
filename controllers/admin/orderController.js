@@ -2,8 +2,75 @@ const Order = require("../../models/orderSchema");
 const User = require("../../models/userSchema");
 const Notification = require("../../models/notificationSchema");
 const mongoose = require("mongoose");
+const Product = require("../../models/productSchema");
+
+const {StatusCodes,ResponsePhrases} = require('http-status-codes');
+
+const fetchDashboardData = async() => {
+  const users = await User.find({isAdmin:false});
+  const orders = await Order.find()
+  .sort({createdOn:-1})
+  .populate('items.productId')
+  .populate('userId');
+  const products = await Product.find();
+  const notifications = await Notification.find({notificationType:'returnRequest'})
+  .populate('orderId')
+  .sort({createdOn:-1});
+
+  const topSellingProducts = await Order.aggregate([
+    {$unwind:'$items'},
+    {$group:{_id:'$items.productId',totalQuantitySold:{$sum:'$items.quantity'}}},
+    {$sort:{totalQuantitySold:-1}},
+    {$limit:10},
+    {$lookup:{from:'products',localField:'_id',foreignField:'_id',as:'productDetails'}},
+    {$unwind:'$productDetails'}
+  ]);
+  const topSellingCategories = await Order.aggregate([
+    {$unwind:'$items'},
+    {$lookup:{from:'products',localField:'items.productId',foreignField:'_id',as:'productDetails'}},
+    {$unwind:'$productDetails'},
+    {$group:{_id:'$productDetails.category',totalQuantitySold:{$sum:'$items.quantity'}}},
+    {$sort:{totalQuantitySold:-1}},
+    {$limit:10},
+    {$lookup:{from:'categories',localField:'_id',foreignField:'_id',as:'categoryDetails'}},
+    {$unwind:'$categoryDetails'},
+    {$project:{_id:'$categoryDetails',totalQuantitySold:1}}
+  ])
+
+  const topSellingBrands = await Order.aggregate([
+    {$unwind:'$items'},
+    {$lookup:{from:'products',localField:'items.productId',foreignField:'_id',as:'productDetails'}},
+    {$unwind:'$productDetails'},
+    {$group:{_id:'$productDetails.brand',totalQuantitySold:{$sum:'$items.quantity'}}},
+    {$sort:{totalQuantitySold:-1}},
+    {$limit:10},
+    {$lookup:{from:'brands',localField:'_id',foreignField:'brandName',as:'brandDetails'}},
+    {$unwind:'$brandDetails'},
+    {$project:{brandName:'$_id',brandImage:'$brandDetails.brandImage',totalQuantitySold:1}}
+  ])
+  return {users,orders,products,notifications,topSellingProducts,topSellingCategories,topSellingBrands};
+};
+
+const fetchOrderData = async() => {
+  const limit = 10;
+  const orders = await Order.find()
+  .populate('items.productId')
+  .sort({createdOn:-1});
+
+  const totalOrders = await Order.countDocuments();
+  const totalPages = Math.ceil(totalOrders/limit);
+
+  const notifications = await Notification.find({
+    notificationType:'returnRequest'
+  })
+  .populate('orderId')
+  .sort({createdOn:-1});
+
+  return {orders,totalPages,totalOrders,notifications};
+};
 
 const listOrders = async (req, res) => {
+  const {users,orders,products,notifications,topSellingProducts,topSellingCategories,topSellingBrands} = await fetchDashboardData();
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = 10;
@@ -31,15 +98,18 @@ const listOrders = async (req, res) => {
       totalPages: totalPages,
       totalOrders: totalOrders,
       notifications,
+      errorMessage:null
     });
   } catch (error) {
-    res.status(500).send("Internal Server Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).render('admin-dashboard',{errorMessage:'Something went wrong! Please try again.',users,orders,products,notifications,topSellingProducts,topSellingCategories,topSellingBrands});
   }
 };
 
 const changeOrderStatus = async (req, res) => {
+  const {orders,totalPages,totalOrders,notifications} = await fetchOrderData();
+  const page = parseInt(req.query.page) || 1;
   try {
-    const { id } = req.params;
+    const orderId = req.params.id;
     const { status } = req.body;
     if (
       !status ||
@@ -53,12 +123,12 @@ const changeOrderStatus = async (req, res) => {
         "Returned",
       ].includes(status)
     ) {
-      return res.status(400).send("Invalid status");
+      return res.status(StatusCodes.BAD_REQUEST).render('orders',{errorMessage:"Invalid order status",orders,totalPages,currentPage:page,totalOrders,notifications});
     }
 
-    const order = await Order.findById(id);
+    const order = await Order.findById(orderId);
     if (!order) {
-      return res.status(404).send("Order not found");
+      return res.status(StatusCodes.NOT_FOUND).render('orders',{errorMessage:"Order not found",orders,totalPages,currentPage:page,totalOrders,notifications});
     }
 
     order.status = status;
@@ -71,23 +141,25 @@ const changeOrderStatus = async (req, res) => {
 
     res.redirect("/admin/orders");
   } catch (error) {
-    res.status(500).send("Internal Server Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).render('orders',{errorMessage:'Something went wrong! Please try again.',orders,totalPages,currentPage:page,totalOrders,notifications});
   }
 };
 
 const cancelOrder = async (req, res) => {
+  const {orders,totalPages,totalOrders,notifications} = await fetchOrderData();
+  const page = parseInt(req.query.page) || 1;
   try {
-    const { id } = req.params;
+    const orderId = req.params.id;
 
-    const order = await Order.findById(id);
+    const order = await Order.findById(orderId);
     if (!order) {
-      return res.status(404).send("Order not found");
+      return res.status(StatusCodes.NOT_FOUND).render('orders',{errorMessage:"Order not found",orders,totalPages,currentPage:page,totalOrders,notifications});
     }
 
     if (order.status !== "Pending") {
       return res
-        .status(400)
-        .send("Order cannot be cancelled in its current status");
+        .status(StatusCodes.BAD_REQUEST)
+        .render('orders',{errorMessage:"Order cannot be cancelled in its current status",orders,totalPages,currentPage:page,totalOrders,notifications});
     }
 
     order.status = "Cancelled";
@@ -95,41 +167,46 @@ const cancelOrder = async (req, res) => {
 
     res.redirect("/admin/orders");
   } catch (error) {
-    res.status(500).send("Internal Server Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).render('orders',{errorMessage:'Something went wrong! Please try again.',orders,totalPages,currentPage:page,totalOrders,notifications});
   }
 };
 const moreDetails = async (req, res) => {
+  const {orders,totalPages,totalOrders,notifications} = await fetchOrderData();
+  const page = parseInt(req.query.page) || 1;
   try {
-    const id = req.params.id;
-    const order = await Order.findById(id).populate("items.productId");
+    const orderId = req.params.id;
+    const order = await Order.findById(orderId).populate("items.productId");
     const notifications = await Notification.find()
       .populate("orderId")
       .sort({ createdOn: -1 });
     if (!order) {
-      return res.status(404).send("Order not found");
+      return res.status(StatusCodes.NOT_FOUND).render('orders',{errorMessage:"Order not found",orders,totalPages,currentPage:page,totalOrders,notifications});
     }
 
     res.render("orderMoreDetails", {
       orders: order,
       notifications: notifications,
+      errorMessage:null
     });
   } catch (error) {
-    res.status(500).send("Internal server error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).render('orders',{errorMessage:'Something went wrong! Please try again.',orders,totalPages,currentPage:page,totalOrders,notifications});
   }
 };
 
 const handleReturnRequest = async (req, res) => {
+  const {orders,totalPages,totalOrders,notifications} = await fetchOrderData();
+  const page = parseInt(req.query.page) || 1;
   try {
-    const id = req.params.id;
+    const orderId = req.params.id;
     const { action } = req.body;
 
     if (action !== "approve" && action !== "decline") {
-      return res.status(400).json({ message: "Invalid action provided" });
+      return res.status(StatusCodes.BAD_REQUEST).json({ message: "Invalid action provided" });
     }
 
-    const order = await Order.findById({ _id: id });
+    const order = await Order.findById({ _id: orderId });
     if (!order) {
-      return res.status(404).json({ message: "Order not found" });
+      return res.status(StatusCodes.NOT_FOUND).json({ message: "Order not found" });
     }
 
     if (action === "approve") {
@@ -163,7 +240,7 @@ const handleReturnRequest = async (req, res) => {
         await user.save();
       }
 
-      res.status(200).json({
+      res.status(StatusCodes.OK).json({
         message: "Return request approved and refund processed",
         type: "success",
       });
@@ -181,11 +258,11 @@ const handleReturnRequest = async (req, res) => {
       await notification.save();
 
       res
-        .status(200)
+        .status(StatusCodes.OK)
         .json({ message: "Return request declined", type: "success" });
     }
   } catch (error) {
-    res.status(500).send("Internal Server Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message:'Something went wrong! Please try again.'});
   }
 };
 
