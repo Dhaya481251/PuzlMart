@@ -112,84 +112,124 @@
 <script src="/tempFiles/js/jquery.slicknav.js"></script>
 <script src="/tempFiles/js/owl.carousel.min.js"></script>
 <script src="/tempFiles/js/main.js"></script>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+  const updateCartSummary = () => {
+    let subtotal = 0;
+    let discount = 0;
+    let total = 0;
 
-//   document.querySelectorAll('.cart-remove').forEach(button => {
-//         button.addEventListener('click', async (event) => {
-//             event.preventDefault();
-            
-//             const confirmation = await Swal.fire({
-//                 title: 'Are you sure?',
-//                 text: "Do you want to remove this item from your cart?",
-//                 icon: 'warning',
-//                 showCancelButton: true,
-//                 confirmButtonText: 'Yes, remove it!',
-//                 cancelButtonText: 'Cancel',
-//                 reverseButtons: true
-//             });
-//             if (confirmation.isConfirmed) {
-//                 const productId = event.target.closest('a').getAttribute('href').split('/').pop();
-//                 try {
-//                     const response = await fetch(`/removeFromCart/${productId}`, {
-//                         method: 'GET', 
-//                         headers: {
-//                             'Content-Type': 'application/json',
-//                         },
-//                     });
-//                     const data = await response.json();
-//                     if (response.ok) {
-//                         Swal.fire('Removed!', 'The item has been removed from your cart.', 'success').then(() => location.reload());
-//                     } else {
-//                         Swal.fire('Error!', 'There was an issue removing the item. Please try again.', 'error');
-//                     }
-//                 } catch (error) {
-//                     console.error('Error removing item:', error);
-//                     Swal.fire('Error!', 'An error occurred while removing the item. Please try again.', 'error');
-//                 }
-//             } else {
-//                 Swal.fire('Cancelled', 'The item is still in your cart.', 'info');
-//             }
-//         });
-//     });
-//     document.querySelectorAll('.wishlist-remove').forEach(button => {
-//     button.addEventListener('click', async (event) => {
-//         event.preventDefault();
-//         const confirmation = await Swal.fire({
-//             title: 'Are you sure?',
-//             text: "Do you want to remove this item from your wishlist?",
-//             icon: 'warning',
-//             showCancelButton: true,
-//             confirmButtonText: 'Yes, remove it!',
-//             cancelButtonText: 'Cancel',
-//             reverseButtons: true
-//         });
-//         if (confirmation.isConfirmed) {
-//             const productsId = event.target.closest('a').dataset.id;
-//             console.log('Product ID for removal:', productsId); // Debug statement
-//             try {
-//                 const response = await fetch(`/removeFromWishlist/${productsId}`, {
-//                     method: 'GET',
-//                     headers: {
-//                         'Content-Type': 'application/json',
-//                     },
-//                 });
-//                 const data = await response.json();
-//                 if (response.ok) {
-//                     Swal.fire('Removed!', 'The item has been removed from your wishlist.', 'success').then(() => location.reload());
-//                 } else {
-//                     Swal.fire('Error!', 'There was an issue removing the item. Please try again.', 'error');
-//                 }
-//             } catch (error) {
-//                 console.error('Error removing item:', error);
-//                 Swal.fire('Error!', 'An error occurred while removing the item. Please try again.', 'error');
-//             }
-//         } else {
-//             Swal.fire('Cancelled', 'The item is still in your wishlist.', 'info');
-//         }
-//     });
-// });
+    
+    document.querySelectorAll('.qua-col').forEach(cartItem => {
+        const row = cartItem.closest('tr');
+        const quantity = parseInt(row.querySelector('input[type="text"]').value);
+        const regularPrice = parseFloat(row.querySelector('.p-price').textContent.replace('Rs ', ''));
+        const salePricePerUnit = parseFloat(row.querySelector('.total-price').textContent) / quantity;
+
+        subtotal += regularPrice * quantity; 
+        discount += (regularPrice - salePricePerUnit) * quantity; 
+        total += salePricePerUnit * quantity; 
+    });
+
+    // Update DOM elements for subtotal, discount, and total
+    document.querySelector('.subtotal span').textContent = `Rs ${subtotal.toFixed(2)}`;
+    document.querySelector('.discount span').textContent = `Rs ${discount.toFixed(2)}`;
+    document.querySelector('.cart-total span').textContent = `Rs ${total.toFixed(2)}`;
+    const headerTotalElement = document.querySelector('.select-total h5');
+    if (headerTotalElement) {
+        headerTotalElement.textContent = `Rs ${total.toFixed(2)}`;
+    }
+
+};
+
+// Example integration for cart item removal
+document.querySelectorAll('.cart-remove').forEach(button => {
+    button.addEventListener('click', async (event) => {
+        event.preventDefault();
+
+        const confirmation = await Swal.fire({
+            title: 'Are you sure?',
+            text: "Do you want to remove this item from your cart?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, remove it!',
+            cancelButtonText: 'Cancel',
+            reverseButtons: true
+        });
+
+        if (confirmation.isConfirmed) {
+            const productId = event.target.closest('a').getAttribute('href').split('/').pop();
+            const cartItem = event.target.closest('tr');
+
+            // AJAX request to remove the item
+            $.ajax({
+                url: `/removeFromCart/${productId}`,
+                type: 'GET',
+                success: () => {
+                    cartItem.remove(); 
+                    updateCartSummary();
+                    Swal.fire('Removed!', 'The item has been removed from your cart.', 'success');
+                },
+                error: (xhr) => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops',
+                        text: xhr.responseJSON?.error || 'Something went wrong! Please try again.'
+                    });
+                }
+            });
+        } else {
+            Swal.fire('Cancelled', 'The item is still in your cart.', 'info');
+        }
+    });
+});
+document.querySelectorAll('.wishlist-remove').forEach(button => {
+    button.addEventListener('click', async (event) => {
+        event.preventDefault();
+
+        const confirmation = await Swal.fire({
+            title: 'Are you sure?',
+            text: "Do you want to remove this item from your wishlist?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, remove it!',
+            cancelButtonText: 'Cancel',
+            reverseButtons: true
+        });
+
+        if (confirmation.isConfirmed) {
+            const productsId = event.target.closest('a').dataset.id; // Get the product ID
+            const wishlistItem = event.target.closest('tr'); // Reference the wishlist item row
+
+            // AJAX request to remove the item
+            $.ajax({
+                url: `/removeFromWishlist/${productsId}`,
+                type: 'GET',
+                success: () => {
+                    // Dynamically remove the item from the DOM
+                    wishlistItem.remove();
+
+                    Swal.fire('Removed!', 'The item has been removed from your wishlist.', 'success');
+                },
+                error: (xhr) => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops',
+                        text: xhr.responseJSON?.error || 'Something went wrong! Please try again.'
+                    });
+                }
+            });
+        } else {
+            Swal.fire('Cancelled', 'The item is still in your wishlist.', 'info');
+        }
+    });
+});
+
   document.querySelectorAll('.wishlist-btn').forEach(button => {
   button.addEventListener('click',(e) => {
     e.preventDefault();
@@ -292,47 +332,6 @@ const sendRequest = (url,method) => {
         }
     });
 };
-
-
-$('.cart-remove').on('click', function (e) {
-    e.preventDefault();
-    const productId = $(this).closest('a').attr('href').split('/').pop();
-    Swal.fire({
-        title: 'Are you sure?',
-        text: "Do you want to remove this item from your cart?",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, remove it!',
-        cancelButtonText: 'Cancel',
-        reverseButtons: true
-    }).then((result) => {
-        if (result.isConfirmed) {
-            sendRequest(`/removeFromCart/${productId}`, 'GET');
-        } else {
-            Swal.fire('Cancelled', 'The item is still in your cart.', 'info');
-        }
-    });
-});
-
-$('.wishlist-remove').on('click', function (e) {
-    e.preventDefault();
-    const productId = $(this).data('id'); // Using data attribute for product ID
-    Swal.fire({
-        title: 'Are you sure?',
-        text: "Do you want to remove this item from your wishlist?",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, remove it!',
-        cancelButtonText: 'Cancel',
-        reverseButtons: true
-    }).then((result) => {
-        if (result.isConfirmed) {
-            sendRequest(`/removeFromWishlist/${productId}`, 'GET');
-        } else {
-            Swal.fire('Cancelled', 'The item is still in your wishlist.', 'info');
-        }
-    });
-});
 
 $('.increase-btn').on('click',function(e) {
     e.preventDefault();

@@ -321,13 +321,12 @@
                     <i class="icon_heart_alt"></i>
                   </a>
                   <div class="cart-hover">
-                    <div class="select-items">
+                    <% if(wishlist && wishlist.products && wishlist.products.length > 0){ %>
+                    <div class="select-items" style="overflow-y:auto;height: 245px;scrollbar-color: #e7ab3c black; scrollbar-width: thin;">
                       <table>
                         <tbody>
-                          <% if(wishlist && wishlist.products &&
-                          wishlist.products.length > 0){ %> <%
-                          wishlist.products.forEach((product) => { %>
-
+                           
+                            <% wishlist.products.forEach((product) => { %>
                           <tr>
                             <td class="si-pic">
                               <a
@@ -379,11 +378,7 @@
                               </div>
                             </td>
                           </tr>
-                          <% }) %> <% }else{ %>
-
-                          <h4 colspan="4">Your Wishlist is empty</h4>
-
-                          <% } %>
+                          
                         </tbody>
                       </table>
                     </div>
@@ -393,15 +388,21 @@
                         >VIEW WISHLIST</a
                       >
                     </div>
+                    <% }) %> <% }else{ %>
+
+                      <h4 colspan="4">Your Wishlist is empty</h4>
+
+                    <% } %>
                   </div>
                 </li>
                 <li class="cart-icon">
                   <a href="#"> <i class="icon_bag_alt"></i> </a>
                   <div class="cart-hover">
-                    <div class="select-items">
+                    <% if(cart && cart.items && cart.items.length > 0){ %>
+                    <div class="select-items" style="overflow-y:auto;height: 245px;scrollbar-color: #e7ab3c black; scrollbar-width: thin;">
                       <table>
                         <tbody>
-                          <% if(cart && cart.items && cart.items.length > 0){ %>
+                          
                           <% cart.items.forEach(item => { %> 
                           <%if(item.productId) { %>
 
@@ -441,21 +442,11 @@
                           <p>Product not found</p>
                           <% } %>
                            <% }) %> 
-                          <% }else{ %>
-
-                          <h4 colspan="4">Your cart is empty</h4>
-
-                          <% } %>
+                          
                         </tbody>
                       </table>
                     </div>
-                    <div class="select-total">
-                      <span>total:</span>
-                      <h5>
-                        Rs <%= cart ? cart.items.reduce((acc, item) => acc +
-                        item.productId.salePrice * item.quantity, 0) : 0 %>
-                      </h5>
-                    </div>
+                    
                     <div class="select-button">
                       <a href="/cart" class="primary-btn view-card"
                         >VIEW CART</a
@@ -464,6 +455,11 @@
                         >CHECK OUT</a
                       >
                     </div>
+                    <% }else{ %>
+
+                      <h4 colspan="4">Your cart is empty</h4>
+
+                      <% } %>
                   </div>
                 </li>
               </ul>

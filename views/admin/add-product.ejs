@@ -51,6 +51,7 @@
             <div class="col-md-12">
               <div class="form-floating mb-3">
                 <select class="form-select" id="floatingSelect" name="brand" aria-label="Floating label select example">
+                  <option value = "">Choose Brand</option>
                   <% for(let i = 0; i < brand.length; i++) { %>
                     <option value="<%= brand[i].brandName %>"><%= brand[i].brandName %></option>
                   <% } %>
@@ -60,6 +61,19 @@
               </div>
             </div>
             
+            <div class="col-md-12">
+              <div class="form-floating mb-3">
+                <select class="form-select" id="floatingSelect" name="category" aria-label="Floating label select example">
+                  <option value="">Choose Category</option>
+                  <% for(let i = 0; i < cat.length; i++) { %>
+                    <option value="<%= cat[i].name %>"><%= cat[i].name %></option>
+                  <% } %>
+                </select>
+                <label for="floatingSelect">Category</label>
+                <div id="category-error" class="error-message"></div>
+              </div>
+            </div>
+
             <div class="col-md-12">
               <div class="form-floating">
                 <textarea class="form-control" name="description" placeholder="Product Description" id="descriptionId" style="height: 100px;"></textarea>
@@ -85,17 +99,6 @@
               </div>
             </div>
             
-            <div class="col-md-12">
-              <div class="form-floating mb-3">
-                <select class="form-select" id="floatingSelect" name="category" aria-label="Floating label select example">
-                  <% for(let i = 0; i < cat.length; i++) { %>
-                    <option value="<%= cat[i].name %>"><%= cat[i].name %></option>
-                  <% } %>
-                </select>
-                <label for="floatingSelect">Category</label>
-                <div id="category-error" class="error-message"></div>
-              </div>
-            </div>
             <div class="col-md-12">
               <div class="form-floating mb-3">
                 <select multiple class="form-select" id="relatedProducts" name="relatedProducts[]" aria-label="Floating label select example">
@@ -169,16 +172,14 @@ function validateAndSubmit(event) {
         icon:data.type,
         title:data.message,
         showConfirmButton:true,
-        timer:1500
-      }).then(() => {
-        if(data.type === 'success'){
+      }).then((result) => {
+        if(result.isConfirmed && data.type === 'success'){
           window.location.href = '/admin/products';
         }else{
           Swal.fire({
             icon:'error',
             title:data.message,
             showConfirmButton:true,
-            timer:1500
           });
         }
       });
@@ -189,7 +190,6 @@ function validateAndSubmit(event) {
         icon:'error',
         title:error.message,
         showConfirmButton:true,
-        timer:1500
       })
     })
     
@@ -222,6 +222,13 @@ function validateForm() {
     if (description.trim() === "") {
         displayErrorMessage('description-error', 'Please enter a product description.');
         isValid = false;
+    }
+    if(brand.trim() === ""){
+      displayErrorMessage('brand-error','Please select a brand')
+    }
+
+    if(category.trim() === ""){
+      displayErrorMessage('category-error','Please select a category')
     }
 
     if (!/^\d+(\.\d{1,2})?$/.test(price) || parseFloat(price) < 0) {

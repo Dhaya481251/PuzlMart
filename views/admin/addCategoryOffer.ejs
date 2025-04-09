@@ -131,16 +131,14 @@
           icon: data.type,
           title: data.message,
           showConfirmButton: true,
-          timer: 1500,
-        }).then(() => {
-          if (data.type === "success") {
+        }).then((result) => {
+          if (result.isConfirmed && data.type === "success") {
             window.location.href = "/admin/category";
           } else {
             Swal.fire({
               icon: "error",
               title: data.message,
               showConfirmButton: true,
-              timer: 1500,
             });
           }
         });
@@ -151,7 +149,6 @@
           icon: "error",
           title: error.message,
           showConfirmButton: true,
-          timer: 1500,
         });
       });
   }
