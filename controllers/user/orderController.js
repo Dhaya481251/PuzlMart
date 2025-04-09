@@ -15,6 +15,21 @@ const env = require("dotenv").config();
 const payment = require("../../config/paymentRoute");
 const startPayPal = require("../../config/startPayPal");
 const PDFDocument = require("pdfkit");
+const axios = require("axios");
+
+const {StatusCodes,ReasonPhrases} = require('http-status-codes');
+
+async function convertCurrency(amountInINR) {
+  try {
+    const response = await axios.get(
+      `https://api.exchangerate-api.com/v4/latest/INR`
+    );
+    const conversionRate = response.data.rates.USD;
+    return (amountInINR * conversionRate).toFixed(2); 
+  } catch (error) {
+    throw new Error("Failed to convert INR to USD");
+  }
+}
 
 const loadCheckOutPage = async (req, res) => {
   try {
@@ -25,7 +40,7 @@ const loadCheckOutPage = async (req, res) => {
     const category = await Category.find({ isListed: true });
 
     if (!cart || !cart.items || cart.items.length === 0) {
-      return res.redirect(302, "/products");
+      return res.redirect(StatusCodes.MOVED_TEMPORARILY, "/products");
     }
 
     const addressData = (await Address.findOne({ userId: userData._id })) || {
@@ -65,7 +80,7 @@ const loadCheckOutPage = async (req, res) => {
 
     
     const finalAmount = Math.max(0, cartTotal - couponDiscount + deliveryCharge);
-
+    const finalAmountInUSD = await convertCurrency(finalAmount)
     res.render("orderPaymentPage", {
       user: userData,
       cart,
@@ -77,10 +92,11 @@ const loadCheckOutPage = async (req, res) => {
       wishlist,
       category,
       coupon: couponCode ? await Coupon.findOne({ code: couponCode }) : null,
+      finalAmountInUSD
     });
   } catch (error) {
     console.error("Error in loadCheckOutPage:", error);
-    res.status(500).send("Internal Server Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
   }
 };
 
@@ -92,26 +108,26 @@ const orderPlaced = async (req, res) => {
     const coupon = await Coupon.findOne({ code: req.session.couponCode });
     const category = await Category.find({ isListed: true });
     if (!selectedAddress || !selectedPayment) {
-      return res.status(400).send("Address and payment method are required");
+      return res.status(StatusCodes.BAD_REQUEST).send("Address and payment method are required");
     }
 
     const cart = await Cart.findOne({ userId }).populate("items.productId");
     if (!cart || !cart.items || cart.items.length === 0) {
-      return res.status(400).send("Cart is empty");
+      return res.status(StatusCodes.BAD_REQUEST).send("Cart is empty");
     }
     const wishlist = await Wishlist.findOne({ userId }).populate(
             "products.productsId"
     );
     const userAddresses = await Address.findOne({ userId });
     if (!userAddresses) {
-      return res.status(404).send("No addresses found for the user");
+      return res.status(StatusCodes.NOT_FOUND).send("No addresses found for the user");
     }
 
     const orderAddress = userAddresses.address.find(
       (addr) => addr._id.toString() === selectedAddress
     );
     if (!orderAddress) {
-      return res.status(404).send("Address not found");
+      return res.status(StatusCodes.NOT_FOUND).send("Address not found");
     }
 
     const deliveryCharge = 20;
@@ -173,10 +189,10 @@ const orderPlaced = async (req, res) => {
           product.quantity -= item.quantity;
           await product.save();
         } else {
-          return res.status(400).send("Out of stock");
+          return res.status(StatusCodes.BAD_REQUEST).send("Out of stock");
         }
       } else {
-        return res.status(404).send("Product not found");
+        return res.status(StatusCodes.NOT_FOUND).send("Product not found");
       }
     }
 
@@ -223,11 +239,11 @@ const orderPlaced = async (req, res) => {
     await cart.save();
       return res.render("orderConfirmation", { cart, wishlist, category });
     } else {
-      return res.status(400).send("Invalid payment method");
+      return res.status(StatusCodes.BAD_REQUEST).send("Invalid payment method");
     }
   } catch (error) {
     console.error("Error in orderPlaced:", error);
-    res.status(500).send("Internal Server Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
   }
 };
 
@@ -246,7 +262,7 @@ const orderConfirmation = async (req, res) => {
 
     res.render(`orderConfirmation`, { cart, wishlist, category: category });
   } catch (error) {
-    res.status(500).send("Internal Server Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
   }
 };
 
@@ -264,7 +280,7 @@ const paymentSuccessfull = async (req, res) => {
 
     res.render(`paymentSuccessfull`, { cart, wishlist, category: category });
   } catch (error) {
-    res.status(500).send("Internal Server Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
   }
 };
 
@@ -273,7 +289,7 @@ const loadMyOrdersPage = async (req, res) => {
     const userId = req.session.user;
     const user = await User.findOne({ _id: userId });
     if (!user) {
-      return res.status(404).send("User not found");
+      return res.status(StatusCodes.NOT_FOUND).send("User not found");
     }
     const cart = await Cart.findOne({ userId }).populate("items.productId");
     const wishlist = await Wishlist.findOne({ userId }).populate(
@@ -307,7 +323,7 @@ const loadMyOrdersPage = async (req, res) => {
       totalPages: totalPages,
     });
   } catch (error) {
-    res.status(500).send("Internal server error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal server error");
   }
 };
 
@@ -323,7 +339,7 @@ const orderDetails = async (req, res) => {
     const reviews = await Review.find({ userId: userId });
 
     if (!order) {
-      return res.status(404).send("Order not found");
+      return res.status(StatusCodes.NOT_FOUND).send("Order not found");
     }
     const cart = await Cart.findOne({ userId }).populate("items.productId");
     const wishlist = await Wishlist.findOne({ userId }).populate(
@@ -341,7 +357,7 @@ const orderDetails = async (req, res) => {
       reviews,
     });
   } catch (error) {
-    res.status(500).send("Internal server error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal server error");
   }
 };
 
@@ -354,7 +370,7 @@ const payFromOrderDetails = async (req, res) => {
     const order = await Order.findById({ _id: id });
 
     if (!order) {
-      return res.status(404).send("Order not found");
+      return res.status(StatusCodes.NOT_FOUND).send("Order not found");
     }
 
     order.paypalOrderId = new URL(approvalUrl).searchParams.get("token");
@@ -363,7 +379,7 @@ const payFromOrderDetails = async (req, res) => {
 
     return res.redirect(approvalUrl);
   } catch (error) {
-    res.status(500).send("Internal Server Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
   }
 };
 
@@ -379,7 +395,7 @@ const rateProduct = async (req, res) => {
     const category = await Category.find({ isListed: true });
 
     if (isNaN(rating) || rating < 1 || rating > 5) {
-      return res.status(400).json({
+      return res.status(StatusCodes.BAD_REQUEST).json({
         message: "Invalid rating. Rating should be a number between 1 and 5.",
         type: "error",
       });
@@ -402,7 +418,7 @@ const rateProduct = async (req, res) => {
       { new: true }
     );
     if (!order) {
-      return res.status(404).json({ message: "Order or product not found" });
+      return res.status(StatusCodes.NOT_FOUND).json({ message: "Order or product not found" });
     }
 
     const product = await Product.findByIdAndUpdate(
@@ -429,12 +445,12 @@ const rateProduct = async (req, res) => {
       await product.save();
     }
 
-    res.status(200).json({
+    res.status(StatusCodes.OK).json({
       message: "Rating and review added successfully",
       type: "success",
     });
   } catch (error) {
-    res.status(500).json({ message: "Internal server error", type: "error" });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal server error", type: "error" });
   }
 };
 
@@ -455,7 +471,7 @@ const loadAddAddress = async (req, res) => {
       coupon,
     });
   } catch (error) {
-    res.status(500).send("Internal Server Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
   }
 };
 
@@ -514,9 +530,9 @@ const addAddress = async (req, res) => {
     req.session.cart = cart;
     req.session.wishlist = wishlist;
 
-    res.redirect(302, "/buyNow");
+    res.redirect(StatusCodes.MOVED_TEMPORARILY, "/buyNow");
   } catch (error) {
-    res.status(500).send("Internal server error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal server error");
   }
 };
 
@@ -532,7 +548,7 @@ const loadEditAddress = async (req, res) => {
     const coupon = await Coupon.findOne({ code: req.sessioncouponCode });
     const currentAddress = await Address.findOne({ "address._id": addressId });
     if (!currentAddress) {
-      return res.status(404).send("Address not found");
+      return res.status(StatusCodes.NOT_FOUND).send("Address not found");
     }
 
     const addressData = currentAddress.address.find((item) => {
@@ -540,7 +556,7 @@ const loadEditAddress = async (req, res) => {
     });
 
     if (!addressData) {
-      return res.status(404).send("Address not found");
+      return res.status(StatusCodes.NOT_FOUND).send("Address not found");
     }
 
     res.render("orderEditAddress", {
@@ -552,7 +568,7 @@ const loadEditAddress = async (req, res) => {
       coupon,
     });
   } catch (error) {
-    res.status(500).send("Internal server error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal server error");
   }
 };
 
@@ -569,7 +585,7 @@ const editAddress = async (req, res) => {
     const findAddress = await Address.findOne({ "address._id": addressId });
     const coupon = await Coupon.findOne({ code: req.session.couponCode });
     if (!findAddress) {
-      res.status(404).send("Address not found");
+      res.status(StatusCodes.NOT_FOUND).send("Address not found");
     }
 
     await Address.updateOne(
@@ -593,9 +609,9 @@ const editAddress = async (req, res) => {
 
     req.session.cart = cart;
     req.session.wishlist = wishlist;
-    res.redirect(302, "/buyNow");
+    res.redirect(StatusCodes.MOVED_TEMPORARILY, "/buyNow");
   } catch (error) {
-    res.status(500).send("Internal server error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal server error");
   }
 };
 
@@ -616,12 +632,12 @@ const cancelOrder = async (req, res) => {
       { new: true }
     );
     if (!order) {
-      return res.status(404).send("Order not found");
+      return res.status(StatusCodes.NOT_FOUND).send("Order not found");
     }
 
     if (order.status !== "Pending") {
       return res
-        .status(400)
+        .status(StatusCodes.BAD_REQUEST)
         .json({ message: "Order cannot be cancelled.", type: "error" });
     }
 
@@ -643,17 +659,17 @@ const cancelOrder = async (req, res) => {
       user.wallet.transactions.push(newTransaction);
       await user.save();
 
-      res.status(200).json({
+      res.status(StatusCodes.OK).json({
         message: "Order cancelled and refund credited in wallet successfully",
         type: "success",
       });
     } else {
       res
-        .status(200)
+        .status(StatusCodes.OK)
         .json({ message: "Order cancelled successfully", type: "success" });
     }
   } catch (error) {
-    res.status(500).json({ message: "Internal server error", type: "error" });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal server error", type: "error" });
   }
 };
 
@@ -673,12 +689,12 @@ const returnOrder = async (req, res) => {
       { new: true }
     );
     if (!order) {
-      return res.status(404).send("Order not found");
+      return res.status(StatusCodes.NOT_FOUND).send("Order not found");
     }
 
     if (order.status !== "Delivered") {
       return res
-        .status(400)
+        .status(StatusCodes.BAD_REQUEST)
         .json({ message: "Order cannot be returned.", type: "error" });
     }
 
@@ -692,10 +708,10 @@ const returnOrder = async (req, res) => {
     await notification.save();
 
     res
-      .status(200)
+      .status(StatusCodes.OK)
       .json({ message: "Return request sent to admin", type: "success" });
   } catch (error) {
-    res.status(500).json({ message: "Internal server error", type: "error" });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal server error", type: "error" });
   }
 };
 
@@ -707,18 +723,18 @@ const applyCoupon = async (req, res) => {
     const coupon = await Coupon.findOne({ code: couponCode, isActive: true });
 
     if (!coupon) {
-      return res.status(404).json({ message: "Coupon not found" });
+      return res.status(StatusCodes.NOT_FOUND).json({ message: "Coupon not found" });
     }
 
     const currentDate = new Date();
     if (currentDate > coupon.expireOn) {
-      return res.status(400).json({ message: "Coupon has expired" });
+      return res.status(StatusCodes.BAD_REQUEST).json({ message: "Coupon has expired" });
     }
 
     const user = await User.findById(userId);
 
     if (user.coupons.includes(coupon._id)) {
-      return res.status(400).json({ message: "Coupon already added" });
+      return res.status(StatusCodes.BAD_REQUEST).json({ message: "Coupon already added" });
     }
 
     const cart = await Cart.findOne({ userId }).populate("items.productId");
@@ -736,7 +752,7 @@ const applyCoupon = async (req, res) => {
     );
     const category = await Category.find({ isListed: true });
     if (coupon.minimumPrice && cartTotal < coupon.minimumPrice) {
-      return res.status(400).json({
+      return res.status(StatusCodes.BAD_REQUEST).json({
         message: `Coupon requires a minimum price of ${coupon.minimumPrice}`,
       });
     }
@@ -755,7 +771,7 @@ const applyCoupon = async (req, res) => {
     await coupon.save();
     req.session.couponCode = couponCode;
 
-    res.status(200).json({
+    res.status(StatusCodes.OK).json({
       message: "Coupon added successfully",
       couponDetails: {
         name: coupon.name,
@@ -766,7 +782,7 @@ const applyCoupon = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ error: "Internal Serve Error" });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Internal Serve Error" });
   }
 };
 
@@ -776,14 +792,14 @@ const removeCoupon = async (req, res) => {
     const user = await User.findById(userId);
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(StatusCodes.NOT_FOUND).json({ message: "User not found" });
     }
 
     const couponCode = req.session.couponCode;
     const coupon = await Coupon.findOne({ code: couponCode });
 
     if (!coupon) {
-      return res.status(404).json({ message: "Coupon not found" });
+      return res.status(StatusCodes.NOT_FOUND).json({ message: "Coupon not found" });
     }
 
     user.coupons = user.coupons.filter(
@@ -793,7 +809,7 @@ const removeCoupon = async (req, res) => {
 
     const cart = await Cart.findOne({ userId }).populate("items.productId");
     if (cart && cart.items) {
-      cart.items = cart.items.filter((item) => item.productId); // Remove items with null productId
+      cart.items = cart.items.filter((item) => item.productId); 
     }
 
     const wishlist = await Wishlist.findOne({ userId }).populate(
@@ -813,7 +829,7 @@ const removeCoupon = async (req, res) => {
     );
 
     req.session.couponCode = null;
-    res.status(200).json({
+    res.status(StatusCodes.OK).json({
       message: "Coupon removed successfully",
       updatedPrices: {
         total: cartTotal,
@@ -822,7 +838,7 @@ const removeCoupon = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ message: "Internal Server Error" });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal Server Error" });
   }
 };
 
@@ -835,12 +851,12 @@ const downloadInvoice = async (req, res) => {
       .exec();
 
     if (!order) {
-      return res.status(404).send("Order not found");
+      return res.status(StatusCodes.NOT_FOUND).send("Order not found");
     }
 
     const address = order.addressDetails;
     if (!address) {
-      return res.status(404).send("Address not found");
+      return res.status(StatusCodes.NOT_FOUND).send("Address not found");
     }
 
     const doc = new PDFDocument({ autoFirstPage: false });
@@ -971,7 +987,7 @@ const downloadInvoice = async (req, res) => {
     doc.end();
     doc.pipe(res);
   } catch (error) {
-    res.status(500).send("Internal Server Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
   }
 };
 

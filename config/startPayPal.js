@@ -33,7 +33,7 @@ async function convertCurrency(amountInINR) {
   }
 }
 
-exports.createOrder = async (userId, id) => {
+exports.createOrder = async (userId, id,deliveryChargeINR = 20) => {
   try {
     const order = await Order.findById({ _id: id })
       .populate("items.productId")
@@ -69,12 +69,10 @@ exports.createOrder = async (userId, id) => {
         },
       });
     }
-
+    const deliveryChargeUSD = await convertCurrency(deliveryChargeINR)
     const discountUSD = await convertCurrency(order.discount);
-    const finalAmountUSD = (itemTotalUSD - parseFloat(discountUSD)).toFixed(2);
+    const finalAmountUSD = (itemTotalUSD - discountUSD + parseFloat(deliveryChargeUSD)).toFixed(2);
 
-    console.log("finalAmountUSD:", finalAmountUSD);
-    console.log("discountUSD:", discountUSD);
     const return_url = process.env.NODE_ENV === 'production'
     ? "https://puzlmart.shop/paymentSuccessfull"
     : "http://localhost:3000/paymentSuccessfull";
@@ -109,6 +107,10 @@ exports.createOrder = async (userId, id) => {
                   currency_code: "USD",
                   value: discountUSD,
                 },
+                shipping:{
+                  currency_code:"USD",
+                  value:deliveryChargeUSD
+                }
               },
             },
             items: purchaseUnits,
