@@ -4,6 +4,7 @@ const User = require('../../models/userSchema');
 const Cart = require('../../models/cartSchema');
 const Wishlist = require('../../models/wishlistSchema');
 const Brand = require('../../models/brandSchema');
+const {StatusCodes,ReasonPhrases} = require('http-status-codes');
 
 const loadCategoryItems = async(req,res) => {
     try {
@@ -16,7 +17,7 @@ const loadCategoryItems = async(req,res) => {
         const id = req.params.id;
         const selectedCategory = await Category.findOne({_id:id,isListed:true});
         if(!selectedCategory){
-            res.status(400).send('Category not found');
+            res.status(StatusCodes.BAD_REQUEST).send('Category not found');
         };
         const page = parseInt(req.query.page) || 1;
         const limit = 4;
@@ -54,7 +55,7 @@ const loadCategoryItems = async(req,res) => {
         res.render('categoryItems',{user:userData,category:categories,selectedCategory,products:productData,brand:brands,totalProducts:totalProducts,currentPage:page,totalPages:totalPages,cart,wishlist,discount,appliedFilters:[]});
     } catch (error) {
         console.error('Error while loading categoryItems : ',error);
-        res.status(500).send('Internal Server Error');
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).send('Internal Server Error');
     }
 }
 
@@ -68,7 +69,7 @@ const filterProducts = async (req, res) => {
 
     const selectedCategory = await Category.findOne({ _id: id, isListed: true });
     if (!selectedCategory) {
-      return res.status(400).render("errorPage", { message: "Category not found" });
+      return res.status(StatusCodes.BAD_REQUEST).render("errorPage", { message: "Category not found" });
     }
 
     const { brand, minPrice, maxPrice, sort, query } = req.query;
@@ -145,7 +146,7 @@ const filterProducts = async (req, res) => {
     });
   } catch (error) {
     console.error("Error while filtering products:", error);
-    res.status(500).render("errorPage", { message: "Something went wrong. Please try again later." });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).render("errorPage", { message: "Something went wrong. Please try again later." });
   }
 };
 

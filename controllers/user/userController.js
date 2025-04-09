@@ -9,6 +9,8 @@ const nodemailer = require("nodemailer");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 
+const {StatusCodes,ReasonPhrases} = require('http-status-codes');
+
 const loadHomepage = async (req, res) => {
   try {
     const userId = req.session.user;
@@ -56,7 +58,7 @@ const loadHomepage = async (req, res) => {
       res.render("home", { user: null ,products:productData,cart:null,wishlist:null,category:categories,brands});
     }
   } catch (error) {
-    res.status(500).send("Server Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Server Error");
   }
 };
 
@@ -65,10 +67,10 @@ const loadLogin = async (req, res) => {
     if (!req.session.user) {
       return res.render("login");
     } else {
-      return res.redirect(302,"/");
+      return res.redirect(StatusCodes.MOVED_TEMPORARILY,"/");
     }
   } catch (error) {
-    res.status(500).send("Server Internal Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Server Internal Error");
   }
 };
 
@@ -76,7 +78,7 @@ const loadSignup = async (req, res) => {
   try {
     return res.render("signup");
   } catch (error) {
-    res.status(500).send("Server Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Server Error");
   }
 };
 
@@ -146,7 +148,7 @@ const signup = async (req, res) => {
 
     res.render("verify-otp");
   } catch (error) {
-    res.status(500).send("Server Internal Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Server Internal Error");
   }
 };
 
@@ -209,11 +211,11 @@ const verifyOtp = async (req, res) => {
       res.json({ success: true, redirectUrl: "/login" });
     } else {
       res
-        .status(400)
+        .status(StatusCodes.BAD_REQUEST)
         .json({ success: false, message: "Invalid OTP, Please try again" });
     }
   } catch (error) {
-    res.status(500).json({ success: false, message: "An error occured" });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "An error occured" });
   }
 };
 
@@ -222,7 +224,7 @@ const resendOtp = async (req, res) => {
     const { email } = req.session.userData;
     if (!email) {
       return res
-        .status(400)
+        .status(StatusCodes.BAD_REQUEST)
         .json({ success: false, message: "Email not found in session" });
     }
     const otp = generateOtp();
@@ -232,16 +234,16 @@ const resendOtp = async (req, res) => {
     if (emailSent) {
       console.log("Resend OTP : ", otp);
       res
-        .status(200)
+        .status(StatusCodes.OK)
         .json({ success: true, message: "OTP Resend Successfully" });
     } else {
-      res.status(500).json({
+      res.status(StatusCodes.BAD_REQUEST).json({
         success: false,
         message: "Failed to resend OTP. Please try again",
       });
     }
   } catch (error) {
-    res.status(500).json({
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: "Internal Server Error. Please try again",
     });
@@ -271,7 +273,7 @@ const login = async (req, res) => {
 
     req.session.user = findUser._id;
 
-    res.redirect("/");
+    res.redirect(StatusCodes.MOVED_TEMPORARILY,"/");
   } catch (error) {
     return res.render("login", {
       message: "Login failed. Please try again later",
@@ -283,13 +285,13 @@ const logout = async (req, res) => {
   try {
     req.session.destroy((err) => {
       if (err) {
-        return res.status(500).send("Internal Server Error");
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
       }
 
       return res.redirect("/login");
     });
   } catch (error) {
-    res.status(500).send("Internal Server Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
   }
 };
 
@@ -297,7 +299,7 @@ const loadForgotPassword = async (req, res) => {
   try {
     res.render("forgotPassword");
   } catch (error) {
-    res.status(500).send("Internal server error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal server error");
   }
 };
 
@@ -326,7 +328,7 @@ const forgotEmailValid = async (req, res) => {
       });
     }
   } catch (error) {
-    res.status(500).send("Internal Server Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
   }
 };
 
@@ -340,7 +342,7 @@ const verifyForgotOtp = async (req, res) => {
     }
   } catch (error) {
     res
-      .status(500)
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({ success: false, message: "An error occured. Please try again" });
   }
 };
@@ -349,7 +351,7 @@ const loadResetPassword = async (req, res) => {
   try {
     res.render("resetPassword");
   } catch (error) {
-    res.status(500).send("Internal server error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal server error");
   }
 };
 
@@ -362,10 +364,10 @@ const resendForgotOtp = async (req, res) => {
 
     const emailSent = await sendVerificationEmail(email, otp);
     if (emailSent) {
-      res.status(200).json({ success: true, message: "Resend OTP successful" });
+      res.status(StatusCodes.OK).json({ success: true, message: "Resend OTP successful" });
     }
   } catch (error) {
-    res.status(500).json({ success: false, message: "Internal Server Error" });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Internal Server Error" });
   }
 };
 
@@ -379,12 +381,12 @@ const resetPassword = async (req, res) => {
         { email: email },
         { $set: { password: passwordHash } }
       );
-      res.redirect("/login");
+      res.redirect(StatusCodes.MOVED_TEMPORARILY,"/login");
     } else {
       res.render("resetPassword", { message: "Passwords do not match" });
     }
   } catch (error) {
-    res.status(500).send("Internal Server Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
   }
 };
 
@@ -399,7 +401,7 @@ const loadAboutPage = async(req,res) => {
     );
     res.render('aboutUs',{user:userData,category:categories,cart,wishlist});
   } catch (error) {
-    res.status(500).send('Internal server error');
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send('Internal server error');
   }
 }
 
@@ -414,7 +416,7 @@ const loadContactPage = async(req,res) => {
     );
     res.render('contactUs',{user:userData,category:categories,cart,wishlist});
   } catch (error) {
-    res.status(500).send('Internal server error');
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send('Internal server error');
   }
 }
 module.exports = {

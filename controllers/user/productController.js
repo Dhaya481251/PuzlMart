@@ -14,6 +14,8 @@ const dayjs = require("dayjs");
 const relativeTime = require("dayjs/plugin/relativeTime");
 dayjs.extend(relativeTime);
 
+const {StatusCodes,ReasonPhrases} = require('http-status-codes');
+
 const loadProductpage = async (req, res) => {
   try {
     const userId = req.session.user;
@@ -86,7 +88,7 @@ const loadProductpage = async (req, res) => {
       appliedFilters: [],
     });
   } catch (error) {
-    res.status(500).send("Internal Server Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
   }
 };
 const incrementProductView = async (productId) => {
@@ -139,7 +141,7 @@ const loadProductDetailspage = async (req, res) => {
       .exec();
 
     if (!product) {
-      return res.status(404).send("Product not found");
+      return res.status(StatusCodes.NOT_FOUND).send("Product not found");
     }
 
     const reviews = await Review.find({ productId: id })
@@ -179,7 +181,7 @@ const loadProductDetailspage = async (req, res) => {
       totalRatings,
     });
   } catch (error) {
-    res.status(500).send("Something went wrong");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Something went wrong");
   }
 };
 
@@ -275,7 +277,7 @@ const filterProductByCategory = async (req, res) => {
       wishlist,
     });
   } catch (error) {
-    res.status(500).send("Internal Server Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
   }
 };
 
@@ -320,7 +322,7 @@ const searchProducts = async (req, res) => {
       appliedFilters: { ...req.query, query: search },
     });
   } catch (error) {
-    res.status(500).send("Internal Server Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
   }
 };
 
@@ -370,12 +372,12 @@ const leaveAReview = async (req, res) => {
       await product.save();
     }
 
-    res.status(200).json({
+    res.status(StatusCodes.OK).json({
       message: "Rating and review added successfully",
       type: "success",
     });
   } catch (error) {
-    res.status(500).json({ message: "Internal server error", type: "error" });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal server error", type: "error" });
   }
 };
 module.exports = {

@@ -4,6 +4,8 @@ const Product = require("../../models/productSchema");
 const Category = require("../../models/categorySchema");
 const Wishlist = require("../../models/wishlistSchema");
 
+const {StatusCodes,ReasonPhrases} = require('http-status-codes');
+
 const incrementProductPurchase = async (productId) => {
   await Product.findByIdAndUpdate(productId, { $in: { purchases: 1 } });
 };
@@ -32,7 +34,7 @@ const loadCart = async (req, res) => {
 
     res.render("cart", { user, cart: { items: [] }, category, wishlist });
   } catch (error) {
-    res.status(500).send("Internal Server Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send('Something went wrong! Please try again.');
   }
 };
 
@@ -47,12 +49,12 @@ const addToCart = async (req, res) => {
 
     if (!product) {
       return res
-        .status(400)
+        .status(StatusCodes.NOT_FOUND)
         .json({ success: false, error: "Product not found" });
     }
 
     if (quantityToAdd > product.quantity) {
-      return res.status(400).json({ success: false, error: "Out of Stock" });
+      return res.status(StatusCodes.BAD_REQUEST).json({ success: false, error: "Out of Stock" });
     }
 
     let cart = await Cart.findOne({ userId });
@@ -65,14 +67,14 @@ const addToCart = async (req, res) => {
       if (existingItemIndex > -1) {
         const existingItem = cart.items[existingItemIndex];
         if (existingItem.quantity + quantityToAdd > product.quantity) {
-          return res.status(400).json({
+          return res.status(StatusCodes.BAD_REQUEST).json({
             success: false,
             error: "Cannot add more than available stock",
           });
         }
         if (existingItem.quantity + quantityToAdd > 10) {
           return res
-            .status(400)
+            .status(StatusCodes.BAD_REQUEST)
             .json({ success: false, error: "You can buy max 10 products" });
         }
 
@@ -100,12 +102,12 @@ const addToCart = async (req, res) => {
 
     await cart.save();
 
-    res.status(200).json({
+    res.status(StatusCodes.OK).json({
       success: true,
       message: "Product added to the cart successfully",
     });
   } catch (error) {
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Internal Server Error" });
   }
 };
 
@@ -117,7 +119,7 @@ const removeFromCart = async (req, res) => {
     let cart = await Cart.findOne({ userId });
 
     if (!cart) {
-      return res.status(404).send("Cart not found");
+      return res.status(StatusCodes.NOT_FOUND).send("Cart not found");
     }
 
     cart.items = cart.items.filter(
@@ -125,7 +127,7 @@ const removeFromCart = async (req, res) => {
     );
 
     await cart.save();
-    res.status(200).json({
+    res.status(StatusCodes.OK).json({
       items: cart.items,
       total: cart.items.reduce(
         (acc, item) => acc + item.productId.salePrice * item.quantity,
@@ -133,7 +135,7 @@ const removeFromCart = async (req, res) => {
       ),
     });
   } catch (error) {
-    res.status(500).send("Internal Server Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
   }
 };
 
@@ -145,20 +147,20 @@ const increaseQuantity = async (req, res) => {
     const cart = await Cart.findOne({ userId });
 
     if (!cart) {
-      return res.status(404).json({ error: "cart not found" });
+      return res.status(StatusCodes.NOT_FOUND).json({ error: "cart not found" });
     }
 
     const product = await Product.findById(productId);
-    if (!product) return res.status(404).json({ error: "Product not found" });
+    if (!product) return res.status(StatusCodes.NOT_FOUND).json({ error: "Product not found" });
 
     const item = cart.items.find(
       (item) => item.productId.toString() === productId
     );
-    if (!item) return res.status(404).json({ error: "Item not in cart" });
+    if (!item) return res.status(StatusCodes.NOT_FOUND).json({ error: "Item not in cart" });
 
     if (item.quantity + 1 > product.quantity) {
       return res
-        .status(400)
+        .status(StatusCodes.BAD_REQUEST)
         .json({ error: "Cannot add more than available stock" });
     }
 
@@ -167,13 +169,13 @@ const increaseQuantity = async (req, res) => {
 
     if (item.quantity > 10) {
       item.quantity = 10;
-      return res.status(400).json({ error: "You can buy maximum 10 products" });
+      return res.status(StatusCodes.BAD_REQUEST).json({ error: "You can buy maximum 10 products" });
     }
     await cart.save();
-    res.json({ success: true });
+    res.status(StatusCodes.OK).json({ success: true });
   } catch (error) {
     
-    res.status(500).json({ error: "Internal server error" });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Internal server error" });
   }
 };
 
@@ -185,20 +187,20 @@ const decreaseQuantity = async (req, res) => {
     const cart = await Cart.findOne({ userId });
 
     if (!cart) {
-      return res.status(404).json({ error: "cart not found" });
+      return res.status(StatusCodes.NOT_FOUND).json({ error: "cart not found" });
     }
 
     const product = await Product.findById(productId);
-    if (!product) return res.status(404).json({ error: "Product not found" });
+    if (!product) return res.status(StatusCodes.NOT_FOUND).json({ error: "Product not found" });
 
     const item = cart.items.find(
       (item) => item.productId.toString() === productId
     );
-    if (!item) return res.status(404).json({ error: "Item not in cart" });
+    if (!item) return res.status(StatusCodes.NOT_FOUND).json({ error: "Item not in cart" });
 
     if (item.quantity + 1 > product.quantity) {
       return res
-        .status(400)
+        .status(StatusCodes.BAD_REQUEST)
         .json({ error: "Cannot add more than available stock" });
     }
 
@@ -206,12 +208,12 @@ const decreaseQuantity = async (req, res) => {
     item.productId.discount = product.regularPrice - product.salePrice;
 
     if (item.quantity < 1) {
-      return res.status(400).json({ error: "You can buy min 1 products" });
+      return res.status(StatusCodes.BAD_REQUEST).json({ error: "You can buy min 1 products" });
     }
     await cart.save();
-    res.json({ success: true });
+    res.status(StatusCodes.OK).json({ success: true });
   } catch (error) {
-    res.status(500).json({ error: "Internal server error" });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Internal server error" });
   }
 };
 

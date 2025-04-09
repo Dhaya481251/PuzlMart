@@ -9,6 +9,8 @@ const bcrypt = require("bcrypt");
 const session = require("express-session");
 const Coupon = require("../../models/couponSchema");
 
+const {StatusCodes,ReasonPhrases} = require('http-status-codes');
+
 const loadUserProfilePage = async (req, res) => {
   try {
     const userId = req.session.user;
@@ -25,7 +27,7 @@ const loadUserProfilePage = async (req, res) => {
       category: category,
     });
   } catch (error) {
-    res.status(500).send("Internal Server Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
   }
 };
 const loadUserDetailsPage = async (req, res) => {
@@ -46,7 +48,7 @@ const loadUserDetailsPage = async (req, res) => {
       category: category,
     });
   } catch (error) {
-    res.status(500).send("Internal Server Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
   }
 };
 
@@ -63,9 +65,9 @@ const editName = async (req, res) => {
     user.name = newName;
     await user.save();
 
-    res.redirect(302, "/userDetails");
+    res.redirect(StatusCodes.MOVED_TEMPORARILY, "/userDetails");
   } catch (error) {
-    res.status(500).send("Internal server error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal server error");
   }
 };
 
@@ -115,7 +117,7 @@ const editEmail = async (req, res) => {
     req.session.userOtp = otp;
     res.render("verifyOtp");
   } catch (error) {
-    res.status(500).send("Internal Server Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
   }
 };
 
@@ -136,11 +138,11 @@ const emailVerifyOtp = async (req, res) => {
       res.json({ success: true, redirectUrl: "/userDetails" });
     } else {
       res
-        .status(400)
+        .status(StatusCodes.BAD_REQUEST)
         .json({ success: false, message: "Invalid OTP, Please ty again" });
     }
   } catch (error) {
-    res.status(500).json({ success: false, message: "An error occured" });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "An error occured" });
   }
 };
 
@@ -149,7 +151,7 @@ const emailResendOtp = async (req, res) => {
     const newEmail = req.session.email;
     if (!newEmail) {
       return res
-        .status(400)
+        .status(StatusCodes.BAD_REQUEST)
         .json({ success: false, message: "Email not found in session" });
     }
 
@@ -159,16 +161,16 @@ const emailResendOtp = async (req, res) => {
     const emailSent = await sendVerificationEmail(email, otp);
     if (emailSent) {
       res
-        .status(200)
+        .status(StatusCodes.OK)
         .json({ success: true, message: "OTP Resend Successfully" });
     } else {
-      res.status(500).json({
+      res.status(StatusCodes.BAD_REQUEST).json({
         success: false,
         message: "Failed to resend OTP. Please try again.",
       });
     }
   } catch (error) {
-    res.status(500).json({ success: false, message: "Internal Server Error." });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Internal Server Error." });
   }
 };
 
@@ -190,7 +192,7 @@ const loadUserAddressPage = async (req, res) => {
       category: category,
     });
   } catch (error) {
-    res.status(500).send("Internal Server Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
   }
 };
 
@@ -210,7 +212,7 @@ const loadAddAddress = async (req, res) => {
       category: category,
     });
   } catch (error) {
-    res.status(500).send("Internal Server Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
   }
 };
 
@@ -265,9 +267,9 @@ const addAddress = async (req, res) => {
       });
       await userAddress.save();
     }
-    res.redirect(302, "/userAddress");
+    res.redirect(StatusCodes.MOVED_TEMPORARILY, "/userAddress");
   } catch (error) {
-    res.status(500).send("Internal server error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal server error");
   }
 };
 
@@ -283,7 +285,7 @@ const loadEditAddress = async (req, res) => {
     );
     const category = await Category.find({ isListed: true });
     if (!currentAddress) {
-      return res.status(404).send("Address not found");
+      return res.status(StatusCodes.NOT_FOUND).send("Address not found");
     }
 
     const addressData = currentAddress.address.find((item) => {
@@ -291,7 +293,7 @@ const loadEditAddress = async (req, res) => {
     });
 
     if (!addressData) {
-      return res.status(404).send("Address not found");
+      return res.status(StatusCodes.NOT_FOUND).send("Address not found");
     }
 
     res.render("editAddressPage", {
@@ -302,7 +304,7 @@ const loadEditAddress = async (req, res) => {
       category: category,
     });
   } catch (error) {
-    res.status(500).send("Internal server error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal server error");
   }
 };
 
@@ -319,7 +321,7 @@ const editAddress = async (req, res) => {
     const category = await Category.find({ isListed: true });
 
     if (!findAddress) {
-      res.status(404).send("Address not found");
+      res.status(StatusCodes.NOT_FOUND).send("Address not found");
     }
 
     await Address.updateOne(
@@ -341,9 +343,9 @@ const editAddress = async (req, res) => {
       }
     );
 
-    res.redirect(302, "/userAddress");
+    res.redirect(StatusCodes.MOVED_TEMPORARILY, "/userAddress");
   } catch (error) {
-    res.status(500).send("Internal server error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal server error");
   }
 };
 
@@ -358,7 +360,7 @@ const deleteAddress = async (req, res) => {
     const addressId = req.query.id;
     const findAddress = await Address.findOne({ "address._id": addressId });
     if (!findAddress) {
-      return res.status(404).send("Address not found");
+      return res.status(StatusCodes.NOT_FOUND).send("Address not found");
     }
 
     await Address.updateOne(
@@ -369,9 +371,9 @@ const deleteAddress = async (req, res) => {
         },
       }
     );
-    res.redirect(302, "/userAddress");
+    res.redirect(StatusCodes.MOVED_TEMPORARILY, "/userAddress");
   } catch (error) {
-    res.status(500).send("Internal server error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal server error");
   }
 };
 
@@ -392,7 +394,7 @@ const loadReferralPage = async (req, res) => {
       category: category,
     });
   } catch (error) {
-    res.status(500).send("Internal Server Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
   }
 };
 

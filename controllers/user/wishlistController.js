@@ -4,6 +4,8 @@ const Wishlist = require("../../models/wishlistSchema");
 const Cart = require("../../models/cartSchema");
 const Category = require("../../models/categorySchema");
 
+const {StatusCodes,ReasonPhrases} = require('http-status-codes');
+
 const loadWishlist = async (req, res) => {
   try {
     const userId = req.session.user;
@@ -15,9 +17,10 @@ const loadWishlist = async (req, res) => {
     const category = await Category.find({ isListed: true });
     res.render("wishlist", { user, cart, category: category, wishlist });
   } catch (error) {
-    res.status(500).send("Internal Server Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
   }
 };
+
 const addToWishlist = async (req, res) => {
   try {
     const userId = req.session.user;
@@ -26,7 +29,7 @@ const addToWishlist = async (req, res) => {
 
     if (!products) {
       return res
-        .status(400)
+        .status(StatusCodes.BAD_REQUEST)
         .json({ success: false, error: "Product not found" });
     }
 
@@ -38,7 +41,7 @@ const addToWishlist = async (req, res) => {
       );
       if (existingProductIndex > -1) {
         return res
-          .status(400)
+          .status(StatusCodes.BAD_REQUEST)
           .json({ success: false, message: "Product already in wishlist" });
       } else {
         wishlist.products.push({
@@ -53,13 +56,13 @@ const addToWishlist = async (req, res) => {
     }
 
     await wishlist.save();
-    res.status(200).json({
+    res.status(StatusCodes.OK).json({
       success: true,
       message: "Product added to the wishlist successfully",
     });
   } catch (error) {
     return res
-      .status(500)
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({ status: false, message: "Internal server error" });
   }
 };
@@ -72,7 +75,7 @@ const removeFromWishlist = async (req, res) => {
     const productsId = req.params.id;
 
     if (!wishlist) {
-      return res.status(404).send("Wishlist not found");
+      return res.status(StatusCodes.NOT_FOUND).send("Wishlist not found");
     }
 
     wishlist.products = wishlist.products.filter(
@@ -81,10 +84,10 @@ const removeFromWishlist = async (req, res) => {
 
     await wishlist.save();
     res
-      .status(200)
+      .status(StatusCodess.OK)
       .json({ message: "Product removed from wishlist successfully" });
   } catch (error) {
-    res.status(500).send("Internal Server Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
   }
 };
 

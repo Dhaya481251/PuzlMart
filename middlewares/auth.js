@@ -1,6 +1,8 @@
 const User = require("../models/userSchema");
 const Cart = require("../models/cartSchema");
 
+const {StatusCodes,ReasonPhrases} = require('http-status-codes');
+
 const userAuth = (req, res, next) => {
   if (req.session.user) {
     User.findById(req.session.user)
@@ -22,7 +24,7 @@ const userAuth = (req, res, next) => {
         }
       })
       .catch((error) => {
-        res.status(500).send("Internal Server Error");
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
       });
   } else {
     res.redirect("/login");
@@ -49,7 +51,7 @@ const validateCartState = async (req, res, next) => {
     next(); 
   } catch (error) {
     console.error("Error validating cart state:", error);
-    res.status(500).send("Internal Server Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
   }
 };
 
