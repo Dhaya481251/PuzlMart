@@ -42,6 +42,9 @@ app.use(express.static("public"));
 
 app.use("/", userRouter);
 app.use("/admin", adminRouter);
+app.use((req,res) => {
+  res.status(404).render('pageNotFound')
+})
 
 app.listen(process.env.PORT || 3000, () => {
   console.log("Server Started Running...");
