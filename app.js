@@ -24,6 +24,7 @@ app.use(
   })
 );
 
+
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -42,9 +43,10 @@ app.use(express.static("public"));
 
 app.use("/", userRouter);
 app.use("/admin", adminRouter);
-app.use((req,res) => {
-  res.status(404).render('404Page');
-})
+
+app.use((req, res) => {
+  res.status(404).render("404Page"); 
+});
 
 app.listen(process.env.PORT || 3000, () => {
   console.log("Server Started Running...");
