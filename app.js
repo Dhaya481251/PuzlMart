@@ -49,10 +49,17 @@ app.get('/404', (req, res) => {
   res.status(404).render('404Page');
 });
 
-app.use((req, res) => {
-  res.redirect('/404');
+app.get('/admin/404', (req, res) => {
+  res.status(404).render('admin404Page');
 });
 
+app.use((req, res) => {
+  if (req.originalUrl.startsWith('/admin')) {
+      res.redirect('/admin/404');
+  } else {
+      res.redirect('/404');
+  }
+});
 
 app.listen(process.env.PORT || 3000, () => {
   console.log("Server Started Running...");
