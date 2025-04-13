@@ -46,7 +46,7 @@ app.use("/", userRouter);
 app.use("/admin", adminRouter);
 
 app.use((req, res) => {
-  res.status(404).redirect('/404');
+  res.status(404).render('404Page')
 });
 
 app.get('/404', (req, res) => {
