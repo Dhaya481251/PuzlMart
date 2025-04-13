@@ -46,8 +46,13 @@ app.use("/", userRouter);
 app.use("/admin", adminRouter);
 
 app.use((req, res) => {
-  res.status(404).render('404Page'); 
+  res.status(404).redirect('/404');
 });
+
+app.get('/404', (req, res) => {
+  res.status(404).render('404Page');
+});
+
 
 app.listen(process.env.PORT || 3000, () => {
   console.log("Server Started Running...");
