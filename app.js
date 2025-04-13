@@ -38,6 +38,7 @@ app.set("views", [
   path.join(__dirname, "views/user"),
   path.join(__dirname, "views/admin"),
   path.join(__dirname, "views/partials"),
+  path.join(__dirname, "views")
 ]);
 app.use(express.static("public"));
 
@@ -45,7 +46,7 @@ app.use("/", userRouter);
 app.use("/admin", adminRouter);
 
 app.use((req, res) => {
-  res.status(404).render("404Page"); 
+  res.status(404).render('404Page'); 
 });
 
 app.listen(process.env.PORT || 3000, () => {
