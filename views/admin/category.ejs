@@ -51,10 +51,13 @@
                   <td><%=category.name%></td>
                   <td><%=category.description%></td>
                   <td>
-                    <% if(category.categoryOffer){ %> <% if
-                    (category.categoryOffer?.discountType === 'Percentage') { %>
-                    <%= (category.categoryOffer.value)%>% <% }else{ %> <%=
-                    (category.categoryOffer?.value) %> <% } %> <% }else{ %>
+                    <% if(category.categoryOffer){ %> 
+                      <% if(category.categoryOffer?.discountType === 'Percentage') { %>
+                        <%= (category.categoryOffer.value)%>% 
+                      <% }else{ %>
+                        Rs <%= (category.categoryOffer?.value) %> 
+                      <% } %> 
+                    <% }else{ %>
                     <p style="color: red">No Offers</p>
                     <% } %>
                   </td>
@@ -182,41 +185,7 @@
 </div>
 <!-- Sweet alert and bootstrap links -->
 <script>
-  async function addOffer(categoryId) {
-    const { value: amount } = await Swal.fire({
-      title: "Offer in percentage",
-      input: "number",
-      inputLabel: "Percentage",
-      inputPlaceholder: "%",
-      inputAttributes: { min: 1, max: 100 },
-      customClass: { container: "my-custom-class" },
-    });
-    if (!amount || amount < 1 || amount > 100) {
-      Swal.fire(
-        "Invalid Percentage",
-        "Please enter a value between 1 and 100",
-        "error"
-      );
-      return;
-    }
-    $.ajax({
-      url: "/admin/addCategoryOffer",
-      method: "POST",
-      data: {
-        categoryId: categoryId,
-        percentage: amount,
-      },
-      success: (response) => {
-        console.log(response);
-        if (response.status === true) {
-          location.reload();
-          Swal.fire("Offer added", "The offer has been added", "success");
-        } else {
-          Swal.fire("Error", response.message, "error");
-        }
-      },
-    });
-  }
+  
   function removeOffer(categoryId) {
     Swal.fire({
       title: "Remove Offer",
@@ -234,15 +203,24 @@
           contentType: "application/json",
           data: JSON.stringify({ categoryId: categoryId }),
           success: function (response) {
-            console.log("Offer removed:", response);
-            Swal.fire("Success", response.message, "success");
-            location.reload();
+            
+            Swal.fire("Success", response.message, "success").then(() => {
+            $(`#category-${categoryId} td:nth-child(5)`).html(
+              `<button class="btn btn-sm" style="border: none; background: #e7ab3c">
+                <a href="/admin/addCategoryOffer?id=${categoryId}" 
+                   style="text-decoration: none" 
+                   class="text-white">
+                   Add Offer
+                </a>
+              </button>`
+            );
+            $(`#category-${categoryId} td:nth-child(4)`).html(
+              `<p style="color:red">No Offers</p>`
+            )
+          });
           },
           error: function (error) {
-            console.error(
-              "Error removing offer:",
-              error.responseText || error.statusText
-            );
+            
             Swal.fire("Error", "Something went wrong! Please try again.", "error");
           },
         });
@@ -250,48 +228,42 @@
     });
   }
   function confirmDelete(categoryId) {
-    const confirmation = Swal.fire({
-      title: "Are you sure?",
-      text: "Do you want to delete the category?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yes, Delete it!",
-      cancelButtonText: "Cancel",
-      reverseButtons: true,
-    }).then((result) => {
-      if (result.isConfirmed) {
-        fetch(`/admin/removeCategory/${categoryId}`, {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        })
-          .then((response) => {
-            if (response.ok) {
-              Swal.fire(
-                "Deleted",
-                "The category has been deleted successfully",
-                "success"
-              ).then(() => location.reload());
-            } else {
-              Swal.fire(
-                "Error!",
-                "Something went wrong! Please try again.",
-                "error"
-              );
-            }
-          })
-          .catch((error) => {
-            console.error("Error:", error);
-            Swal.fire(
-              "Error!",
-              "Something went wrong! Please try again.",
-              "error"
-            );
+  Swal.fire({
+    title: "Are you sure?",
+    text: "Do you want to delete the category?",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Yes, Delete it!",
+    cancelButtonText: "Cancel",
+    reverseButtons: true,
+  }).then((result) => {
+    if (result.isConfirmed) {
+      $.ajax({
+        url: `/admin/removeCategory/${categoryId}`,
+        type: "DELETE",
+        contentType: "application/json",
+        success: function(response) {
+          Swal.fire(
+            "Deleted",
+            "The category has been deleted successfully",
+            "success"
+          ).then(() => {
+            
+            $(`#category-${categoryId}`).remove(); 
           });
-      }
-    });
-  }
+        },
+        error: function(xhr, status, error) {
+          
+          Swal.fire(
+            "Error!",
+            "Something went wrong! Please try again.",
+            "error"
+          );
+        },
+      });
+    }
+  });
+}
   document.addEventListener("DOMContentLoaded",() => {
     const errorMessage = "<%= errorMessage %>";
       if(errorMessage){

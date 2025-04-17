@@ -239,7 +239,7 @@ const addCategoryOffer = async (req, res) => {
         return res.status(StatusCodes.BAD_REQUEST).json({
           type: "error",
           message:
-            "Value must be less than the lowest product price in the category",
+            `Value must be less than the least product price ${minProductPrice} in the category`,
         });
       } else {
         const newOffer = new Offer({
@@ -307,12 +307,6 @@ const removeCategoryOffer = async (req, res) => {
         }
 
         product.salePrice = Math.ceil(parseFloat(product.salePrice) + discount);
-        console.log(
-          "Updated salePrice for product",
-          product._id,
-          ":",
-          product.salePrice
-        );
 
         product.categoryOffer = null;
         await product.save();

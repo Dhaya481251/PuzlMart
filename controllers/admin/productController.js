@@ -289,7 +289,7 @@ const addProductOffer = async (req, res) => {
       if (value >= findProduct.regularPrice) {
         return res.status(StatusCodes.BAD_REQUEST).json({
           type: "error",
-          message: "value must be less than product price",
+          message: `value must be less than the least product price ${findProduct.regularPrice}`,
         });
       } else {
         const newOffer = new Offer({
