@@ -105,18 +105,20 @@
                     <% if(category.isListed){ %>
                     <button class="btn btn-danger btn-sm">
                       <a
-                        href="/admin/listCategory?id=<%=category._id%>"
+                        
                         class="text-white"
                         style="text-decoration: none"
+                        onclick="confirmUnlist('<%=category._id%>')"
                         >Unlist</a
                       >
                     </button>
                     <% }else{ %>
                     <button class="btn btn-success btn-sm">
                       <a
-                        href="/admin/unlistCategory?id=<%=category._id%>"
+                        
                         class="text-white"
                         style="text-decoration: none"
+                        onclick="confirmList('<%=category._id%>')"
                         >List</a
                       >
                     </button>
@@ -260,6 +262,81 @@
     }
   });
 }
+
+function confirmUnlist(categoryId){
+  Swal.fire({
+    title:'Are you sure?',
+    text:'Do you want to unlist this category?',
+    icon:'warning',
+    showCancelButton:true,
+    confirmButtonText:'Yes, Unlist it!',
+    cancelButtonText:"Cancel",
+    reverseButtons:true
+  }).then((result) => {
+    if(result.isConfirmed){
+      $.ajax({
+        url:`/admin/listCategory?id=${categoryId}`,
+        type:"GET",
+        contentType:"application/json",
+        success: function(response){
+          Swal.fire(
+            "Unlisted",
+            "The category has been unlisted successfully",
+            "success"
+          )
+          .then(() => {
+            $(`#category-${categoryId} td:nth-child(6)`).html(
+              `<span class="badge rounded-pill alert-danger" style="background-color:red">Unlisted</span>`
+            )
+            $(`#category-${categoryId} td:nth-child(7)`).html(
+              `<button class="btn btn-success btn-sm">
+                <a class="text-white" style="text-decoration:none" onclick="confirmList('${categoryId}')">List</a>
+              </button>`
+            )
+          })
+        }
+      })
+    }
+  })
+}
+
+function confirmList(categoryId){
+  Swal.fire({
+    title:'Are you sure?',
+    text:'Do you want to list this category?',
+    icon:'warning',
+    showCancelButton:true,
+    confirmButtonText:'Yes, List it!',
+    cancelButtonText:"Cancel",
+    reverseButtons:true
+  }).then((result) => {
+    if(result.isConfirmed){
+      $.ajax({
+        url:`/admin/unlistCategory?id=${categoryId}`,
+        type:"GET",
+        contentType:"application/json",
+        success: function(response){
+          Swal.fire(
+            "Listed",
+            "The category has been listed successfully",
+            "success"
+          )
+          .then(() => {
+            $(`#category-${categoryId} td:nth-child(6)`).html(
+              `<span class="badge rounded-pill alert-success" style="background-color:green">Listed</span>`
+            )
+            $(`#category-${categoryId} td:nth-child(7)`).html(
+              `<button class="btn btn-danger btn-sm">
+                <a href="/admin/listCategory?id=${categoryId}" class="text-white" style="text-decoration:none" onclick="confirmUnlist('${categoryId}')">Unlist</a>
+              </button>`
+            )
+          })
+        }
+      })
+    }
+  })
+}
+
   document.addEventListener("DOMContentLoaded",() => {
     const errorMessage = "<%= errorMessage %>";
       if(errorMessage){
