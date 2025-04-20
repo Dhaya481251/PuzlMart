@@ -51,12 +51,12 @@
                   <td><%=category.name%></td>
                   <td><%=category.description%></td>
                   <td>
-                    <% if(category.categoryOffer){ %> 
+                    <% if(category.categoryOffer){ %>
                       <% if(category.categoryOffer?.discountType === 'Percentage') { %>
-                        <%= (category.categoryOffer.value)%>% 
+                        <%= (category.categoryOffer.value)%>%
                       <% }else{ %>
-                        Rs <%= (category.categoryOffer?.value) %> 
-                      <% } %> 
+                        Rs <%= (category.categoryOffer?.value) %>
+                      <% } %>
                     <% }else{ %>
                     <p style="color: red">No Offers</p>
                     <% } %>
@@ -185,7 +185,7 @@
 </div>
 <!-- Sweet alert and bootstrap links -->
 <script>
-  
+
   function removeOffer(categoryId) {
     Swal.fire({
       title: "Remove Offer",
@@ -203,11 +203,10 @@
           contentType: "application/json",
           data: JSON.stringify({ categoryId: categoryId }),
           success: function (response) {
-            
             Swal.fire("Success", response.message, "success").then(() => {
             $(`#category-${categoryId} td:nth-child(5)`).html(
               `<button class="btn btn-sm" style="border: none; background: #e7ab3c">
-                <a href="/admin/addCategoryOffer?id=${categoryId}" 
+                <a href="/admin/addCategoryOffer?id=${categoryId}"
                    style="text-decoration: none" 
                    class="text-white">
                    Add Offer
@@ -220,7 +219,6 @@
           });
           },
           error: function (error) {
-            
             Swal.fire("Error", "Something went wrong! Please try again.", "error");
           },
         });
@@ -248,12 +246,10 @@
             "The category has been deleted successfully",
             "success"
           ).then(() => {
-            
-            $(`#category-${categoryId}`).remove(); 
+            $(`#category-${categoryId}`).remove();
           });
         },
         error: function(xhr, status, error) {
-          
           Swal.fire(
             "Error!",
             "Something went wrong! Please try again.",

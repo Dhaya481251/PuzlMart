@@ -39,7 +39,7 @@
               </thead>
               <tbody>
                 <% data.reverse().forEach((brand,index) =>{ %>
-                <tr>
+                <tr id="brand-<%=brand._id%>">
                   <td style="width: 10%">
                     <img
                       src="/uploads/re-image/<%=brand.brandImage%>"
@@ -70,8 +70,8 @@
                   <td>
                     <% if(brand.isBlocked===false){ %>
                     <button
-                      class="btn btn-danger"
-                      onclick="confirmBlock('<%=brand._id%>')"
+                 onclick="confirmBlock('<%=brand._id%>')"      class="btn btn-danger"
+                     
                     >
                       Block
                     </button>
@@ -170,6 +170,7 @@
   addBrand.addEventListener("click", () => {
     brandForm.style.display = "block";
   });
+
   function confirmBlock(brandId) {
     Swal.fire({
       title: "Are you sure?",
@@ -181,10 +182,37 @@
       reverseButtons: true,
     }).then((result) => {
       if (result.isConfirmed) {
-        window.location.href = `/admin/blockBrand?id=${brandId}`;
+        $.ajax({
+          url:`/admin/blockBrand?id=${brandId}`,
+          type:"GET",
+          contentType:"application/json",
+          success: function(response) {
+            Swal.fire(
+              "Blocked",
+              "The brand has been blocked successfully",
+              "success"
+            )
+            .then(() => {
+              $(`#brand-${brandId} td:nth-child(3)`).html(
+                `<span class="badge rounded-pill alert-danger" style="background-color:red">Blocked</span>`
+              );
+              $(`#brand-${brandId} td:nth-child(4)`).html(
+                `<button class="btn btn-success" onclick="confirmUnblock('${brandId}')" >Unblock</button>`
+              )
+            });
+          },
+          error: function(error) {
+            Swal.fire(
+              "Error",
+              "Something went wrong! Please try again.",
+              "error"
+            )
+          }
+        });
       }
     });
   }
+
   function confirmUnblock(brandId) {
     Swal.fire({
       title: "Are you sure?",
@@ -196,10 +224,37 @@
       reverseButtons: true,
     }).then((result) => {
       if (result.isConfirmed) {
-        window.location.href = `/admin/unblockBrand?id=${brandId}`;
+        $.ajax({
+          url:`/admin/unblockBrand?id=${brandId}`,
+          type:"GET",
+          contentType:"application/json",
+          success: function(response) {
+            Swal.fire(
+              "Blocked",
+              "The brand has been unblocked successfully",
+              "success"
+            )
+            .then(() => {
+              $(`#brand-${brandId} td:nth-child(3)`).html(
+                `<span class="badge rounded-pill alert-success" style="background-color:green">Unblocked</span>`
+              );
+              $(`#brand-${brandId} td:nth-child(4)`).html(
+                `<button class="btn btn-danger" onclick="confirmBlock('${brandId}')">Block</button>`
+              )
+            });
+          },
+          error: function(error) {
+            Swal.fire(
+              "Error",
+              "Something went wrong! Please try again.",
+              "error"
+            )
+          }
+        });
       }
     });
   }
+
   function confirmDelete(brandId) {
     const confirmation = Swal.fire({
       title: "Are you sure?",
@@ -211,38 +266,31 @@
       reverseButtons: true,
     }).then((result) => {
       if (result.isConfirmed) {
-        fetch(`/admin/deleteBrand?id=${brandId}`, {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        })
-          .then((response) => {
-            if (response.ok) {
-              Swal.fire(
-                "Deleted",
-                "The brand has been deleted successfully",
-                "success"
-              ).then(() => location.reload());
-            } else {
-              Swal.fire(
-                "Error!",
-                "Something went wrong! Please try again.",
-                "error"
-              );
-            }
-          })
-          .catch((error) => {
-            console.error("Error:", error);
+        $.ajax({
+          url:`/admin/deleteBrand?id=${brandId}`,
+          type:"DELETE",
+          contentType:"application/json",
+          success: function(response) {
             Swal.fire(
-              "Error!",
-              "Something went wrong! Please try again.",
-              "error"
-            );
-          });
+              "Deleted",
+              "The brand has been deleted successfully",
+              "success"
+            ).then(() => {
+              $(`#brand-${brandId}`).remove();
+            });
+          },
+          error: function(xhr, status, error) {
+          Swal.fire(
+            "Error!",
+            "Something went wrong! Please try again.",
+            "error"
+          );
+        }
+        });
       }
     });
   }
+
   document
     .getElementById("brandImage")
     .addEventListener("change", function (event) {
@@ -302,6 +350,7 @@
         });
       });
   }
+
   function validateForm() {
     clearErrorMessages();
     const name = document.getElementsByName("name")[0].value.trim();
@@ -324,12 +373,14 @@
     }
     return isValid;
   }
+
   function displayErrorMessage(elementId, message) {
     var errorElement = document.getElementById(elementId);
     errorElement.innerText = message;
     errorElement.style.display = "block";
     errorElement.style.color = "red";
   }
+
   function clearErrorMessages() {
     const errorElements = document.getElementsByClassName("error-message");
     Array.from(errorElements).forEach((element) => {
@@ -337,6 +388,7 @@
       element.style.display = "none";
     });
   }
+
   document.addEventListener("DOMContentLoaded",() => {
     const errorMessage = "<%= errorMessage %>";
       if(errorMessage){
@@ -344,6 +396,7 @@
         errorModal.show();
       }
   })
+  
 </script>
 
 <%-include('../../views/partials/admin/footer')%>

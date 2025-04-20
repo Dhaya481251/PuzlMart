@@ -130,10 +130,11 @@ const blockBrand = async (req, res) => {
   const {reverseBrand,totalPages,totalBrands,notifications} = await fetchBrandData();
   const page = parseInt(req.query.page) || 1;
   try {
-    const brandd = req.query.id;
+    const brandId = req.query.id;
     await Brand.updateOne({ _id: brandId }, { $set: { isBlocked: true } });
     res.status(StatusCodes.OK).redirect('/admin/brands')
   } catch (error) {
+    console.error('Error while blocking brand : ',error);
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).render('brands',{errorMessage:'Something went wrong! Please try again.',data:reverseBrand,currentPage:page,totalPages,totalBrands,notifications});
   }
 };
@@ -146,6 +147,7 @@ const unblockBrand = async (req, res) => {
     await Brand.updateOne({ _id: brandId }, { $set: { isBlocked: false } });
     res.status(StatusCodes.OK).redirect('/admin/brands')
   } catch (error) {
+    console.error('Error while unblocking brand : ',error);
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).render('brands',{errorMessage:'Something went wrong! Please try again.',data:reverseBrand,currentPage:page,totalPages,totalBrands,notifications});
   }
 };
