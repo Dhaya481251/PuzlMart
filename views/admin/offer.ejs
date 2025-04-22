@@ -54,7 +54,7 @@
                     <span
                       class="badge rounded-pill alert-danger"
                       style="width: 60px; background-color: red"
-                      >Not active</span
+                      >Inactive</span
                     >
                     <% } %>
                   </td>
@@ -62,16 +62,18 @@
                     <% if(offer.isActive){ %>
                     <button class="btn btn-danger btn-sm">
                       <a
-                        href="/admin/activateOffer?id=<%=offer._id%>"
+                        
                         class="text-white"
+                        onclick="confirmDeactivate('<%=offer._id%>')"
                         >Deactivate</a
                       >
                     </button>
                     <% }else{ %>
                     <button class="btn btn-success btn-sm">
                       <a
-                        href="/admin/deactivateOffer?id=<%=offer._id%>"
+                        
                         class="text-white"
+                        onclick="confirmActivate('<%=offer._id%>')"
                         >Activate</a
                       >
                     </button>
@@ -117,6 +119,84 @@
   </div>
 </div>
 <script>
+  function confirmActivate(offerId){
+    Swal.fire({
+      title:'Are you sure?',
+      text:'Do you want to activate this offer?',
+      icon:'warning',
+      showCancelButton:true,
+      confirmButtonText:'Yes, Activate it!',
+      cancelButtonText:'Cancel',
+      reverseButtons:true
+    }).then((result) => {
+      if(result.isConfirmed){
+        $.ajax({
+          url:`/admin/activateOffer?id=${offerId}`,
+          type:"GET",
+          contentType:"application/json",
+          success: function(response){
+            Swal.fire(
+              "Activated",
+              "The offer has been activated successfully",
+              "success"
+            )
+            .then(() => {
+              $(`#offer-${offerId} td:nth-child(6)`).html(
+               `<span class="badge rounded-pill alert-success" style="width:60px;background-color:green">
+                Active
+                </span>` 
+              )
+              $(`#offer-${offerId} td:nth-child(7)`).html(
+                `<button class="btn btn-danger btn-sm">
+                  <a class="text-white" onclick="confirmDeactivate('${offerId}')">Deactivate</a>
+                 </button>`
+              )
+            })
+          }
+        })
+      }
+    })
+  }
+
+  function confirmDeactivate(offerId){
+    Swal.fire({
+      title:'Are you sure?',
+      text:'Do you want to deactivate this offer?',
+      icon:'warning',
+      showCancelButton:true,
+      confirmButtonText:'Yes, Deactivate it!',
+      cancelButtonText:'Cancel',
+      reverseButtons:true
+    }).then((result) => {
+      if(result.isConfirmed){
+        $.ajax({
+          url:`/admin/deactivateOffer?id=${offerId}`,
+          type:"GET",
+          contentType:"application/json",
+          success: function(response){
+            Swal.fire(
+              "Deactivated",
+              "The offer has been deactivated successfully",
+              "success"
+            )
+            .then(() => {
+              $(`#offer-${offerId} td:nth-child(6)`).html(
+               `<span class="badge rounded-pill alert-danger" style="width:60px;background-color:red">
+                Inactive
+                </span>` 
+              )
+              $(`#offer-${offerId} td:nth-child(7)`).html(
+                `<button class="btn btn-success btn-sm">
+                  <a class="text-white" onclick="confirmActivate('${offerId}')">Activate</a>
+                 </button>`
+              )
+            })
+          }
+        })
+      }
+    })
+  }
+
   document.addEventListener("DOMContentLoaded",() => {
     const errorMessage = "<%= errorMessage %>";
       if(errorMessage){

@@ -107,7 +107,7 @@ const activateOffer = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   try {
     let offerId = req.query.id;
-    await Offer.updateOne({ _id: offerId }, { $set: { isActive: false } });
+    await Offer.updateOne({ _id: offerId }, { $set: { isActive: true } });
     res.redirect("/admin/offer");
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).render('offer',{errorMessage:'Something went wrong! Please try again.',offers,currentPage:page,totalPages,totalOffers,notifications});
@@ -119,7 +119,7 @@ const deactivateOffer = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   try {
     let offerId = req.query.id;
-    await Offer.updateOne({ _id: offerId }, { $set: { isActive: true } });
+    await Offer.updateOne({ _id: offerId }, { $set: { isActive: false } });
     res.redirect("/admin/offer");
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).render('offer',{errorMessage:'Something went wrong! Please try again.',offers,currentPage:page,totalPages,totalOffers,notifications});
