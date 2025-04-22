@@ -29,7 +29,7 @@
                 </thead>
                 <tbody>
                 <% for(let i=0 ; i<data.length ; i++){ %>
-                  <tr>
+                  <tr id="users-<%=data[i]._id%>">
                     <td><%= data[i].name %></td>
                     <td><%=data[i].email%></td>
                     <td><%= data[i].phone %></td>
@@ -85,70 +85,75 @@
 
 
 <script>
-async function confirmBlockUser(userId){
-                const confirmation = await Swal.fire({
-                    title:'Are you sure?',
-                    text:'Do you want to block the user?',
-                    icon:'warning',
-                    showCancelButton:true,
-                    confirmButtonText:'Yes, Block the user!',
-                    cancelButtonText:'Cancel',
-                    reverseButtons:true
-                });
-                if(confirmation.isConfirmed){
-                    fetch(`/admin/blockCustomer/${userId}`,{
-                        method:'POST',
-                        headers:{
-                            'Content-Type':'application/json'
-                        },
-                        body:JSON.stringify({isBlocked:true})
-                    })
-                    .then(response => {
-                        if(response.ok){
-                            Swal.fire('Blocked','The user has been blocked successfully','success')
-                            .then(() => location.reload());
-                        }else{
-                            Swal.fire('Error!','Something went wrong! Please try again.', 'error');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error blocking user : ',error);
-                        Swal.fire('Error!', 'Something went wrong! Please try again.', 'error');
-                    });
-                }
-            }
-async function confirmunBlockUser(userId){
-                const confirmation = await Swal.fire({
-                    title:'Are you sure?',
-                    text:'Do you want to unblock the user?',
-                    icon:'warning',
-                    showCancelButton:true,
-                    confirmButtonText:'Yes,Unblock the user!',
-                    cancelButtonText:'Cancel',
-                    reverseButtons:true
-                });
-                if(confirmation.isConfirmed){
-                    fetch(`/admin/unblockCustomer/${userId}`,{
-                        method:'POST',
-                        headers:{
-                            'Content-Type':'application/json'
-                        },
-                        body:JSON.stringify({isBlocked:false})
-                    })
-                    .then(response => {
-                        if(response.ok){
-                            Swal.fire('Unblocked','The user has been unblocked successfully','success')
-                            .then(() => location.reload());
-                        }else{
-                            Swal.fire('Something went wrong! Please try again.','error');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error unblocking user : ',error);
-                        Swal.fire('Error!','Something went wrong! Please try again.','error')
-                    });
-                }
-            }
+function confirmBlockUser(userId){
+  Swal.fire({
+    title:"Are you sure?",
+    text:"Do you want to block this user?",
+    icon:"warning",
+    showCancelButton:true,
+    confirmButtonText:"Yes, Block it!",
+    cancelButtonText:"Cancel",
+    reverseButtons:true
+  }).then((result) => {
+    if(result.isConfirmed){
+      $.ajax({
+        url:`/admin/blockCustomer/${userId}`,
+        type:"POST",
+        contentType:"application/json",
+        success: function(response){
+          Swal.fire(
+            "Blocked",
+            "The user has been blocked successfully",
+            "success"
+          )
+          .then(() => {
+            $(`#users-${userId} td:nth-child(4)`).html(
+              `<button class="btn btn-success">
+                <a class="text-white" style="text-decoration:none" onclick="return confirmunBlockUser('${userId}')">Unblock</a>
+               </button>`
+            )
+          })
+        }
+      })
+    }
+  })
+}
+
+function confirmunBlockUser(userId){
+  Swal.fire({
+    title:"Are you sure?",
+    text:"Do you want to unblock this user?",
+    icon:"warning",
+    showCancelButton:true,
+    confirmButtonText:"Yes, Unblock it!",
+    cancelButtonText:"Cancel",
+    reverseButtons:true
+  }).then((result) => {
+    if(result.isConfirmed){
+      $.ajax({
+        url:`/admin/unblockCustomer/${userId}`,
+        type:"POST",
+        contentType:"application/json",
+        success: function(response){
+          Swal.fire(
+            "Unblocked",
+            "The user has been unblocked successfully",
+            "success"
+          )
+          .then(() => {
+            $(`#users-${userId} td:nth-child(4)`).html(
+              `<button class="btn btn-danger">
+                <a class="text-white" style="text-decoration:none" onclick="return confirmBlockUser('${userId}')">Block</a>
+               </button>`
+            )
+          })
+        }
+      })
+    }
+  })
+}
+
+
 document.addEventListener("DOMContentLoaded",() => {
     const errorMessage = "<%= errorMessage %>";
       if(errorMessage){
