@@ -61,18 +61,18 @@
                     <% if(data[i].featured===false){ %>
                     <button class="btn btn-success">
                       <a
-                        href="/admin/featured?id=<%=data[i]._id%>"
                         class="text-white"
                         style="text-decoration: none"
+                        onclick="confirmFeatured('<%=data[i]._id%>')"
                         >Featured</a
                       >
                     </button>
                     <% }else{ %>
                     <button class="btn btn-danger">
                       <a
-                        href="/admin/unFeatured?id=<%=data[i]._id%>"
                         class="text-white"
                         style="text-decoration: none"
+                        onclick="confirmUnfeatured('<%=data[i]._id%>')"
                         >Unfeatured</a
                       >
                     </button>
@@ -81,9 +81,15 @@
                   <td><%=data[i].regularPrice%></td>
                   <td><%=data[i].salePrice%></td>
                   <td>
-                    <% if (data[i].productOffer?.discountType === 'Percentage')
-                    { %> <%= (data[i].productOffer.value)%>% <% }else{ %> Rs <%=
-                    (data[i].productOffer?.value) %> <% } %>
+                  <% if(data[i].productOffer){ %>
+                    <% if (data[i].productOffer?.discountType === 'Percentage'){ %> 
+                      <%= (data[i].productOffer.value)%>% 
+                    <% }else{ %> 
+                      Rs <%=(data[i].productOffer?.value) %> 
+                    <% } %>
+                  <% }else{ %>
+                    <p style="color:red">No Offers</p>
+                  <% } %>
                   </td>
                   <td>
                     <% if (data[i].productOffer) { %>
@@ -91,7 +97,7 @@
                       <a
                         href="#"
                         class="text-white"
-                        onclick="removeOffer('<%=data[i]._id%>')"
+                        onclick="removeOffer('<%=data[i]._id%>','<%=data[i].regularPrice%>')"
                         >Remove Offer</a
                       >
                     </button>
@@ -186,45 +192,8 @@
   </div>
 </div>
 <script>
-  async function addOffer(productId) {
-    const { value: amount } = await Swal.fire({
-      title: "Offer in percentage",
-      input: "number",
-      inputLabel: "percentage",
-      inputPlaceholder: "%",
-      inputAttributes: {
-        min: 1,
-        max: 100,
-      },
-      customClass: {
-        container: "my-custom-class",
-      },
-    });
-    if (!amount || amount < 1 || amount > 100) {
-      Swal.fire(
-        "Invalid Percentage",
-        "Please enter a value between 1 and 100",
-        "error"
-      );
-    }
-    $.ajax({
-      url: "/admin/addProductOffer",
-      method: "post",
-      data: {
-        percentage: amount,
-        productId: productId,
-      },
-      success: (response) => {
-        if (response.status === true) {
-          location.reload();
-          Swal.fire("Offer added", "The offer has been added", "success");
-        } else {
-          alert("failed");
-        }
-      },
-    });
-  }
-  function removeOffer(productId) {
+  
+  function removeOffer(productId,regularPrice) {
     Swal.fire({
       title: "Remove Offer",
       text: "Are you sure? You want to remove this offer?",
@@ -241,23 +210,32 @@
           contentType: "application/json",
           data: JSON.stringify({ productId: productId }),
           success: function (response) {
-            console.log("Offer removed:", response);
-            Swal.fire("Success", response.message, "success");
-            location.reload();
+            Swal.fire("Success", response.message, "success").then(() => {
+              $(`#product-${productId} td:nth-child(9)`).html(
+                `<button class="btn btn-sm" style="border:none; background:#e7ab3c">
+                  <a href="/admin/addProductOffer?id=${productId}" style="text-decoration:none" class="text-white">
+                    Add Offer
+                  </a>
+                 </button>`
+              );
+              $(`#product-${productId} td:nth-child(8)`).html(
+                `<p style="color:red">No Offers</p>`
+              )
+              $(`#product-${productId} td:nth-child(7)`).html(
+                 `${regularPrice}`
+              )
+            })
+            
           },
           error: function (error) {
-            console.error(
-              "Error removing offer:",
-              error.responseText || error.statusText
-            );
             Swal.fire("Error", "Something went wrong! Please try again.", "error");
           },
         });
       }
     });
   }
+
   function removeProduct(productId) {
-    console.log(`Removing product with ID: ${productId}`);
     const confirmation = Swal.fire({
       title: "Are you sure?",
       text: "Do you want to delete the product",
@@ -268,35 +246,28 @@
       reverseButtons: true,
     }).then((result) => {
       if (result.isConfirmed) {
-        fetch(`/admin/removeProduct?id=${productId}`, {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
+        $.ajax({
+          url:`/admin/removeProduct?id=${productId}`,
+          type:"DELETE",
+          contentType:"application/json",
+          success:function(response){
+            Swal.fire(
+              "Deleted",
+              "The product has been deleted successfully",
+              "success"
+            ).then(() => {
+              $(`#product-${productId}`).remove();
+            });
           },
-        })
-          .then((response) => {
-            if (response.ok) {
-              Swal.fire(
-                "Removed",
-                "The product has been removed successfully",
-                "success"
-              ).then(() => location.reload());
-            } else {
-              Swal.fire(
-                "Error!",
-                "Something went wrong! Please try again.",
-                "error"
-              );
-            }
-          })
-          .catch((error) => {
-            console.error("Error : ", error);
+          error: function(xhr,status,error){
             Swal.fire(
               "Error!",
               "Something went wrong! Please try again.",
               "error"
             );
-          });
+          }
+        });
+        
       }
     });
   }
@@ -311,7 +282,23 @@
       reverseButtons: true,
     }).then((result) => {
       if (result.isConfirmed) {
-        window.location.href = `/admin/blockProduct?id=${productId}`;
+        $.ajax({
+          url:`/admin/blockProduct?id=${productId}`,
+          type:"GET",
+          contentType:"application/json",
+          success: function(response){
+            Swal.fire(
+              "Blocked",
+              "The product has been blocked successfully",
+              "success"
+            )
+            .then(() => {
+              $(`#product-${productId} td:nth-child(11)`).html(
+                `<button class="btn btn-success" onclick="confirmBlock('${productId}')">Unblock</button>`
+              )
+            })
+          }
+        })
       }
     });
   }
@@ -326,10 +313,95 @@
       reverseButtons: true,
     }).then((result) => {
       if (result.isConfirmed) {
-        window.location.href = `/admin/unblockProduct?id=${productId}`;
+        $.ajax({
+          url:`/admin/unblockProduct?id=${productId}`,
+          type:"GET",
+          contentType:"application/json",
+          success: function(response){
+            Swal.fire(
+              "Unblocked",
+              "The product has been unblocked successfully",
+              "success"
+            )
+            .then(() => {
+              $(`#product-${productId} td:nth-child(11)`).html(
+                `<button class="btn btn-danger" onclick="confirmBlock('${productId}')">Block</button>`
+              )
+            })
+          }
+        })
       }
     });
   }
+
+  function confirmFeatured(productId){
+    Swal.fire({
+      title:"Are you sure?",
+      text:"Do you want to featured this product?",
+      icon:"warning",
+      showCancelButton:true,
+      confirmButtonText:"Yes, Featured it",
+      cancelButtonText:"Cancel",
+      reverseButtons:true
+    }).then((result) => {
+      if(result.isConfirmed){
+        $.ajax({
+          url:`/admin/featured?id=${productId}`,
+          type:"GET",
+          contentType:"application/json",
+          success: function(response){
+            Swal.fire(
+              "Featured",
+              "The product has been featured successfully",
+              "success"
+            )
+            .then(() => {
+              $(`#product-${productId} td:nth-child(5)`).html(
+                `<button class="btn btn-danger">
+                  <a class="text-white" style="text-decoration:none" onclick="confirmUnfeatured('${productId}')">Unfeatured</a>
+                 </button>`
+              )
+            })
+          }
+        })
+      }
+    })
+  }
+
+  function confirmUnfeatured(productId){
+    Swal.fire({
+      title:"Are you sure?",
+      text:"Do you want to unfeatured this product?",
+      icon:"warning",
+      showCancelButton:true,
+      confirmButtonText:"Yes, Unfeatured it",
+      cancelButtonText:"Cancel",
+      reverseButtons:true
+    }).then((result) => {
+      if(result.isConfirmed){
+        $.ajax({
+          url:`/admin/unFeatured?id=${productId}`,
+          type:"GET",
+          contentType:"application/json",
+          success: function(response){
+            Swal.fire(
+              "Unfeatured",
+              "The product has been unfeatured successfully",
+              "success"
+            )
+            .then(() => {
+              $(`#product-${productId} td:nth-child(5)`).html(
+                `<button class="btn btn-success">
+                  <a class="text-white" style="text-decoration:none" onclick="confirmFeatured('${productId}')">Featured</a>
+                 </button>`
+              )
+            })
+          }
+        })
+      }
+    })
+  }
+
   document.addEventListener("DOMContentLoaded",() => {
     const errorMessage = "<%= errorMessage %>";
       if(errorMessage){

@@ -253,13 +253,26 @@ const addProductOffer = async (req, res) => {
     const findProduct = await Product.findOne({
       _id: productId,
       isBlocked: false,
-    }).populate("productOffer");
+    }).populate("productOffer")
+    .populate({
+      path:"category",
+      populate:{
+        path:"categoryOffer",
+        model:"Offer"
+      }
+    });
 
     if (!findProduct) {
       return res
         .status(StatusCodes.NOT_FOUND)
         .json({ type: "error", message: "Product not found" });
     }
+    if(findProduct.category.categoryOffer){
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ type: "error", message: "Product already has a category offer."})
+    }
+    
     if (discountType === "Percentage") {
       if (value < 1 || value > 90) {
         return res
