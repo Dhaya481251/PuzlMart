@@ -14,6 +14,7 @@ const {StatusCodes,ReasonPhrases} = require('http-status-codes');
 const loadUserProfilePage = async (req, res) => {
   try {
     const userId = req.session.user;
+    let search = req.body.query || "";
     const userData = await User.findById(userId);
     const cart = await Cart.findOne({ userId }).populate("items.productId");
     const wishlist = await Wishlist.findOne({ userId }).populate(
@@ -25,6 +26,7 @@ const loadUserProfilePage = async (req, res) => {
       cart,
       wishlist,
       category: category,
+      appliedFilters:{query:search}
     });
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
@@ -33,6 +35,7 @@ const loadUserProfilePage = async (req, res) => {
 const loadUserDetailsPage = async (req, res) => {
   try {
     const userId = req.session.user;
+    let search = req.body.query || "";
     const cart = await Cart.findOne({ userId }).populate("items.productId");
     const wishlist = await Wishlist.findOne({ userId }).populate(
       "products.productsId"
@@ -46,6 +49,7 @@ const loadUserDetailsPage = async (req, res) => {
       cart,
       wishlist,
       category: category,
+      appliedFilters:{query:search}
     });
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
@@ -177,6 +181,7 @@ const emailResendOtp = async (req, res) => {
 const loadUserAddressPage = async (req, res) => {
   try {
     const userId = req.session.user;
+    let search = req.body.query || "";
     const userData = await User.findById(userId);
     const cart = await Cart.findOne({ userId }).populate("items.productId");
     const wishlist = await Wishlist.findOne({ userId }).populate(
@@ -190,6 +195,7 @@ const loadUserAddressPage = async (req, res) => {
       cart,
       wishlist,
       category: category,
+      appliedFilters:{query:search}
     });
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
@@ -199,6 +205,7 @@ const loadUserAddressPage = async (req, res) => {
 const loadAddAddress = async (req, res) => {
   try {
     const userId = req.session.user;
+    let search = req.body.query || "";
     const userData = await User.findById(userId);
     const cart = await Cart.findOne({ userId }).populate("items.productId");
     const wishlist = await Wishlist.findOne({ userId }).populate(
@@ -210,6 +217,7 @@ const loadAddAddress = async (req, res) => {
       cart,
       wishlist,
       category: category,
+      appliedFilters:{query:search}
     });
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
@@ -276,6 +284,7 @@ const addAddress = async (req, res) => {
 const loadEditAddress = async (req, res) => {
   try {
     const addressId = req.query.id;
+    let search = req.body.query || "";
     const user = req.session.user;
     const userData = await User.findById(user);
     const cart = await Cart.findOne({ user }).populate("items.productId");
@@ -302,6 +311,7 @@ const loadEditAddress = async (req, res) => {
       cart,
       wishlist,
       category: category,
+      appliedFilters:{query:search}
     });
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal server error");
@@ -380,6 +390,7 @@ const deleteAddress = async (req, res) => {
 const loadReferralPage = async (req, res) => {
   try {
     const userId = req.session.user;
+    let search = req.body.query || "";
     const userData = await User.findById(userId);
     const cart = await Cart.findOne({ userId }).populate("items.productId");
     const wishlist = await Wishlist.findOne({ userId }).populate(
@@ -392,6 +403,7 @@ const loadReferralPage = async (req, res) => {
       cart,
       wishlist,
       category: category,
+      appliedFilters:{query:search}
     });
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");

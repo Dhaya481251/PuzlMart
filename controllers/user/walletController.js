@@ -8,6 +8,7 @@ const {StatusCodes,ReasonPhrases} = require('http-status-codes');
 const loadWallet = async (req, res) => {
   try {
     const userId = req.session.user;
+    let search = req.body.query || "";
     const user = await User.findById(userId);
     const cart = await Cart.findOne({ userId }).populate("items.productId");
     const wishlist = await Wishlist.findOne({ userId }).populate(
@@ -35,6 +36,7 @@ const loadWallet = async (req, res) => {
       transactions,
       currentPage: page,
       totalPages,
+      appliedFilters:{query:search}
     });
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");

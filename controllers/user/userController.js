@@ -14,6 +14,7 @@ const {StatusCodes,ReasonPhrases} = require('http-status-codes');
 const loadHomepage = async (req, res) => {
   try {
     const userId = req.session.user;
+    let search = req.body.query || "";
     const userData = await User.findById(userId);
     const categories = await Category.find({ isListed: true });
     const cart = await Cart.findOne({ userId }).populate("items.productId");
@@ -53,9 +54,10 @@ const loadHomepage = async (req, res) => {
         wishlist,
         category: categories,
         brands,
+        appliedFilters:{query:search}
       });
     } else {
-      res.render("home", { user: null ,products:productData,cart:null,wishlist:null,category:categories,brands});
+      res.render("home", { user: null ,products:productData,cart:null,wishlist:null,category:categories,brands,appliedFilters:{query:search}});
     }
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Server Error");
@@ -393,13 +395,14 @@ const resetPassword = async (req, res) => {
 const loadAboutPage = async(req,res) => {
   try {
     const userId = req.session.user;
+    let search = req.body.query || "";
     const userData = await User.findById(userId);
     const categories = await Category.find({ isListed: true });
     const cart = await Cart.findOne({ userId }).populate("items.productId");
     const wishlist = await Wishlist.findOne({ userId }).populate(
       "products.productsId"
     );
-    res.render('aboutUs',{user:userData,category:categories,cart,wishlist});
+    res.render('aboutUs',{user:userData,category:categories,cart,wishlist,appliedFilters:{query:search}});
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send('Internal server error');
   }
@@ -408,13 +411,14 @@ const loadAboutPage = async(req,res) => {
 const loadContactPage = async(req,res) => {
   try {
     const userId = req.session.user;
+    let search = req.body.query || "";
     const userData = await User.findById(userId);
     const categories = await Category.find({ isListed: true });
     const cart = await Cart.findOne({ userId }).populate("items.productId");
     const wishlist = await Wishlist.findOne({ userId }).populate(
       "products.productsId"
     );
-    res.render('contactUs',{user:userData,category:categories,cart,wishlist});
+    res.render('contactUs',{user:userData,category:categories,cart,wishlist,appliedFilters:{query:search}});
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send('Internal server error');
   }

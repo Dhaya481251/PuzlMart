@@ -17,6 +17,7 @@ const updatePopularityScore = async (productId) => {
 const loadCart = async (req, res) => {
   try {
     const userId = req.session.user;
+    let search = req.body.query || "";
     const user = await User.findById(userId);
     let cart = await Cart.findOne({ userId }).populate("items.productId");
     const category = await Category.find({ isListed: true });
@@ -28,7 +29,7 @@ const loadCart = async (req, res) => {
       );
 
       if (cart.items.length > 0) {
-        return res.render("cart", { user, cart, category, wishlist });
+        return res.render("cart", { user, cart, category, wishlist ,appliedFilters:{query:search} });
       }
     }
     cart.items = cart.items.filter(item => !item.productId.isBlocked);
@@ -36,7 +37,7 @@ const loadCart = async (req, res) => {
     if (cart.items.length === 0) {
           return res.redirect(StatusCodes.MOVED_TEMPORARILY, "/products");
     }
-    res.render("cart", { user, cart: { items: [] }, category, wishlist });
+    res.render("cart", { user, cart: { items: [] }, category, wishlist ,appliedFilters:{query:search}});
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send('Something went wrong! Please try again.');
   }

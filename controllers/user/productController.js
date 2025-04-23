@@ -19,6 +19,7 @@ const {StatusCodes,ReasonPhrases} = require('http-status-codes');
 const loadProductpage = async (req, res) => {
   try {
     const userId = req.session.user;
+    let search = req.body.query || "";
     const userData = await User.findById(userId);
     const cart = await Cart.findOne({ userId }).populate("items.productId");
     const wishlist = await Wishlist.findOne({ userId }).populate(
@@ -102,6 +103,7 @@ const updatePopularityScore = async (productId) => {
 const loadProductDetailspage = async (req, res) => {
   try {
     const userId = req.session.user;
+    let search = req.body.query || "";
     const userData = await User.findById(userId);
     const id = req.params.id;
     await incrementProductView(id);
@@ -180,6 +182,7 @@ const loadProductDetailspage = async (req, res) => {
       reviews: formattedReviews,
       totalReviews,
       totalRatings,
+      appliedFilters:{query:search}
     });
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Something went wrong");
@@ -189,6 +192,7 @@ const loadProductDetailspage = async (req, res) => {
 const filterProductByCategory = async (req, res) => {
   try {
     const user = req.session.user;
+    let search = req.body.query || "";
     const userData = await User.findById(user);
     const cart = await Cart.findOne({ user }).populate("items.productId");
     const wishlist = await Wishlist.findOne({ user }).populate(
@@ -276,6 +280,7 @@ const filterProductByCategory = async (req, res) => {
       totalPages: totalPages,
       cart,
       wishlist,
+      appliedFilters:{query:search}
     });
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");

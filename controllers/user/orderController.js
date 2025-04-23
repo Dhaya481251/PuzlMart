@@ -34,6 +34,7 @@ async function convertCurrency(amountInINR) {
 const loadCheckOutPage = async (req, res) => {
   try {
     const userId = req.session.user;
+    let search = req.body.query || "";
     const userData = await User.findById(userId);
     const cart = await Cart.findOne({ userId }).populate("items.productId");
     const wishlist = await Wishlist.findOne({ userId }).populate("products.productsId");
@@ -97,7 +98,8 @@ const loadCheckOutPage = async (req, res) => {
       wishlist,
       category,
       coupon: couponCode ? await Coupon.findOne({ code: couponCode }) : null,
-      finalAmountInUSD
+      finalAmountInUSD,
+      appliedFilters:{query:search}
     });
   } catch (error) {
     console.error("Error in loadCheckOutPage:", error);
@@ -108,6 +110,7 @@ const loadCheckOutPage = async (req, res) => {
 const orderPlaced = async (req, res) => {
   try {
     const userId = req.session.user;
+    let search = req.body.query || "";
     const userData = await User.findById(userId);
     const { selectedAddress, selectedPayment } = req.body;
     const coupon = await Coupon.findOne({ code: req.session.couponCode });
@@ -232,7 +235,7 @@ const orderPlaced = async (req, res) => {
       await orderData.save();
       cart.items = [];
     await cart.save();
-      return res.render("orderConfirmation", { cart, wishlist, category });
+      return res.render("orderConfirmation", { cart, wishlist, category , appliedFilters:{query:search} });
     } else if (selectedPayment === "Wallet") {
       userData.wallet.balance = userData.wallet.balance - finalAmount || 0;
       const newTransaction = {
@@ -247,7 +250,7 @@ const orderPlaced = async (req, res) => {
       await orderData.save();
       cart.items = [];
     await cart.save();
-      return res.render("orderConfirmation", { cart, wishlist, category });
+      return res.render("orderConfirmation", { cart, wishlist, category ,appliedFilters:{query:search}});
     } else {
       return res.status(StatusCodes.BAD_REQUEST).send("Invalid payment method");
     }
@@ -261,7 +264,7 @@ const orderConfirmation = async (req, res) => {
   try {
     const userId = req.session.user;
     const id = req.params.id;
-
+    let search = req.body.query || "";
     const cart = await Cart.findOne({ userId }).populate("items.productId");
     const wishlist = await Wishlist.findOne({ userId }).populate(
       "products.productsId"
@@ -270,7 +273,7 @@ const orderConfirmation = async (req, res) => {
 
     await payment.capturePayment(req.query.token);
 
-    res.render(`orderConfirmation`, { cart, wishlist, category: category });
+    res.render(`orderConfirmation`, { cart, wishlist, category: category,appliedFilters:{query:search} });
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
   }
@@ -279,7 +282,7 @@ const orderConfirmation = async (req, res) => {
 const paymentSuccessfull = async (req, res) => {
   try {
     const userId = req.session.user;
-
+    let search = req.body.query || "";
     const cart = await Cart.findOne({ userId }).populate("items.productId");
     const wishlist = await Wishlist.findOne({ userId }).populate(
       "products.productsId"
@@ -288,7 +291,7 @@ const paymentSuccessfull = async (req, res) => {
 
     await startPayPal.capturePayment(req.query.token);
 
-    res.render(`paymentSuccessfull`, { cart, wishlist, category: category });
+    res.render(`paymentSuccessfull`, { cart, wishlist, category: category,appliedFilters:{query:search} });
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
   }
@@ -297,6 +300,7 @@ const paymentSuccessfull = async (req, res) => {
 const loadMyOrdersPage = async (req, res) => {
   try {
     const userId = req.session.user;
+    let search = req.body.query || "";
     const user = await User.findOne({ _id: userId });
     if (!user) {
       return res.status(StatusCodes.NOT_FOUND).send("User not found");
@@ -331,6 +335,7 @@ const loadMyOrdersPage = async (req, res) => {
       totalOrders: totalOrders,
       currentPage: page,
       totalPages: totalPages,
+      appliedFilters:{query:search}
     });
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal server error");
@@ -340,6 +345,7 @@ const loadMyOrdersPage = async (req, res) => {
 const orderDetails = async (req, res) => {
   try {
     const userId = req.session.user;
+    let search = req.body.query || "";
     const id = req.params.id;
     const order = await Order.findById({ _id: id })
       .populate("items.productId")
@@ -365,6 +371,7 @@ const orderDetails = async (req, res) => {
       category: category,
       notifications: notifications,
       reviews,
+      appliedFilters:{query:search}
     });
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal server error");
@@ -467,6 +474,7 @@ const rateProduct = async (req, res) => {
 const loadAddAddress = async (req, res) => {
   try {
     const user = req.session.user;
+    let search = req.body.query || "";
     const cart = await Cart.findOne({ user }).populate("items.productId");
     const wishlist = await Wishlist.findOne({ user }).populate(
       "products.productsId"
@@ -479,6 +487,7 @@ const loadAddAddress = async (req, res) => {
       wishlist,
       category: category,
       coupon,
+      appliedFilters:{query:search}
     });
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
@@ -488,6 +497,7 @@ const loadAddAddress = async (req, res) => {
 const addAddress = async (req, res) => {
   try {
     const userId = req.session.user;
+    let search = req.body.query || "";
     const cart = await Cart.findOne({ userId }).populate("items.productId");
     const wishlist = await Wishlist.findOne({ userId }).populate(
       "products.productsId"
@@ -549,6 +559,7 @@ const addAddress = async (req, res) => {
 const loadEditAddress = async (req, res) => {
   try {
     const addressId = req.query.id;
+    let search = req.body.query || "";
     const user = req.session.user;
     const cart = await Cart.findOne({ user }).populate("items.productId");
     const wishlist = await Wishlist.findOne({ user }).populate(
@@ -576,6 +587,7 @@ const loadEditAddress = async (req, res) => {
       wishlist,
       category: category,
       coupon,
+      appliedFilters:{query:search}
     });
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal server error");
@@ -585,6 +597,7 @@ const loadEditAddress = async (req, res) => {
 const editAddress = async (req, res) => {
   try {
     const data = req.body;
+    let search = req.body.query || "";
     const addressId = req.query.id;
     const user = req.session.user;
     const cart = await Cart.findOne({ user }).populate("items.productId");
