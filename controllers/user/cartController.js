@@ -21,7 +21,7 @@ const loadCart = async (req, res) => {
     let cart = await Cart.findOne({ userId }).populate("items.productId");
     const category = await Category.find({ isListed: true });
     const wishlist = await Wishlist.findOne({ userId }).populate("products.productsId");
-
+    
     if (cart && cart.items) {
       cart.items = cart.items.filter(
         (item) => item.productId && !item.productId.isBlocked
@@ -31,7 +31,11 @@ const loadCart = async (req, res) => {
         return res.render("cart", { user, cart, category, wishlist });
       }
     }
-
+    cart.items = cart.items.filter(item => !item.productId.isBlocked);
+    
+    if (cart.items.length === 0) {
+          return res.redirect(StatusCodes.MOVED_TEMPORARILY, "/products");
+    }
     res.render("cart", { user, cart: { items: [] }, category, wishlist });
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send('Something went wrong! Please try again.');
@@ -55,6 +59,10 @@ const addToCart = async (req, res) => {
 
     if (quantityToAdd > product.quantity) {
       return res.status(StatusCodes.BAD_REQUEST).json({ success: false, error: "Out of Stock" });
+    }
+
+    if(product.isBlocked === true){
+      return res.status(StatusCodes.BAD_REQUEST).json({success:false,error:'Access Denied. Please contact Admin'});
     }
 
     let cart = await Cart.findOne({ userId });
@@ -153,6 +161,10 @@ const increaseQuantity = async (req, res) => {
     const product = await Product.findById(productId);
     if (!product) return res.status(StatusCodes.NOT_FOUND).json({ error: "Product not found" });
 
+    if(product.isBlocked === true){
+      return res.status(StatusCodes.BAD_REQUEST).json({error:'Access Denied. Please contact Admin'});
+    }
+
     const item = cart.items.find(
       (item) => item.productId.toString() === productId
     );
@@ -192,6 +204,10 @@ const decreaseQuantity = async (req, res) => {
 
     const product = await Product.findById(productId);
     if (!product) return res.status(StatusCodes.NOT_FOUND).json({ error: "Product not found" });
+
+    if(product.isBlocked === true){
+      return res.status(StatusCodes.BAD_REQUEST).json({error:'Access Denied. Please contact Admin'});
+    }
 
     const item = cart.items.find(
       (item) => item.productId.toString() === productId

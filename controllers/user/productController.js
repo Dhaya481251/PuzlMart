@@ -112,6 +112,7 @@ const loadProductDetailspage = async (req, res) => {
     const product = await Product.findOne({
       _id: id,
       category: { $in: categoryIds },
+      isBlocked:false
     })
       .populate("category")
       .populate("brand")

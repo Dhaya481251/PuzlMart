@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+views/partials/user/header.ejs<!DOCTYPE html>
 <html lang="zxx">
   <head>
     <meta charset="UTF-8" />
@@ -404,7 +404,7 @@
                         <tbody>
                           
                           <% cart.items.forEach(item => { %> 
-                          <%if(item.productId) { %>
+                          <%if(item.productId.isBlocked===false) { %>
 
                           <tr>
                             <td class="si-pic">
@@ -439,7 +439,7 @@
                           </tr>
 
                           <% } else { %>
-                          <p>Product not found</p>
+                            <h4 colspan="4">Your cart is empty</h4>
                           <% } %>
                            <% }) %> 
                           

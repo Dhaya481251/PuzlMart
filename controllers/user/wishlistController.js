@@ -84,7 +84,7 @@ const removeFromWishlist = async (req, res) => {
 
     await wishlist.save();
     res
-      .status(StatusCodess.OK)
+      .status(StatusCodes.OK)
       .json({ message: "Product removed from wishlist successfully" });
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");

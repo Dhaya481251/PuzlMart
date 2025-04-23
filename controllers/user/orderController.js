@@ -38,8 +38,13 @@ const loadCheckOutPage = async (req, res) => {
     const cart = await Cart.findOne({ userId }).populate("items.productId");
     const wishlist = await Wishlist.findOne({ userId }).populate("products.productsId");
     const category = await Category.find({ isListed: true });
-
+    
     if (!cart || !cart.items || cart.items.length === 0) {
+      return res.redirect(StatusCodes.MOVED_TEMPORARILY, "/products");
+    }
+    cart.items = cart.items.filter(item => !item.productId.isBlocked);
+
+    if (cart.items.length === 0) {
       return res.redirect(StatusCodes.MOVED_TEMPORARILY, "/products");
     }
 
@@ -114,6 +119,11 @@ const orderPlaced = async (req, res) => {
     const cart = await Cart.findOne({ userId }).populate("items.productId");
     if (!cart || !cart.items || cart.items.length === 0) {
       return res.status(StatusCodes.BAD_REQUEST).send("Cart is empty");
+    }
+    cart.items = cart.items.filter(item => !item.productId.isBlocked);
+
+    if (cart.items.length === 0) {
+      return res.redirect(StatusCodes.BAD_REQUEST).send('product is blocked')
     }
     const wishlist = await Wishlist.findOne({ userId }).populate(
             "products.productsId"
