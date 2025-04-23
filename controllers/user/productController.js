@@ -142,7 +142,7 @@ const loadProductDetailspage = async (req, res) => {
       .exec();
 
     if (!product) {
-      return res.status(StatusCodes.NOT_FOUND).send("Product not found");
+      return res.status(StatusCodes.NOT_FOUND).redirect('/404')
     }
 
     const reviews = await Review.find({ productId: id })
