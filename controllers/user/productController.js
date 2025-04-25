@@ -36,6 +36,7 @@ const loadProductpage = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = 4;
     const skip = (page - 1) * limit;
+    
     let productData = await Product.find({
       isBlocked: false,
       category: { $in: categoryIds },
@@ -52,6 +53,12 @@ const loadProductpage = async (req, res) => {
       .sort({ createdOn: -1 })
       .skip(skip)
       .limit(limit);
+    productData = productData.filter(product => product.category.isListed);
+const productBrands = await Brand.find({ isBlocked: false });
+
+productData = productData.filter(product =>
+  productBrands.some(brand => brand.brandName === product.brand)
+);
 
     productData = productData.map((product) => {
       const status = product.quantity > 0 ? "Available" : "Out of Stock";
@@ -206,11 +213,11 @@ const filterProductByCategory = async (req, res) => {
         name: { $in: categoriesArray },
       });
       const categoryIds = categoryDocs.map((cat) => cat._id);
-      filter.category = { $in: categoryIds };
+      filter.category = { $in: categoryIds,isListed:true };
     }
     if (brand) {
       const brandsArray = Array.isArray(brand) ? brand : [brand];
-      filter.brand = { $in: brandsArray };
+      filter.brand = { $in: brandsArray ,isBlocked:false};
     }
     if (minPrice || maxPrice) {
       filter.salePrice = {};
@@ -260,10 +267,8 @@ const filterProductByCategory = async (req, res) => {
       .sort(sortOrder)
       .skip(skip)
       .limit(limit);
-    products = products.map((product) => {
-      const status = product.quantity > 0 ? "Available" : "Out of Stock";
-      return { ...product.toObject(), status };
-    });
+
+    
     const totalProducts = await Product.countDocuments(filter);
     const totalPages = Math.ceil(totalProducts / limit);
 
@@ -307,6 +312,11 @@ const searchProducts = async (req, res) => {
         isBlocked: false,
         category: { $in: categoryIds },
       }).lean();
+      searchResult = searchResult.filter(product => product.category.isListed);
+      const productBrands = await Brand.find({isBlocked:false});
+      searchResult = searchResult.filter(product => 
+        productBrands.some(brand => brand.brandName === product.brand)
+      );
     }
     searchResult.sort((a, b) => new Date(b.createdOn) - new Date(a.createdOn));
     let itemsPerPage = 4;

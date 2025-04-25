@@ -327,7 +327,7 @@ function confirmList(categoryId){
             )
             $(`#category-${categoryId} td:nth-child(7)`).html(
               `<button class="btn btn-danger btn-sm">
-                <a href="/admin/listCategory?id=${categoryId}" class="text-white" style="text-decoration:none" onclick="confirmUnlist('${categoryId}')">Unlist</a>
+                <a class="text-white" style="text-decoration:none" onclick="confirmUnlist('${categoryId}')">Unlist</a>
               </button>`
             )
           })
