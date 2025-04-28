@@ -22,7 +22,7 @@
             </thead>
             <tbody>
               <% cart.items.forEach(item => { %> <% if(item.productId) { %>
-              <tr>
+                <tr id="cart-<%= cart._id %>-<%= item.productId._id %>">
                 <td class="cart-pic first-row px-3">
                   <a
                     href="/productDetails/<%=item.productId._id%>"
@@ -37,7 +37,9 @@
                 <td class="cart-title first-row px-2">
                   <h5><%=item.productId.productName%></h5>
                 </td>
-                <td class="p-price first-row">
+                <td class="p-price first-row" 
+                  data-regular-price="<%=item.productId.regularPrice%>" 
+                  data-sale-price="<%=item.productId.salePrice%>">
                   Rs <%=item.productId.salePrice%>
                 </td>
                 <td class="qua-col first-row">
@@ -45,7 +47,7 @@
                     <div class="pro-qty" style="display: flex">
                       <a
                         href="#"
-                        data-id="<%=item.productId._id%>"
+                        onclick="decreaseQuantity('<%=cart._id%>','<%=item.productId._id%>','<%=item.productId.salePrice%>','<%=item.quantity%>')"
                         class="btn decrease-btn"
                         style="margin-left: -1rem"
                       >
@@ -54,7 +56,7 @@
                       <input type="text" value="<%=item.quantity%>" class="" />
                       <a
                         href="#"
-                        data-id="<%=item.productId._id%>"
+                        onclick="increaseQuantity('<%=cart._id%>','<%=item.productId._id%>','<%=item.productId.salePrice%>','<%=item.quantity%>')"
                         class="btn increase-btn"
                       >
                         <span class="inc qty-btn">+</span>
@@ -98,32 +100,26 @@
           <div class="col-lg-4 offset-lg-4">
             <div class="proceed-checkout">
               <% if(cart && cart.items.length > 0){ %>
-              <ul>
-                <li class="subtotal">
-                  Price
-                  <span
-                    ><%=cart ? cart.items.reduce((acc,item) => acc +
-                    item.productId.regularPrice*item.quantity,0):0%></span
-                  >
-                </li>
-                <li class="discount">
-                  Discount
-                  <span
-                    ><%= (cart? cart.items.reduce((acc,item) => acc+
-                    (item.productId.regularPrice -
-                    item.productId.salePrice)*item.quantity,0):0).toFixed(2)
-                    %></span
-                  >
-                </li>
-                <li class="cart-total">
-                  Total
-                  <span
-                    ><%= (cart? cart.items.reduce((acc,item) => acc +
-                    item.productId.salePrice*item.quantity,0):0).toFixed(2)
-                    %></span
-                  >
-                </li>
-              </ul>
+                <ul>
+                  <li class="subtotal">
+                    Price
+                    <span id="subtotal">
+                      <%= cart ? cart.items.reduce((acc,item) => acc + item.productId.regularPrice*item.quantity, 0) : 0 %>
+                    </span>
+                  </li>
+                  <li class="discount">
+                    Discount
+                    <span id="discount">
+                      <%= (cart ? cart.items.reduce((acc,item) => acc + (item.productId.regularPrice - item.productId.salePrice)*item.quantity, 0) : 0).toFixed(2) %>
+                    </span>
+                  </li>
+                  <li class="cart-total">
+                    Total
+                    <span id="total">
+                      <%= (cart ? cart.items.reduce((acc,item) => acc + item.productId.salePrice*item.quantity, 0) : 0).toFixed(2) %>
+                    </span>
+                  </li>
+                </ul>                
               <% } %>
               <a href="/buyNow" class="proceed-btn">PROCEED TO CHECK OUT</a>
             </div>
@@ -133,4 +129,125 @@
     </div>
   </div>
 </section>
+<script>
+  document.querySelectorAll('.cart-remove').forEach(button => {
+    button.addEventListener('click', async (event) => {
+        event.preventDefault();
+
+        const confirmation = await Swal.fire({
+            title: 'Are you sure?',
+            text: "Do you want to remove this item from your cart?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, remove it!',
+            cancelButtonText: 'Cancel',
+            reverseButtons: true
+        });
+
+        if (confirmation.isConfirmed) {
+            const productId = event.target.closest('a').getAttribute('href').split('/').pop();
+            const cartItem = event.target.closest('tr');
+
+            $.ajax({
+                url: `/removeFromCart/${productId}`,
+                type: 'GET',
+                success: () => {
+                    cartItem.remove(); 
+                    updateCartSummary();
+                    Swal.fire('Removed!', 'The item has been removed from your cart.', 'success');
+                },
+                error: (xhr) => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops',
+                        text: xhr.responseJSON?.error || 'Something went wrong! Please try again.'
+                    });
+                }
+            });
+        } else {
+            Swal.fire('Cancelled', 'The item is still in your cart.', 'info');
+        }
+    });
+});
+
+  function increaseQuantity(cartId, productId, salePrice) {
+    $.ajax({
+        url: `/increaseQuantity/${productId}`,
+        type: "POST",
+        contentType: "application/json",
+        success: (response) => {
+            let currentQuantity = parseInt($(`#cart-${cartId}-${productId} td:nth-child(4) input`).val());
+            let updatedQuantity = currentQuantity + 1;
+            let updatedSalePrice = parseInt(salePrice) * updatedQuantity;
+
+            $(`#cart-${cartId}-${productId} td:nth-child(4) input`).val(updatedQuantity);
+            $(`#cart-${cartId}-${productId} td:nth-child(5)`).html(`Rs ${updatedSalePrice}`);
+
+            updateCartSummary();   // <-- IMPORTANT
+        },
+        error: (xhr) => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops',
+                text: xhr.responseJSON?.error || 'Something went wrong! Please try again.'
+            });
+        }
+    });
+}
+
+function decreaseQuantity(cartId, productId, salePrice) {
+    $.ajax({
+        url: `/decreaseQuantity/${productId}`,
+        type: "POST",
+        contentType: "application/json",
+        success: (response) => {
+            let currentQuantity = parseInt($(`#cart-${cartId}-${productId} td:nth-child(4) input`).val());
+            let updatedQuantity = currentQuantity - 1;
+
+            if (updatedQuantity < 1) {
+                updatedQuantity = 1;  // Prevent going below 1
+            }
+
+            let updatedSalePrice = parseInt(salePrice) * updatedQuantity;
+
+            $(`#cart-${cartId}-${productId} td:nth-child(4) input`).val(updatedQuantity);
+            $(`#cart-${cartId}-${productId} td:nth-child(5)`).html(`Rs ${updatedSalePrice}`);
+
+            updateCartSummary();  // <-- IMPORTANT
+        },
+        error: (xhr) => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops',
+                text: xhr.responseJSON?.error || 'Something went wrong! Please try again.'
+            });
+        }
+    });
+}
+
+function updateCartSummary() {
+    let subtotal = 0;
+    let discount = 0;
+    let total = 0;
+
+    $("tbody tr").each(function () {
+        let priceCell = $(this).find("td:nth-child(3)");
+
+        let regularPrice = parseFloat(priceCell.attr("data-regular-price"));
+        let salePrice = parseFloat(priceCell.attr("data-sale-price"));
+        let quantity = parseInt($(this).find("td:nth-child(4) input").val());
+
+        if (!isNaN(regularPrice) && !isNaN(salePrice) && !isNaN(quantity)) {
+            subtotal += regularPrice * quantity;
+            discount += (regularPrice - salePrice) * quantity;
+            total += salePrice * quantity;
+        }
+    });
+
+    $("#subtotal").text(`Rs ${subtotal.toFixed(2)}`);
+    $("#discount").text(`Rs ${discount.toFixed(2)}`);
+    $("#total").text(`Rs ${total.toFixed(2)}`);
+}
+
+</script>
 <%- include('../../views/partials/user/footer') %>

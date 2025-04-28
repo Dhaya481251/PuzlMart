@@ -147,47 +147,7 @@
 
 };
 
-// Example integration for cart item removal
-document.querySelectorAll('.cart-remove').forEach(button => {
-    button.addEventListener('click', async (event) => {
-        event.preventDefault();
 
-        const confirmation = await Swal.fire({
-            title: 'Are you sure?',
-            text: "Do you want to remove this item from your cart?",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, remove it!',
-            cancelButtonText: 'Cancel',
-            reverseButtons: true
-        });
-
-        if (confirmation.isConfirmed) {
-            const productId = event.target.closest('a').getAttribute('href').split('/').pop();
-            const cartItem = event.target.closest('tr');
-
-            // AJAX request to remove the item
-            $.ajax({
-                url: `/removeFromCart/${productId}`,
-                type: 'GET',
-                success: () => {
-                    cartItem.remove(); 
-                    updateCartSummary();
-                    Swal.fire('Removed!', 'The item has been removed from your cart.', 'success');
-                },
-                error: (xhr) => {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops',
-                        text: xhr.responseJSON?.error || 'Something went wrong! Please try again.'
-                    });
-                }
-            });
-        } else {
-            Swal.fire('Cancelled', 'The item is still in your cart.', 'info');
-        }
-    });
-});
 document.querySelectorAll('.wishlist-remove').forEach(button => {
     button.addEventListener('click', async (event) => {
         event.preventDefault();
@@ -316,34 +276,7 @@ document.querySelectorAll('.cart-btn').forEach(button => {
   })
 });
 
-const sendRequest = (url,method) => {
-    $.ajax({
-        url:url,
-        type:method,
-        success:() => {
-            location.reload();
-        }
-        ,error: (xhr) => {
-            Swal.fire({
-                icon:'error',
-                title:'Oops',
-                text:xhr.responseJSON?.error || 'Something went wrong! Please try again.'
-            });
-        }
-    });
-};
 
-$('.increase-btn').on('click',function(e) {
-    e.preventDefault();
-    const productId = $(this).data('id');
-    sendRequest(`/increaseQuantity/${productId}`,'POST');
-});
-
-$('.decrease-btn').on('click',function(e) {
-    e.preventDefault();
-    const productId = $(this).data('id');
-    sendRequest(`/decreaseQuantity/${productId}`,'POST')
-});
 
 </script>
 </body>
