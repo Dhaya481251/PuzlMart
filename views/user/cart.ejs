@@ -183,7 +183,7 @@
             $(`#cart-${cartId}-${productId} td:nth-child(4) input`).val(updatedQuantity);
             $(`#cart-${cartId}-${productId} td:nth-child(5)`).html(`Rs ${updatedSalePrice}`);
 
-            updateCartSummary();   // <-- IMPORTANT
+            updateCartSummary();   
         },
         error: (xhr) => {
             Swal.fire({
@@ -205,7 +205,7 @@ function decreaseQuantity(cartId, productId, salePrice) {
             let updatedQuantity = currentQuantity - 1;
 
             if (updatedQuantity < 1) {
-                updatedQuantity = 1;  // Prevent going below 1
+                updatedQuantity = 1; 
             }
 
             let updatedSalePrice = parseInt(salePrice) * updatedQuantity;
@@ -213,7 +213,7 @@ function decreaseQuantity(cartId, productId, salePrice) {
             $(`#cart-${cartId}-${productId} td:nth-child(4) input`).val(updatedQuantity);
             $(`#cart-${cartId}-${productId} td:nth-child(5)`).html(`Rs ${updatedSalePrice}`);
 
-            updateCartSummary();  // <-- IMPORTANT
+            updateCartSummary(); 
         },
         error: (xhr) => {
             Swal.fire({
