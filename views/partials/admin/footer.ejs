@@ -30,20 +30,22 @@
           button.addEventListener('click', async (event) => {
              event.preventDefault();
              const orderId = button.getAttribute('data-order-id');
-             await handleReturnAction(orderId, 'approve');
+             const itemId = button.getAttribute('data-product-id');
+             await handleReturnAction(orderId,itemId,'approve');
           });
       });
       document.querySelectorAll('.decline-btn').forEach(button => {
           button.addEventListener('click', async (event) => {
              event.preventDefault();
              const orderId = button.getAttribute('data-order-id');
-             await handleReturnAction(orderId, 'decline');
+             const itemId = button.getAttribute('data-product-id');
+             await handleReturnAction(orderId,itemId,'decline');
           });
       });
   });
-  async function handleReturnAction(orderId, action) {
+  async function handleReturnAction(orderId,itemId,action) {
   try {
-      const response = await fetch(`/admin/handleReturnRequest/${orderId}`, {
+      const response = await fetch(`/admin/handleReturnRequest/${orderId}/${itemId}`, {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json'

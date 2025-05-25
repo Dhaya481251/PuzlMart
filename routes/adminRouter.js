@@ -123,14 +123,11 @@ router.get("/unFeatured", adminAuth, productController.unFeaturedProduct);
 
 //Order management
 router.get("/orders", adminAuth, orderController.listOrders);
-router.post("/orders/:id/status", adminAuth, orderController.changeOrderStatus);
-router.post("/orders/:id/cancel", adminAuth, orderController.cancelOrder);
+router.post("/orders/:orderId/:itemId/status", adminAuth, orderController.changeOrderStatus);
+router.post("/orders/:orderId/:itemId/cancel", adminAuth, orderController.cancelOrder);
 router.get("/moreDetails/:id", adminAuth, orderController.moreDetails);
-router.post(
-  "/handleReturnRequest/:id",
-  adminAuth,
-  orderController.handleReturnRequest
-);
+router.post("/handleReturnRequest/:orderId/:itemId",adminAuth,orderController.handleReturnRequest);
+
 //coupon management
 router.get("/coupons", adminAuth, couponController.getCoupons);
 router.get("/addCoupon", adminAuth, couponController.loadAddCouponPage);

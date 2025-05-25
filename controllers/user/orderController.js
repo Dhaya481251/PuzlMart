@@ -640,7 +640,9 @@ const editAddress = async (req, res) => {
 
 const cancelOrder = async (req, res) => {
   try {
-    const id = req.params.id;
+    const orderId = req.params.orderId;
+    const itemId = req.params.itemId;
+
     const userId = req.session.user;
     const user = await User.findById(userId);
     const cart = await Cart.findOne({ userId }).populate("items.productId");
@@ -649,48 +651,35 @@ const cancelOrder = async (req, res) => {
     );
     const category = await Category.find({ isListed: true });
     const { cancellationReason } = req.body;
-    const order = await Order.findOneAndUpdate(
-      { _id: id },
-      { $set: { cancellationReason } },
-      { new: true }
-    );
+    const order = await Order.findById(orderId);
     if (!order) {
-      return res.status(StatusCodes.NOT_FOUND).send("Order not found");
+      return res.status(StatusCodes.NOT_FOUND).json({ message: "Order not found"});
     }
-
-    if (order.status !== "Pending") {
-      return res
-        .status(StatusCodes.BAD_REQUEST)
-        .json({ message: "Order cannot be cancelled.", type: "error" });
+    
+    const item = order.items.find(item => item.productId.toString() === itemId);
+    if (!item) {
+      return res.status(StatusCodes.NOT_FOUND).json({ message: "Item not found in order"});
     }
-
-    order.status = "Cancelled";
-
+    if (item.status !== "Pending") {
+      return res.status(StatusCodes.BAD_REQUEST).json({ message: "Item cannot be cancelled."});
+    }
+    item.status = "Cancelled";
+    item.cancellationReason = cancellationReason;
     await order.save();
 
     if (order.paymentStatus === "Paid") {
-      const userId = req.session.user;
-      const user = await User.findById(userId);
-
-      user.wallet.balance = user.wallet.balance + order.finalAmount || 0;
+      const user = await User.findById(order.userId);
+      user.wallet.balance += item.salePrice * item.quantity || 0;
       const newTransaction = {
         transactionsType: "credit",
-        amount: order.finalAmount,
-        reason: "Order cancellation refund",
+        amount: item.salePrice * item.quantity,
+        reason: "Item cancellation refund",
         date: new Date(),
       };
       user.wallet.transactions.push(newTransaction);
       await user.save();
-
-      res.status(StatusCodes.OK).json({
-        message: "Order cancelled and refund credited in wallet successfully",
-        type: "success",
-      });
-    } else {
-      res
-        .status(StatusCodes.OK)
-        .json({ message: "Order cancelled successfully", type: "success" });
     }
+    res.status(StatusCodes.OK).json({ message: "Item cancelled successfully", type: "success" });
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal server error", type: "error" });
   }
@@ -698,7 +687,8 @@ const cancelOrder = async (req, res) => {
 
 const returnOrder = async (req, res) => {
   try {
-    const id = req.params.id;
+    const orderId = req.params.orderId;
+    const itemId = req.params.itemId;
     const userId = req.session.user;
     const cart = await Cart.findOne({ userId }).populate("items.productId");
     const wishlist = await Wishlist.findOne({ userId }).populate(
@@ -706,34 +696,32 @@ const returnOrder = async (req, res) => {
     );
     const category = await Category.find({ isListed: true });
     const { returnReason } = req.body;
-    const order = await Order.findOneAndUpdate(
-      { _id: id },
-      { $set: { returnReason } },
-      { new: true }
-    );
+    const order = await Order.findById(orderId);
     if (!order) {
-      return res.status(StatusCodes.NOT_FOUND).send("Order not found");
+      return res.status(StatusCodes.NOT_FOUND).json({ message: "Order not found"});
     }
-
-    if (order.status !== "Delivered") {
-      return res
-        .status(StatusCodes.BAD_REQUEST)
-        .json({ message: "Order cannot be returned.", type: "error" });
+    const item = order.items.find(item => item.productId.toString() === itemId);
+    if (!item) {
+      return res.status(StatusCodes.NOT_FOUND).json({ message: "Item not found in order"});
     }
-
+    if (item.status !== "Delivered") {
+      return res.status(StatusCodes.BAD_REQUEST).json({ message: "Item cannot be returned."});
+    }
+    item.returnStatus = "Pending";
+    item.returnReason = returnReason;
+    await order.save();
     const notification = new Notification({
       userId: order.userId,
       orderId: order._id,
-      NotificationMesssage: `Return Request for order ${order._id}`,
+      NotificationMessage: `Return request for item ${itemId} in order ${order._id}`,
       notificationType: "returnRequest",
     });
 
     await notification.save();
+    res.status(StatusCodes.OK).json({ message: "Return request sent for item", type: "success" });
 
-    res
-      .status(StatusCodes.OK)
-      .json({ message: "Return request sent to admin", type: "success" });
   } catch (error) {
+    console.error('error ;',error);
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal server error", type: "error" });
   }
 };

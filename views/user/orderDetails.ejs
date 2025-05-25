@@ -62,9 +62,9 @@
     >
       <p>Order ID: <%= orders.orderId %></p>
       <hr />
-      <ul>
+      <ul style="list-style: none;" >
         <% orders.items.forEach(item => { %>
-        <li style="list-style: none;">
+        <li>
           <img
             src="/uploads/re-image/<%= item.productId.productImage[0]%>"
             alt="<%= item.productId.productName %>"
@@ -91,79 +91,53 @@
           <p>No ratings</p>
           <% } %>
         </li>
+        <h5>Status: <%= item.status %></h5>
+        <% if(item.returnStatus!=="Pending"){ %>
+          <h5>Return Status: <%=item.returnStatus%></h5>
+          <% if (notifications && notifications.length > 1 && notifications[1].NotificationMessage) { %>
+            <p><%= notifications[1].NotificationMessage %></p>
+          <% } %>
+        <%}%>
+          <li>
+            <% if(item.status === "Pending" || item.status === "Processing"){ %>
+            <button class="cancelItemBtn" data-id="<%= item.productId._id %>" style="background-color: #e7ab3c;border-radius: 5px;color:white;border:none">Cancel Item</button>
+            <% }else if(item.status === "Delivered" && item.returnStatus !== "Declined"){ %>
+            <button class="returnItemBtn" data-id="<%= item.productId._id %>" style="background-color: #e7ab3c;border-radius: 5px;color:white;border:none">Return Item</button>
+            <% }else{ %>
+              <button class="cancelItemBtn" data-id="<%= item.productId._id %>" style="display: none;">Cancel Item</button>
+              <button class="returnItemBtn" data-id="<%= item.productId._id %>" style="display: none;">Return Item</button>
+            <%}%>
+        
+            <!-- Cancellation Form -->
+            <div id="cancelForm-<%= item.productId._id %>" style="display: none;">
+              <form class="cancelform" action="/cancelItem/<%=orders._id%>/<%= item.productId._id %>" method="POST">
+                <label for="cancellationReason">Write a cancellation reason:</label>
+                <textarea name="cancellationReason" id="cancellationReason"></textarea>
+                <button type="submit">Submit</button>
+              </form>
+            </div>
+        
+            <!-- Return Form -->
+            <div id="returnForm-<%= item.productId._id %>" style="display: none;">
+              <form class="returnform" action="/returnItem/<%=orders._id%>/<%= item.productId._id %>" method="POST">
+                <label for="returnReason">Write a return reason:</label>
+                <textarea name="returnReason" id="returnReason"></textarea>
+                <button type="submit">Submit</button>
+              </form>
+            </div>
+          </li>
+        
         <% }) %>
       </ul>
       <span style="font-weight: bold;">Rs <%= orders.finalAmount %></span>
       <hr />
       <h5>Order Date: <%= orders.createdOn.toLocaleDateString() %></h5>
 
-      <h5>Status: <%= orders.status %></h5>
+      
 
       <h3>Delivered on <%=orders.deliveryDate.toLocaleDateString()%></h3>
-      <div style="display: flex; flex-direction: column; gap: 1rem">
-        <button
-          id="cancelBtn"
-          class="btn text-white"
-          style="
-            border-color: unset;
-            border-radius: 8px;
-            background-color: #e7ab3c;
-          "
-        >
-          Cancel the order
-        </button>
-        <% if (orders.returnStatus!== 'Pending') { %>
-        <h5>Return Status: <%= orders.returnStatus %></h5>
-        <% if (notifications && notifications.length > 0) { %> <%
-        notifications.forEach(notification => { %> <% if
-        (notification.NotificationMessage) { %>
-        <p><%= notification.NotificationMessage %></p>
-        <% } %> <% }) %> <% } %>
-         <% } else { %>
-        <button
-          id="returnBtn"
-          class="btn text-white"
-          style="
-            border-color: unset;
-            border-radius: 8px;
-            background-color: #e7ab3c;
-          "
-        >
-          Return the order
-        </button>
-        <% } %>
-      </div>
-      <div id="cancelDiv" style="display: none">
-        <form action="/cancelOrder/<%=orders._id%>" method="POST">
-          <label for="cancellationReason">Write a cancellation reason</label
-          ><br />
-          <textarea
-            name="cancellationReason"
-            id="cancellationReason"
-            rows="3"
-          ></textarea>
-          <button
-            type="submit"
-            class="px-1 py-1 text-white"
-            style="background: #e7ab3c"
-          >
-            Submit
-          </button>
-        </form>
-      </div>
-      <div id="returnDiv" style="display: none">
-        <form action="/returnOrder/<%=orders._id%>" method="POST">
-          <label for="returnReason">Write a return reason</label><br />
-          <textarea name="returnReason" id="returnReason" rows="3"></textarea>
-          <button
-            type="submit"
-            class="px-1 py-1 text-white"
-            style="background: #e7ab3c"
-          >
-            Submit
-          </button>
-        </form>
-      </div>
+            
+      
     </div>
     <div
       id="rateDiv"
@@ -296,45 +270,80 @@
     });
   });
 
-  const cancelBtn = document.getElementById("cancelBtn");
-  const cancelDiv = document.getElementById("cancelDiv");
-  const returnDiv = document.getElementById("returnDiv");
-  const returnBtn = document.getElementById("returnBtn");
+  document.querySelectorAll(".cancelItemBtn").forEach(button => {
+  button.addEventListener("click", function () {
+    let itemId = this.getAttribute("data-id");
 
-  const updateButtonVisibility = () => {
-  if (["Pending", "Processing"].includes("<%= orders.status %>")) {
-    cancelBtn.style.display = "block";
-    returnBtn.style.display = "none";
-  } else if ("<%= orders.status %>" === "Delivered" && "<%= orders.returnStatus %>" !== "Declined") {
-    returnBtn.style.display = "block";
-    cancelBtn.style.display = "none";
-  } else if (
-    ["Shipped", "Cancelled", "Returned" , "Return Request"].includes("<%= orders.status %>") ||
-    "<%= orders.returnStatus %>" === "Declined"
-  ) {
-    cancelBtn.style.display = "none";
-    returnBtn.style.display = "none";
-  }
-};
-
-
-updateButtonVisibility();
-
-
-  cancelBtn.addEventListener("click", () => {
-    cancelBtn.style.display = "none";
-    cancelDiv.style.display = "block";
-    returnDiv.style.display = "none";
+    // Find the specific cancellation form related to this item
+    let cancelForm = document.querySelector(`#cancelForm-${itemId}`);
+    if (cancelForm) {
+      cancelForm.style.display = "block"; // Show the form
+    }
   });
+});
 
-  returnBtn.addEventListener("click", () => {
-    returnBtn.style.display = "none";
-    returnDiv.style.display = "block";
-    cancelDiv.style.display = "none";
+document.querySelectorAll(".returnItemBtn").forEach(button => {
+  button.addEventListener("click", function () {
+    let itemId = this.getAttribute("data-id");
+
+    // Find the specific return form related to this item
+    let returnForm = document.querySelector(`#returnForm-${itemId}`);
+    if (returnForm) {
+      returnForm.style.display = "block"; // Show the form
+    }
+  });
+});
+
+
+  document.querySelectorAll(".cancelform, .returnform").forEach((form) => {
+    form.addEventListener("submit", function (event) {
+      event.preventDefault(); // Prevent default form submission
+
+      let formData = {};
+      const formElements = this.elements;
+      for (let element of formElements) {
+        if (element.name) {
+          formData[element.name] = element.value;
+        }
+      }
+
+      fetch(this.action, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then((data) => {
+          Swal.fire({
+            icon: data.type, // "success" or "error"
+            title: data.message, // Message from backend
+            showConfirmButton: false,
+            timer: 1500,
+          }).then(() => {
+            window.location.reload(); // Reload page after alert
+          });
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          Swal.fire({
+            icon: "error",
+            title: "Something went wrong!",
+            text: "Please try again.",
+            showConfirmButton: true,
+          });
+        });
+    });
   });
 
   document
-    .querySelectorAll("#cancelDiv form, #returnDiv form,#rateDiv .rate-form")
+    .querySelectorAll("#rateDiv .rate-form")
     .forEach((form) => {
       form.addEventListener("submit", function (event) {
         event.preventDefault();

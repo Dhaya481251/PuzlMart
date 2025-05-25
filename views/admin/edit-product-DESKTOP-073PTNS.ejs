@@ -1,0 +1,390 @@
+<%- include("../../views/partials/admin/header") %>
+<head>
+   <style>
+       .thumbnails-container {
+           display: flex;
+           overflow-x: auto;
+       }
+       .thumbnail {
+           margin-right: 10px;
+       }
+       .input-upload {
+   position: relative;
+}
+.remove-icon {
+    color: red;
+    font-weight: bold;
+    cursor: pointer;
+    margin-left: 5px;
+}
+.error-message {
+           color: red;
+           display: none;
+       }
+   </style>
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+</head>
+<main id="main" class="main">
+
+    <div class="pagetitle">
+      <h1>Edit Product</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
+          <li class="breadcrumb-item"><a href="/admin/products">Products</a></li>
+          <li class="breadcrumb-item active"><a href="/admin/editProduct">Edit Product</a></li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section">
+      <div class="row">
+        <div class="col-lg-12">
+
+     <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Edit Product</h5>
+
+            <form class="row g-3" method="POST" action="/admin/editProduct/<%=product._id%>" onsubmit="return validateForm()" enctype="multipart/form-data">
+              <div class="col-md-12">
+                <div class="form-floating">
+                  <input type="text" class="form-control" id="productName" placeholder="Product Name" name="productName" value="<%=product.productName%>">
+                  <label for="floatingName">Product Name</label>
+                  <div id="productName-error" class="error-message"></div>
+                </div>
+              </div>
+
+              <div class="col-md-12">
+                <div class="form-floating mb-3">
+                  <select class="form-select" id="floatingSelect" name="brand" aria-label="Floating label select example">
+                    <% for(let i = 0; i < brand.length; i++) { %>
+                      <option value="<%= brand[i].brandName %>"><%= brand[i].brandName %></option>
+                    <% } %>
+                  </select>
+                  <label for="floatingSelect">Brand</label>
+                  <div id="brand-error" class="error-message"></div>
+                </div>
+              </div>
+
+              <div class="col-md-12">
+                <div class="form-floating">
+                  <textarea class="form-control" name="description" placeholder="Product Description" id="descriptionId" style="height: 100px;"><%=product.description%></textarea>
+                  <label for="floatingTextarea">Product Description</label>
+                  <div id="description-error" class="error-message"></div>
+                </div>
+              </div>
+
+              <div class="col-md-12">
+                <div class="form-floating">
+                    <input type="text" class="form-control" id="regularPrice" placeholder="Rs" name="regularPrice" value="<%=product.regularPrice%>">
+                  <label for="floatingPrice">Regular Price</label>
+                  <div id="regularPrice-error" class="error-message"></div>
+                </div>
+              </div>
+
+              <div class="col-md-12">
+                <div class="form-floating">
+                  <input type="text" class="form-control" id="quantity" placeholder="" name="quantity" value="<%=product.quantity%>">
+                  <label for="floatingQuantity">Quantity</label>
+                  <div id="quantity-error" class="error-message"></div>
+                </div>
+              </div>
+
+              <div class="col-md-12">
+                <div class="form-floating mb-3">
+                  <select class="form-select" id="floatingSelect" name="category" aria-label="Floating label select example">
+                    <% for(let i = 0; i < cat.length; i++) { %>
+                      <option value="<%= cat[i].name %>"><%= cat[i].name %></option>
+                    <% } %>
+                  </select>
+                  <label for="floatingSelect">Category</label>
+                  <div id="category-error" class="error-message"></div>
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="form-floating mb-3">
+                  <select multiple class="form-select" id="relatedProducts" name="relatedProducts[]" aria-label="Floating label select example">
+                    <% products.forEach((prod) => { %>
+                      <option value="<%= prod._id %>" <% if (product.relatedProducts && product.relatedProducts.some(rp => rp.toString() === prod._id.toString())) { %> selected <% } %> ><%= prod.productName %></option>
+                    <% }) %>
+                  </select>
+                  <label for="floatingSelect">Related Products</label>
+                </div>
+              </div>
+              <!-- Image inputs with error element -->
+              <div class="col-md-12" style="margin: 0rem;padding: 2rem;">
+                <div class="border row">
+                    <div id="addedImagesContainer"></div>
+                  <div class="thumbnails-container">
+                    <% for(let i=0 ; i<product.productImage.length ; i++){ %>
+                        <div class="col-md-1">
+                            <div class="mb-4">
+                                <div class="col-12">
+                                    <td>
+                                        <input type="hidden" value="<%=product.productImage[i]%>" id="imageDatas">
+                                        <img class="rounded" style="width: 50px; height: 60px;"
+                                            src="/uploads/re-image/<%=product.productImage[i]%>"
+                                            alt="" id="row-image[i]">
+                                        <i onclick="deleteSingleImage('<%=product.productImage[i]%>','<%=product._id%>')" style="position: absolute;margin-left: .5rem; cursor: pointer;" class="bi bi-x-circle-fill"></i>
+                                    </td>
+                                </div>
+                               
+                            </div>
+                        </div>
+               
+                 <% } %>
+                  </div>
+                  <div class="form-floating">
+                    <div class="m-2">
+                      <label for="floatingImage">Choose Images (Max : 4) : </label>
+                    </div>
+                    <% for(let i = 1; i <= 4; i++) { %>
+                    <div class="row">
+                      <div class="card-body align-items-center m-2">
+                        <img src="" alt="" id="imgView<%=i%>">
+                        <input class="form-control" type="file" name="images" id="input<%=i%>" accept="image/png, image/jpeg, image/jpg" onchange="'viewImage<%=i%>(event)',viewImage(event, '<%=i%>')" >
+                        <div id="images-error" class="error-message"></div>
+                      </div>
+                      <div class="image-cropper d-flex align-items-center" style="display:none; width: 100%; height: 150px;">
+                        <img src="" id="croppedImg<%=i%>" alt="" style="width:150px">
+                        <button type="button" id="saveButton<%=i%>" class="btn-sm btn-primary">Save</button>
+                      </div>
+                    </div>
+                    <% } %>
+                  </div>
+                </div>
+              </div>
+
+              <div class="text-center">
+                <button type="submit" id="updatebtn" class="btn btn-primary">Add Product</button>
+              </div>
+            </form>          
+
+          </div>
+        </div>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+   <script>
+    function validateAndSubmit() {
+    if (validateForm()) {
+       document.forms[0].submit();
+    }
+    }
+    
+    function validateForm() {
+    let imageDatas = false;
+    console.log("validate form");
+    clearErrorMessages();
+    const name = document.getElementsByName('productName')[0]?.value || '';
+    const description = document.getElementsByName('descriptionData')[0]?.value || '';
+    const brand = document.getElementsByName('brand')[0]?.value || '';
+    const price = document.getElementsByName('regularPrice')[0]?.value || '';
+    const saleprice = document.getElementsByName('salePrice')[0]?.value || '';
+    const category = document.getElementsByName('category')[0]?.value || '';
+    const images = document.getElementById('input1');
+    imageDatas = document.getElementById("imageDatas")?.value || '';
+    const quantity = document.getElementsByName('quantity')[0]?.value || '';
+    let isValid = true;
+    if (name.trim() === "") {
+        displayErrorMessage('productName-error', 'Please enter a product name.');
+        isValid = false;
+    }
+    if (description === '') {
+        displayErrorMessage('description-error', 'Please enter a product description.');
+        isValid = false;
+    }
+    if (!/^\d+(\.\d{1,2})?$/.test(price) || parseFloat(price) < 0 || parseFloat(price)<=parseFloat(saleprice)) {
+        displayErrorMessage('regularPrice-error', 'Please enter a valid non-negative price or enter a regular price greater than sale price');
+        isValid = false;
+    }
+    if (!/^\d+(\.\d{1,2})?$/.test(saleprice) || parseFloat(saleprice) < 0) {
+        displayErrorMessage('salePrice-error', 'Please enter a valid non-negative price ');
+        isValid = false;
+    }
+    if(!/^\d+(\.\d{1,2})?$/.test(quantity) || parseFloat(quantity)<0){
+        displayErrorMessage('quantity-error','please enter a valid non-negative quantity');
+        isValid = false;
+    }
+    if (!imageDatas && images?.files.length === 0) {
+        displayErrorMessage("images-error", 'Please select an image.');
+        isValid = false;
+    }
+    if(images?.files.length > 4){
+        displayErrorMessage('images-error','You can upload a maximum of 4 images')
+    }
+    return isValid;
+}
+          
+           function displayErrorMessage(elementId, message) {
+               var errorElement = document.getElementById(elementId);
+               errorElement.innerText = message;
+               errorElement.style.display = "block";
+           }
+    
+    
+           function clearErrorMessages() {
+               const errorElements = document.getElementsByClassName('error-message');
+               Array.from(errorElements).forEach(element => {
+                   element.innerText = '';
+               });
+               const errorMessage = document.getElementById('errorMessage');
+    
+    
+           }
+    
+    
+    
+    
+    function viewImage1(event) {
+               document.getElementById('imgView1').src = URL.createObjectURL(event.target.files[0])
+           }
+    
+    
+           function viewImage2(event) {
+               document.getElementById('imgView2').src = URL.createObjectURL(event.target.files[0])
+           }
+    
+    
+           function viewImage3(event) {
+               document.getElementById('imgView3').src = URL.createObjectURL(event.target.files[0])
+           }
+    
+    
+           function viewImage4(event) {
+               document.getElementById('imgView4').src = URL.createObjectURL(event.target.files[0])
+           }
+    
+    
+    
+    
+           function viewImage(event, index) {
+               let input = event.target;
+               let reader = new FileReader();
+               reader.onload = function () {
+                   let dataURL = reader.result;
+                   let image = document.getElementById('imgView' + index);
+                   image.src = dataURL;
+                   let cropper = new Cropper(image, {
+                       aspectRatio: 1,
+                       viewMode: 1,
+                       guides: true,
+                       background: false,
+                       autoCropArea: 1,
+                       zoomable: true
+                   });
+                   let cropperContainer = document.querySelector('#croppedImg' + index).parentNode;
+                   cropperContainer.style.display = 'block';
+                   let saveButton = document.querySelector('#saveButton' + index);
+                   saveButton.addEventListener('click', async function () {
+                       let croppedCanvas = cropper.getCroppedCanvas();
+                       let croppedImage = document.getElementById("croppedImg" + index);
+                       croppedImage.src = croppedCanvas.toDataURL('image/jpeg', 1.0);
+                       let timestamp = new Date().getTime();
+                       let fileName = `cropped-img-${timestamp}-${index}.png`;
+                       await croppedCanvas.toBlob(blob => {
+                           let input = document.getElementById('input' + index);
+                           let imgFile = new File([blob], fileName, blob)
+                           const fileList = new DataTransfer();
+                           fileList.items.add(imgFile);
+                           input.files = fileList.files
+                       });
+                       cropperContainer.style.display = 'none';
+                   });
+                   let existingReplaceButton = cropperContainer.querySelector('.replace-button');
+            if(existingReplaceButton){
+                existingReplaceButton.remove();
+            }
+            let replaceButton = document.createElement('button');
+            replaceButton.innerText = 'Replace';
+            replaceButton.classList.add('btn-sm','btn-warning','replace-button');
+            cropperContainer.appendChild(replaceButton);
+            replaceButton.addEventListener('click',function(){
+                document.getElementById('input'+index).value = '';
+                document.getElementById('imgView'+index).src = '';
+                document.getElementById('croppedImg'+index).src = '';
+                
+                cropperContainer.style.display = 'none';
+                cropper.destroy();
+            });
+               };
+               reader.readAsDataURL(input.files[0]);
+           }
+    
+    
+           const selectedImages = [];
+       document.getElementById("imageInput").addEventListener("change", handleFileSelect);
+    
+    
+           function handleFileSelect(event) {
+               const addedImagesContainer = document.getElementById("addedImagesContainer");
+               addedImagesContainer.innerHTML = "";
+               const files = event.target.files;
+    if (files.length > 4) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'You can upload a maximum of 4 images!',
+        });
+        event.target.value = ""; // Clear the file input
+        return;
+    }
+               
+               for (let i = 0; i < files.length; i++) {
+                   const file = files[i];
+                   selectedImages.push(file);
+                   const thumbnail = document.createElement("div");
+                   thumbnail.classList.add("thumbnail");
+                   const img = document.createElement("img");
+                   img.src = URL.createObjectURL(file);
+                   img.alt = "thumbnail";
+                   img.style.width = "50px";
+                   img.style.height = "auto";
+                   const removeIcon = document.createElement("span");
+                   removeIcon.classList.add("remove-icon");
+                   removeIcon.style.cursor = 'pointer';
+                   removeIcon.innerHTML = "&times;";
+                   removeIcon.addEventListener("click", function () {
+                       const index = selectedImages.indexOf(file);
+                       if(index!== -1){
+                          selectedImages.splice(index,1);
+                       }
+                       thumbnail.remove();
+                   });
+                   thumbnail.appendChild(img);
+                   thumbnail.appendChild(removeIcon);
+                   addedImagesContainer.appendChild(thumbnail);
+                   viewImage(file, i + 1);
+               }
+               
+           };
+           function deleteSingleImage(imageId, productId) {
+    $.ajax({
+        url: '/admin/deleteImage',
+        method: 'post',
+        data: { imageNameToServer: imageId, productIdToServer: productId },
+        success: (response) => {
+            if (response.status === true) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Deleted!',
+                    text: 'The image has been successfully deleted.',
+                }).then(() => {
+                    window.location.reload(); 
+                });
+            }
+        },
+        error: (err) => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to delete the image. Please try again.',
+            });
+        },
+    });
+}
+           
+       </script>
+    
+<%- include("../../views/partials/admin/footer") %>

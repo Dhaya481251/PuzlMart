@@ -109,7 +109,8 @@ const changeOrderStatus = async (req, res) => {
   const {orders,totalPages,totalOrders,notifications} = await fetchOrderData();
   const page = parseInt(req.query.page) || 1;
   try {
-    const orderId = req.params.id;
+    const orderId = req.params.orderId;
+    const itemId = req.params.itemId;
     const { status } = req.body;
     if (
       !status ||
@@ -130,9 +131,12 @@ const changeOrderStatus = async (req, res) => {
     if (!order) {
       return res.status(StatusCodes.NOT_FOUND).render('orders',{errorMessage:"Order not found",orders,totalPages,currentPage:page,totalOrders,notifications});
     }
-
-    order.status = status;
-    if (order.status === "Delivered") {
+    const item = order.items.find(item => item.productId.toString() === itemId);
+    if (!item) {
+      return res.status(StatusCodes.NOT_FOUND).json({ message: "Item not found in order"});
+    }
+    item.status = status;
+    if (item.status === "Delivered") {
       order.deliveryDate = new Date(Date.now());
       order.paymentStatus = "Paid";
       await order.save();
@@ -149,20 +153,25 @@ const cancelOrder = async (req, res) => {
   const {orders,totalPages,totalOrders,notifications} = await fetchOrderData();
   const page = parseInt(req.query.page) || 1;
   try {
-    const orderId = req.params.id;
+    const orderId = req.params.orderId;
+    const itemId = req.params.itemId;
 
     const order = await Order.findById(orderId);
     if (!order) {
       return res.status(StatusCodes.NOT_FOUND).render('orders',{errorMessage:"Order not found",orders,totalPages,currentPage:page,totalOrders,notifications});
     }
-
-    if (order.status !== "Pending") {
+    const item = order.items.find(item => item.productId.toString() === itemId);
+    if (!item) {
+          return res.status(StatusCodes.NOT_FOUND).json({ message: "Item not found in order"});
+    }
+        
+    if (item.status !== "Pending") {
       return res
         .status(StatusCodes.BAD_REQUEST)
         .render('orders',{errorMessage:"Order cannot be cancelled in its current status",orders,totalPages,currentPage:page,totalOrders,notifications});
     }
 
-    order.status = "Cancelled";
+    item.status = "Cancelled";
     await order.save();
 
     res.redirect("/admin/orders");
@@ -197,7 +206,8 @@ const handleReturnRequest = async (req, res) => {
   const {orders,totalPages,totalOrders,notifications} = await fetchOrderData();
   const page = parseInt(req.query.page) || 1;
   try {
-    const orderId = req.params.id;
+    const orderId = req.params.orderId;
+    const itemId = req.params.itemId;
     const { action } = req.body;
 
     if (action !== "approve" && action !== "decline") {
@@ -209,17 +219,21 @@ const handleReturnRequest = async (req, res) => {
       return res.status(StatusCodes.NOT_FOUND).json({ message: "Order not found" });
     }
 
+    const item = order.items.find(item => item.productId.toString() === itemId);
+    if (!item) {
+          return res.status(StatusCodes.NOT_FOUND).json({ message: "Item not found in order"});
+    }
+
     if (action === "approve") {
-      order.returnStatus = "Accepted";
-      order.returnProcedureStartDate = new Date();
-      order.status = "Returned";
+      item.returnStatus = "Accepted";
+      item.returnProcedureStartDate = new Date();
+      item.status = "Returned";
       await order.save();
 
       const notification = new Notification({
         userId: order.userId,
         orderId: order._id,
-        NotificationMessage:
-          "Return request accepted. The product will be collected within 2 days, and the amount will be credited to your wallet today.",
+        NotificationMessage:"Return request accepted. The product will be collected within 2 days, and the amount will be credited to your wallet today.",
         notificationType: "returnApproval",
       });
       await notification.save();
@@ -245,7 +259,7 @@ const handleReturnRequest = async (req, res) => {
         type: "success",
       });
     } else if (action === "decline") {
-      order.returnStatus = "Declined";
+      item.returnStatus = "Declined";
       await order.save();
 
       const notification = new Notification({
@@ -262,6 +276,7 @@ const handleReturnRequest = async (req, res) => {
         .json({ message: "Return request declined", type: "success" });
     }
   } catch (error) {
+    console.log('Error while accepting/declining return request : ',error);
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message:'Something went wrong! Please try again.'});
   }
 };

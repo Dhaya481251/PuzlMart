@@ -298,13 +298,14 @@
               <li class="dropdown-header">
                 You have <%=notifications.length%> new notifications
               </li>
-              <% if(notifications && notifications.length > 0){ %> <%
-              notifications.forEach(notification => { %>
+              <% if(notifications && notifications.length > 0){ %> 
+                <%notifications.forEach(notification => { %>
               <li>
                 <hr class="dropdown-divider" />
               </li>
               <li class="notification-item">
-                <% if(notification.orderId.returnStatus === 'Pending'){ %>
+                <% notification.orderId.items.forEach(item => { %>
+                <% if(item.returnStatus === 'Pending'){ %>
                 <i class="bi bi-exclamation-circle text-warning"></i>
                 <div>
                   <h4>
@@ -312,10 +313,10 @@
                     %>
                   </h4>
                   <p>
-                    Return reason : <%= notification.orderId.returnReason %>
+                    Return reason : <%= item.returnReason %>
                   </p>
                   <form
-                    action="/admin/handleReturnRequest/<%=notification.orderId%>"
+                    action="/admin/handleReturnRequest/<%=notification.orderId%>/<%=item.productId%>"
                     method="POST"
                   >
                     <div>
@@ -324,6 +325,7 @@
                         class="approve-btn btn-success px-1 py-1"
                         style="border-radius: 5px"
                         data-order-id="<%= notification.orderId._id %>"
+                        data-product-id="<%= item.productId %>"
                         >Approve</a
                       >
                       <a
@@ -331,6 +333,7 @@
                         class="decline-btn btn-danger px-1 py-1"
                         style="border-radius: 5px"
                         data-order-id="<%= notification.orderId._id %>"
+                        data-product-id="<%= item.productId %>"
                         >Decline</a
                       >
                     </div>
@@ -344,16 +347,18 @@
                     %>
                   </h4>
                   <p>
-                    Return reason : <%= notification.orderId.returnReason %>
+                    Return reason : <%= item.returnReason %>
                   </p>
 
                   <p>
-                    Return Status : <%= notification.orderId.returnStatus %>
+                    Return Status : <%= item.returnStatus %>
                   </p>
                 </div>
                 <% } %>
+                <% }) %>
               </li>
-              <% }) %> <% }else{ %>
+              <% }) %>
+              <% }else{ %>
               <h5>No notification</h5>
               <% } %>
             </ul>

@@ -31,36 +31,48 @@
               <% orders.forEach(order => { %>
                 <tr id="">
                   <td><%= order.orderId %></td>
-                  <td><%= order.status %></td>
-                  <% if(order.status!=='Cancelled' || order.status!=='Returned'){%>
                   <td>
-                      <form action="/admin/orders/<%= order._id %>/status" method="POST">
+                  <% order.items.forEach( item => {%>
+                  <div style="display: flex;flex-direction: column;margin-top: 1rem;"><%= item.status %></div>
+                  <%})%>
+                  </td>
+
+                  <td>
+                    <% order.items.forEach( item => {%>
+                      <% if(item.status!=='Cancelled' || item.status!=='Returned'){%>
+                      <form action="/admin/orders/<%= order._id %>/<%=item.productId._id%>/status" method="POST" style="margin-top:1rem">
                           <select name="status" id="status">
-                              <option value="Pending" <%= order.status === 'Pending' ? 'selected' : '' %>>Pending</option>
-                              <option value="Processing" <%= order.status === 'Processing' ? 'selected' : '' %>>Processing</option>
-                              <option value="Shipped" <%= order.status === 'Shipped' ? 'selected' : '' %>>Shipped</option>
-                              <option value="Delivered" <%= order.status === 'Delivered' ? 'selected' : '' %>>Delivered</option>
-                              <option value="Cancelled" <%= order.status === 'Cancelled' ? 'selected' : '' %>>Cancelled</option>
-                              <option value="Return Request" <%= order.status === 'Return Request' ? 'selected' : '' %>>Return Request</option>
-                              <option value="Returned" <%= order.status === 'Returned' ? 'selected' : '' %>>Returned</option>
+                              <option value="Pending" <%= item.status === 'Pending' ? 'selected' : '' %>>Pending</option>
+                              <option value="Processing" <%= item.status === 'Processing' ? 'selected' : '' %>>Processing</option>
+                              <option value="Shipped" <%= item.status === 'Shipped' ? 'selected' : '' %>>Shipped</option>
+                              <option value="Delivered" <%= item.status === 'Delivered' ? 'selected' : '' %>>Delivered</option>
+                              <option value="Cancelled" <%= item.status === 'Cancelled' ? 'selected' : '' %>>Cancelled</option>
+                              <option value="Return Request" <%= item.status === 'Return Request' ? 'selected' : '' %>>Return Request</option>
+                              <option value="Returned" <%= item.status === 'Returned' ? 'selected' : '' %>>Returned</option>
                           </select>
                           <button type="submit" class="btn btn-primary">Update Status</button>
                       </form>
+                      <% }else{ %>
+                        <p style="margin-top: 1rem;">Order <%= item.status %></p>
+                      <% } %>
+                      <%})%>
                   </td>
-                  <% }else{ %>
-                    <td><p>Order <%= order.status %></p></td>
-                  <% } %>
-                  <% if(order.status!=='Cancelled'){%>
+                  
+                 
                   <td>
-                      <form action="/admin/orders/<%= order._id %>/cancel" method="POST">
-                          <button type="submit" class="btn btn-danger" <% if (order.status !== 'Pending') { %>disabled<% } %> >Cancel Order</button>
+                    <% order.items.forEach( item => {%>
+                      <% if(item.status!=='Cancelled'){%>
+                      <form action="/admin/orders/<%= order._id %>/<%=item.productId._id%>/cancel" method="POST" style="margin-top:1rem">
+                          <button type="submit" class="btn btn-danger" <% if (item.status !== 'Pending') { %>disabled<% } %> >Cancel Order</button>
                       </form>
+                      <% }else{ %>
+                       <p style="margin-top:1rem;">Order <%= item.status %></p>
+                        <% } %>
+                        <%})%>
                   </td>
-                  <% }else{ %>
-                  <td><p>Order <%= order.status %></p></td>
-                  <% } %>
+                  
                   <td>
-                      <a href="/admin/moreDetails/<%=order._id%>" class="btn-btn-primary" style="text-decoration:none;">More Details</a>
+                      <a href="/admin/moreDetails/<%=order._id%>" class="btn-btn-primary" style="text-decoration:none;margin-top:1rem">More Details</a>
                   </td>
                 </tr>
               <% }) %>

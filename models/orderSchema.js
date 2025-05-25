@@ -38,7 +38,25 @@ const orderSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: "Review",
       },
-    },
+      status: {
+        type: String,
+        enum: ["Pending", "Processing", "Shipped", "Delivered", "Cancelled", "Return Requested", "Returned"],
+        default: "Pending",
+      },
+      cancellationReason: {
+        type: String,
+        default: "none",
+      },
+      returnReason: {
+        type: String,
+        default: "none",
+      },
+      returnStatus: {
+        type: String,
+        enum: ["Pending", "Accepted", "Declined"],
+        default: "Pending",
+      }
+    }
   ],
   finalAmount: {
     type: Number,
@@ -74,32 +92,8 @@ const orderSchema = new Schema({
     enum: ["COD", "PayPal", "Razorpay", "Wallet"],
     required: true,
   },
-  status: {
-    type: String,
-    required: true,
-    enum: [
-      "Pending",
-      "Processing",
-      "Shipped",
-      "Delivered",
-      "Cancelled",
-      "Return Request",
-      "Returned",
-    ],
-  },
-  cancellationReason: {
-    type: String,
-    default: "none",
-  },
-  returnReason: {
-    type: String,
-    default: "none",
-  },
-  returnStatus: {
-    type: String,
-    enum: ["Pending", "Accepted", "Declined"],
-    default: "Pending",
-  },
+  
+  
   returnProcedureStartDate: {
     type: Date,
   },

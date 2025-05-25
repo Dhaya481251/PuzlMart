@@ -49,6 +49,13 @@
           <% }else{ %>
           <p>No ratings</p>
           <% } %>
+
+          <h5>Status: <%= item.status %></h5>
+          <% if(item.status === 'Cancelled'){ %>
+            <p>Cancellation Reason : <%=item.cancellationReason%></p>
+          <% }else if(item.status === 'Returned'){ %>
+            <p>Return Reason : <%=item.returnReason%></p>
+          <% } %>
         </li>
         <% }) %>
       </ul>
@@ -56,12 +63,7 @@
       <hr />
       <h5>Order Date: <%= orders.createdOn.toLocaleDateString() %></h5>
 
-      <h5>Status: <%= orders.status %></h5>
-      <% if(orders.status === 'Cancelled'){ %>
-        <p>Cancellation Reason : <%=orders.cancellationReason%></p>
-      <% }else if(orders.status === 'Returned'){ %>
-        <p>Return Reason : <%=orders.returnReason%></p>
-      <% } %>
+      
       <h3>Delivered on <%=orders.deliveryDate.toLocaleDateString()%></h3>
     </div>
     
